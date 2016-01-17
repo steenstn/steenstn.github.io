@@ -1,0 +1,767 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+    <title></title>
+  <style>
+    body {
+      margin:0px;
+      padding:0px;
+      text-align:center;
+    }
+    
+    canvas{
+      outline:0;
+      border:1px solid #000;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+<div align="center">
+<img src="howto.png"/></div>
+<canvas id='c'></canvas>
+<script src="player.js"></script>
+<script>
+var width = 600, 
+height = 400,
+gLoop,
+c = document.getElementById('c'), 
+ctx = c.getContext('2d');
+  
+c.width = width;
+c.height = height;
+
+var screenx = 100;//width/2.5;
+var screeny = 100;//height/2.5;
+
+
+var levelNow = 1; // Number of current level
+var saving=0; // Is the level saved?
+var oldscreenx = screenx;
+var oldscreeny = screeny;
+var tilesize=32; // The size of a tile(ground, powerups etc)
+var levelWidth=200; // The size of the level in tiles
+var levelHeight=100;
+var score = 0;
+var dead=0;
+var pickedArtefacts=0; // How many phadderists are collected?
+
+var image = new Image();
+image.src = "playersprite.png";
+image.width = 180;
+image.height = 120;
+var player = new Player(2*tilesize, 2*tilesize, image);
+var playerx=2*tilesize,playery=2*tilesize;
+var playerAcc=0.3;
+var gravity=0.3;
+var maxSpeedx=3; // Max speed for player
+var maxSpeedy=6;
+var normalFriction=1.2;
+var friction=normalFriction;
+
+var lastScore = 0;
+
+var skurkImage = new Image();
+skurkImage.src = "skurkerister.png"; // The tileset for the enemies
+skurkImage.width = 120;
+skurkImage.height = 30;
+
+
+var animationCounter = 0; // COunter for framerate of character
+var animationSpeed = 5; // Number of ticks before changing frame
+var currentFrame = 0; // The current frame of the character
+
+var jumpStrength=7;
+var jumpAcc=2;
+var maxJump=7; // Maximum number of jumpsteps, the power of the jump
+var currentLevel = new Array(levelWidth*levelHeight);
+
+for(var i=0;i<currentLevel.length;i++) // set up an object for all tiles
+	currentLevel[i]=new Object();
+
+var enemies={}; // An array containing objects of all enemies
+var content = {};
+
+var tileset = new Image();
+tileset.src = "tileset.png"; // Tileset for the level and all powerups
+tileset.width=tilesize;
+tileset.height=tilesize;
+var playerImage = new Image();
+playerImage.src = "playersprite.png";
+playerImage.width = 180;
+playerImage.height= 120;
+ // Set up key-handling
+ 
+ 
+var init = function() // Init the player in a level
+{
+	screenx = 1;//width/2.5;
+	screeny = 1;//height/2.5;
+
+	var oldscreenx = screenx;
+	var oldscreeny = screeny;
+
+	player.oldx = player.x;
+	player.oldy = player.y;
+	// score=0;
+	player.hp=100;
+	pickedArtefacts=0;
+}
+
+// Keyboard control
+var keysDown = {};
+
+addEventListener("keydown", function (e) {
+	keysDown[e.keyCode] = true;
+}, false);
+
+addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+	
+}, false);
+
+
+var canvas = document.getElementById('c');
+
+// Clear canvas
+var clear = function(){
+  ctx.fillStyle = '#d0e7f9';
+  ctx.clearRect(0, 0, width, height);
+  ctx.beginPath();
+  ctx.rect(0, 0, width, height);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// Function for checking for overlap between two rectangles
+var overlap = function(x,y,width,height,x2,y2,width2,height2) {
+	return (x < x2+width2 && x+width > x2 && y < y2+height2 && y+height > y2);
+}
+
+// Draw player
+var render = function(){
+	
+	if(animationCounter>animationSpeed) {
+		animationCounter=0;
+		currentFrame=1-currentFrame;
+	}
+	//ctx.drawImage(player.image,30,20,30,20,screenx+player.x, screeny+player.y,30,20);
+	
+	if(player.speedy<-0.5) // JUmping up
+	{
+		ctx.drawImage(player.image,30,20*player.goingLeft, 30,20,screenx+player.x-10,screeny+player.y-5, 30, 20);
+	}
+	else if(player.speedy>0.5) // Jumping down
+	{
+		ctx.drawImage(player.image,150,20*player.goingLeft, 30,20,screenx+player.x-10,screeny+player.y-5, 30, 20);
+	}
+	else if(player.speedx>0.05 || player.speedx<-0.05) // Running
+	{
+		ctx.drawImage(player.image,68+60*currentFrame,20*player.goingLeft, 20,20,screenx+player.x-10,screeny+player.y-5, 20, 20);
+	}
+	else
+		ctx.drawImage(player.image,5,20*player.goingLeft, 25,20,screenx+player.x-10,screeny+player.y-5, 25, 20);
+	
+	/*ctx.fillStyle = '#ff0000';
+    ctx.beginPath();
+    ctx.rect(screenx+player.killZonex,screeny+player.killZoney,player.killZoneWidth,player.killZoneHeight);
+    ctx.closePath();
+    ctx.fill();
+	
+	ctx.fillStyle = '#ffaf00';
+    ctx.beginPath();
+    ctx.rect(screenx+player.hurtZonex,screeny+player.hurtZoney,player.hurtZoneWidth,player.hurtZoneHeight);
+    ctx.closePath();
+    ctx.fill();*/
+	
+};
+
+var renderEnemies = function()
+{
+	for(i=0;i<enemies.length;i++)
+	{
+		//if(enemies[i].x<-screenx && enemies[i].x>-screenx+width && enemies[i].y<-screeny && enemies[i].y>-screeny+height)
+		//{
+			switch(enemies[i].type)
+			{
+				case "skurkerist":
+					ctx.drawImage(skurkImage,5,0,18,30,screenx+enemies[i].x,screeny+enemies[i].y, 18, 30);
+					break;
+				case "jumper":
+					ctx.drawImage(skurkImage,36,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
+					break;
+				case "bouncer":
+					ctx.drawImage(skurkImage,67,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
+					break;
+				default:
+				// Non-implemented enemy, if the enemy does nto have a type, a grey rectangle will be drawn
+					ctx.fillStyle = '#111111';
+					ctx.beginPath();
+					ctx.rect(screenx+enemies[i].x,screeny+enemies[i].y,10,10);
+					ctx.closePath();
+					ctx.fill();
+			}
+		//}
+	}
+}
+
+
+var updatePlayer = function() {
+	player.oldx = player.x;
+	player.oldy = player.y;
+	 
+	player.x += player.speedx;
+	
+	// Check to the left if going left and stop the player if he collides with a blocking tile
+	if(player.speedx < 0) {
+		var arrayPos=Math.floor((player.x)/tilesize)+Math.floor((player.y+player.height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
+		if(currentLevel[arrayPos].blocking==1) {
+			player.x = player.oldx;
+			player.speedx = 0;
+		}
+	} else {// Check to the right
+	
+		var arrayPos=Math.floor((player.x+player.width)/tilesize)+Math.floor((player.y+player.height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
+		if(currentLevel[arrayPos].blocking==1) {
+			player.x = player.oldx;
+			player.speedx = 0;
+		}
+	}
+	// Add gravity
+	if(player.speedy < maxSpeedy) {
+		player.speedy += gravity;
+	} 
+	
+	player.y += player.speedy;
+	
+	
+	// If going up, check for blocking tiles
+	if(player.speedy < 0) {
+		arrayPos=Math.floor((player.x+player.width/2)/tilesize)+Math.floor((player.y+2)/tilesize)*levelWidth;
+		if(currentLevel[arrayPos].blocking==1) {
+			player.y = player.oldy;
+			player.speedy = 0;
+		}
+	} else if(player.speedy > 0) { // Going down, check for blocking tiles
+		arrayPos=Math.floor((player.x+player.width/2)/tilesize)+Math.floor((player.y+player.height)/tilesize)*levelWidth;
+		// If the player lands on a blocking tile, iteratively move him upwards until he is free from the
+		// tile. This will remove bouncing when landing in high speed
+		if(currentLevel[arrayPos].blocking==1) {
+			player.jumping = 0;
+			
+			while(currentLevel[Math.floor((player.x+player.width/2)/tilesize)+Math.floor((player.y+player.height)/tilesize)*levelWidth].blocking==1) {
+				player.y-=0.2;
+			}
+			player.speedy=0;
+		}
+	}
+	if(currentLevel[arrayPos].blocking==0) { // Disable jumping when in mid-air
+		player.jumping++;
+	}
+		
+	if(currentLevel[arrayPos].type=="g") // Ice block
+		friction=1; // No friction
+	else
+		friction=normalFriction;
+
+	// Move the screen when the player moves
+	screenx=-player.x+9*tilesize;
+	screeny=-player.y+6*tilesize;
+	
+	// Do not move the screen outside of the level
+	if(screenx>0)
+		screenx=0;
+	if(screenx<-levelWidth*tilesize+19*tilesize)
+		screenx=-levelWidth*tilesize+19*tilesize;
+		
+	if(screeny>0)
+		screeny=0;
+	if(screeny<-levelHeight*tilesize+13*tilesize)
+		screeny=-levelHeight*tilesize+13*tilesize
+	
+	
+	player.killZonex=player.x;
+	player.killZoney=player.y+player.height-5;
+	
+	player.hurtZonex=player.x-2;
+	player.hurtZoney=player.y-5;
+	arrayPos=Math.floor((player.x+player.width/2)/tilesize)+Math.floor((player.y+player.height)/tilesize)*levelWidth;
+	
+	if(currentLevel[arrayPos].type=="p" || currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
+	{
+		if(player.hp<100)
+			player.hp+=10;
+		if(player.hp>100)
+			player.hp=100;
+		currentLevel[arrayPos].type=".";
+	}
+	if(currentLevel[arrayPos].type=="s") // Coins
+	{
+		score+=20;			
+		currentLevel[arrayPos].type=".";
+	}
+	if(currentLevel[arrayPos].type=="l" || currentLevel[arrayPos].type=="m" || currentLevel[arrayPos].type=="n" || currentLevel[arrayPos].type=="o") // Phadderist
+	{
+		pickedArtefacts++;
+		score+=50;
+		currentLevel[arrayPos].type=".";
+	}
+	
+}
+
+var updateEnemies = function() {
+	
+	for(i=0;i<enemies.length;i++) {
+		enemies[i].oldx=enemies[i].x;
+		enemies[i].oldy=enemies[i].y;
+		
+		// If an enemy enters the player's hurtzone, shuffle the player around
+		// If the enemy enters the killzone, remove the enemy
+		if(overlap(enemies[i].x,enemies[i].y,20,20,player.hurtZonex,player.hurtZoney,player.hurtZoneWidth,player.hurtZoneHeight)) {
+			player.speedx=-1*Math.random()*4+Math.random()*4;
+			player.speedy=-1*Math.random()*4+Math.random()*4;
+			player.hp-=2;
+		} else if(overlap(enemies[i].x,enemies[i].y,20,20,player.killZonex,player.killZoney,player.killZoneWidth,player.killZoneHeight)) {
+			enemies.splice(i,1); // Remove the enemy from the array
+			player.speedy=-4;
+			score+=100;
+		} else {
+		// The enemy has neither hurt the player or gotten killed, continue with its behaviour
+			switch(enemies[i].type) {
+				case "skurkerist": // Flies back and forth, no gravity
+					if(enemies[i].direction==1)
+						enemies[i].x+=2;
+					else
+						enemies[i].x-=2;
+						
+					
+					arrayPos=Math.floor((enemies[i].x+5)/tilesize)+Math.floor((enemies[i].y+5)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+				
+					if(currentLevel[arrayPos].blocking==1) {
+						enemies[i].direction=1-enemies[i].direction;
+					}
+					
+					break;
+				case "jumper": // Runs around, jumps when it discovers an edge
+					if(enemies[i].direction==1)
+						enemies[i].x+=3.5;
+					else
+						enemies[i].x-=3.5;
+						
+					arrayPos=Math.floor((enemies[i].x+5)/tilesize)+Math.floor((enemies[i].y+5)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+						
+					if(currentLevel[arrayPos].blocking==1 || currentLevel[arrayPos].type=="h")
+						enemies[i].direction=1-enemies[i].direction;
+							
+						
+					// Check one tile ahead and below, if it's empty, jump
+					if(enemies[i].jumping==0)
+					{
+						if(enemies[i].direction==1) // Going right
+							arrayPos=Math.floor((enemies[i].x+15)/tilesize)+Math.floor((enemies[i].y+15)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+						else
+							arrayPos=Math.floor((enemies[i].x-15)/tilesize)+Math.floor((enemies[i].y+15)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+						
+						if(currentLevel[arrayPos].blocking==0 || Math.random()>0.98) // Check for holes in the ground
+						{
+							enemies[i].jumping=1;
+							enemies[i].speedy=-5;
+						}
+					}
+					arrayPos=Math.floor((enemies[i].x+5)/tilesize)+Math.floor((enemies[i].y)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+					
+					if(enemies[i].speedy<maxSpeedy)
+						enemies[i].speedy+=gravity;
+					
+					enemies[i].y+=enemies[i].speedy;
+					arrayPos=Math.floor((enemies[i].x+5)/tilesize)+Math.floor((enemies[i].y+5)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+						
+					if(currentLevel[arrayPos].blocking==1) {
+						enemies[i].y=enemies[i].oldy;
+						enemies[i].jumping=0;
+					}
+					break;
+				case "bouncer": // Flies around and bounces on the walls
+					
+					if(enemies[i].speedx>0) // Going right
+					{
+						arrayPos=Math.floor((enemies[i].x+20)/tilesize)+Math.floor((enemies[i].y+15)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+						if(currentLevel[arrayPos].blocking==1 || currentLevel[arrayPos].type=="h" )
+						{
+							enemies[i].speedx*=-1;
+						}
+						
+					}
+					else if(enemies[i].speedx<0) // Going left
+					{
+						arrayPos=Math.floor((enemies[i].x)/tilesize)+Math.floor((enemies[i].y+15)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+						if(currentLevel[arrayPos].blocking==1 || currentLevel[arrayPos].type=="h" )
+						{
+							enemies[i].speedx*=-1;
+						}
+						
+					}
+					if(enemies[i].speedy<0) // Going up up up
+					{
+						arrayPos=Math.floor((enemies[i].x+10)/tilesize)+Math.floor((enemies[i].y-1)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+						if(currentLevel[arrayPos].blocking==1 || currentLevel[arrayPos].type=="h" )
+						{
+							enemies[i].speedy*=-1;
+						}
+						
+					}
+					else if(enemies[i].speedy>0) // Going down
+					{
+						arrayPos=Math.floor((enemies[i].x+10)/tilesize)+Math.floor((enemies[i].y+31)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
+						if(currentLevel[arrayPos].blocking==1 || currentLevel[arrayPos].type=="h" )
+						{
+							enemies[i].speedy*=-1;
+						}
+						
+					}
+					enemies[i].x+=enemies[i].speedx;
+					enemies[i].y+=enemies[i].speedy;
+					
+					break;
+			}
+		}	
+		
+	}
+}
+
+var checkKeys = function (modifier) {
+	if (38 in keysDown) { // Player holding up
+		if(player.jumping < maxJump) {
+			player.jumping++;
+			
+			if(player.speedy>-jumpStrength)
+			player.speedy-=jumpAcc;
+		}
+	}
+
+	if (37 in keysDown) { // Player holding left
+	player.goingLeft = 1;
+	animationCounter++;
+		if(player.speedx>-maxSpeedx)
+			player.speedx -= playerAcc * modifier;
+	}
+	else if (39 in keysDown) { // Player holding right
+	player.goingLeft = 0;
+	animationCounter++;
+		if(player.speedx<maxSpeedx)
+			player.speedx += playerAcc * modifier;
+	}
+	else
+		player.speedx/=friction; // Decelerate
+}
+
+var loadContent = function(levelName) {	
+	//enemies.length = 0; // Reset the enemy array
+	var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', "levels/" + levelName+'enemies.json', false);
+
+	xobj.send(null);
+	var jsonTexto = xobj.responseText;
+	enemies = JSON.parse(jsonTexto);
+	
+	xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', "levels/" + levelName+'content.json', false);
+
+	xobj.send(null);
+	jsonTexto = xobj.responseText;
+	content = JSON.parse(jsonTexto);
+}
+
+var loadLevel = function(levelNumber) {
+var levelName = "level"+levelNumber;
+ currentLevel = new Array(levelWidth*levelHeight);
+
+for(var i=0;i<currentLevel.length;i++) { // set up an object for all tiles
+	currentLevel[i]=new Object();
+}
+var txtFile = new XMLHttpRequest();
+
+txtFile.open("GET", "levels/" + levelName + ".txt", true);
+txtFile.onreadystatechange = function() {
+  if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
+    if (txtFile.status === 200 || txtFile.status == 0) {  // Makes sure it's found the file.
+      allText = txtFile.responseText;
+	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
+     // lines = txtFile.responseText.split("\n"); // Will separate each line into an array
+	 
+		for(var y=0;y<levelHeight;y++) {
+			for(var x=0;x<levelWidth;x++) {
+				var arrayPos = x+y*levelWidth;
+				currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
+				switch(currentLevel[arrayPos].type) {
+					case ".": // Empty tile
+						currentLevel[arrayPos].blocking=0;
+						break;
+					case "1": // Ground tile
+						currentLevel[arrayPos].blocking=1; // Blocking tile
+						currentLevel[arrayPos].tileOffsetx=0; // Where in the tileset the tile is
+						currentLevel[arrayPos].tileOffsety=0;
+						break;
+					case "2": // Ground tile
+						currentLevel[arrayPos].blocking=1; // Blocking tile
+						currentLevel[arrayPos].tileOffsetx=32;
+						currentLevel[arrayPos].tileOffsety=0;
+						break;
+					case "3": // Ground tile
+						currentLevel[arrayPos].blocking=1; // Blocking tile
+						currentLevel[arrayPos].tileOffsetx=64;
+						currentLevel[arrayPos].tileOffsety=0;
+						break;
+					case "4": // Ground tile
+						currentLevel[arrayPos].blocking=1; // Blocking tile
+						currentLevel[arrayPos].tileOffsetx=96;
+						currentLevel[arrayPos].tileOffsety=0;
+						break;
+					case "5": // Ground tile
+						currentLevel[arrayPos].blocking=1; // Blocking tile
+						currentLevel[arrayPos].tileOffsetx=0;
+						currentLevel[arrayPos].tileOffsety=32;
+						break;
+					case "6": // Ground tile
+						currentLevel[arrayPos].blocking=1; // Blocking tile
+						currentLevel[arrayPos].tileOffsetx=32;
+						currentLevel[arrayPos].tileOffsety=32;
+						break;
+					case "7": // Ground tile
+						currentLevel[arrayPos].blocking=1; // Blocking tile
+						currentLevel[arrayPos].tileOffsetx=64;
+						currentLevel[arrayPos].tileOffsety=32;
+						break;
+					case "8": // Ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=96;
+						currentLevel[arrayPos].tileOffsety=32;
+						break;
+					case "9": // Ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=0;
+						currentLevel[arrayPos].tileOffsety=64;
+						break;
+					case "0": // Ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=32;
+						currentLevel[arrayPos].tileOffsety=64;
+						break;
+					case "a": // Ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=64;
+						currentLevel[arrayPos].tileOffsety=64;
+						break;
+					case "b": // Ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=96;
+						currentLevel[arrayPos].tileOffsety=64;
+						break;
+					case "c": // Ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=0;
+						currentLevel[arrayPos].tileOffsety=96;
+						break;
+					case "d": // Ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=32;
+						currentLevel[arrayPos].tileOffsety=96;
+						break;
+					case "e": // Ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=64;
+						currentLevel[arrayPos].tileOffsety=96;
+						break;
+					case "f": // Ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=96;
+						currentLevel[arrayPos].tileOffsety=96;
+						break;
+					case "g": // Ice ground tile
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=0;
+						currentLevel[arrayPos].tileOffsety=128;
+						break;
+					case "h": // Tree
+						currentLevel[arrayPos].blocking=0;
+						currentLevel[arrayPos].tileOffsetx=32;
+						currentLevel[arrayPos].tileOffsety=128;
+						break;
+					case "i":
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=64;
+						currentLevel[arrayPos].tileOffsety=128;
+						break;
+					case "j":
+						currentLevel[arrayPos].blocking=1;
+						currentLevel[arrayPos].tileOffsetx=96;
+						currentLevel[arrayPos].tileOffsety=128;
+						break;
+					case "k":
+						currentLevel[arrayPos].blocking=0;
+						currentLevel[arrayPos].tileOffsetx=0;
+						currentLevel[arrayPos].tileOffsety=160;
+						break;
+					case "l":
+						currentLevel[arrayPos].blocking=0;
+						currentLevel[arrayPos].tileOffsetx=96;
+						currentLevel[arrayPos].tileOffsety=160;
+						break;
+					case "m":
+						currentLevel[arrayPos].blocking=0;
+						currentLevel[arrayPos].tileOffsetx=32;
+						currentLevel[arrayPos].tileOffsety=192;
+						break;
+					case "n":
+						currentLevel[arrayPos].blocking=0;
+						currentLevel[arrayPos].tileOffsetx=64;
+						currentLevel[arrayPos].tileOffsety=192;
+						break;
+					case "o":
+						currentLevel[arrayPos].blocking=0;
+						currentLevel[arrayPos].tileOffsetx=0;
+						currentLevel[arrayPos].tileOffsety=192;
+						break;
+					case "p": // 3Cant
+						currentLevel[arrayPos].blocking=0;
+						currentLevel[arrayPos].tileOffsetx=96;
+						currentLevel[arrayPos].tileOffsety=224;
+						break;
+					case "q": // Tryckbar
+						currentLevel[arrayPos].blocking=0;
+						currentLevel[arrayPos].tileOffsetx=64;
+						currentLevel[arrayPos].tileOffsety=224;
+						break;
+					case "s": // Cash
+						currentLevel[arrayPos].blocking=0;
+						currentLevel[arrayPos].tileOffsetx=64;
+						currentLevel[arrayPos].tileOffsety=128;
+						break;
+				}
+			}
+		}
+		
+    }
+    
+  }
+}
+txtFile.send(null);
+
+loadContent(levelName);
+setUpContent();
+}
+
+var setUpContent = function() {
+
+	for(var i = 0; i < content.length; i++) {
+		switch(content[i].type) {
+			case "startPos":
+				player.x = content[i].x;
+				player.y = content[i].y;
+			break;
+		}
+	}
+}
+
+
+var drawLevel = function() {
+	//Only loop through tiles that are almost in the screen
+	var startx=Math.floor(-screenx/tilesize)-1; 
+	var starty=Math.floor(-screeny/tilesize)-1;
+	if(startx<0)
+		startx=0;
+	if(starty<0)
+		starty=0;
+	var endx=startx+width/tilesize+2;
+	var endy=starty+height/tilesize+2;
+	
+	
+	
+	if(endx>levelWidth)
+		endx=levelWidth;
+	if(endy>levelHeight)
+		endy=levelHeight;
+	
+   
+	for(var y=starty;y<endy;y++) {
+		for(var x=startx;x<endx;x++) {
+			var posx = Math.round(screenx+x*tilesize);
+			var posy = Math.round(screeny+y*tilesize);
+			
+			if(currentLevel[x+y*levelWidth].type!=".") {// If the tile is not an air-tile, draw it
+				ctx.drawImage(tileset,currentLevel[x+y*levelWidth].tileOffsetx,currentLevel[x+y*levelWidth].tileOffsety, tilesize,
+					tilesize,posx,posy, tilesize, tilesize);
+			}
+			
+		}
+	}
+	
+}
+var drawText = function() {
+	ctx.fillStyle    = '#F00';
+    ctx.font         = '16px Sans-Serif';
+    ctx.textBaseline = 'Top';
+    ctx.fillText  ("Score: " + score, 4,20);
+	ctx.strokeStyle = "black";
+	ctx.strokeRect(4,30,102,10);
+	if(player.dead==0) {
+		ctx.fillStyle = "rgb(50,129,28)";
+		ctx.fillRect (5,31,player.hp,8); 
+	}
+	
+}
+
+var GameLoop = function(){
+	clear();
+	if(player.hp<1) {
+		player.hp=0;
+		score=lastScore;
+		loadLevel(levelNow);
+			
+		init();
+	}
+	if(player.dead==0) {
+		checkKeys(1);
+			
+		updatePlayer();
+		
+		render();
+	}
+	updateEnemies();
+	renderEnemies();
+	drawLevel();
+	arrayPos=Math.floor((player.x+player.width/2)/tilesize)+Math.floor((player.y+player.height)/tilesize)*levelWidth;
+	
+	if(currentLevel[arrayPos].type=="k") {
+		if(pickedArtefacts>3) {
+			levelNow++;
+			lastScore=score;
+			loadLevel(levelNow);
+			
+			init();
+		} else {
+			ctx.fillStyle    = '#F00';
+			ctx.font         = '16px Sans-Serif';
+			ctx.textBaseline = 'Top';
+			ctx.fillText  ("Hitta alla phadderister, kanske..", 100,100);
+		}
+	}
+	drawText();
+	gLoop = setTimeout(GameLoop, 1000 / 50);
+}
+
+init();
+loadLevel(levelNow);
+GameLoop();
+
+</script>
+
+
+
+</body>
+</html>

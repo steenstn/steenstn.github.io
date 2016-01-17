@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" style="border:1px solid #c3c3c3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+<script>
+var ALIGNED = 0;
+var REAL = 1;
+
+var gLoop;
+var screenx = -300;
+var screeny = -100;
+var oldScreenx = screenx;
+var displayMode = ALIGNED;
+var c=document.getElementById("myCanvas");
+var ctx=c.getContext("2d");
+c.width = window.innerWidth;
+c.height = window.innerHeight;
+var offsetx = c.width/2;
+
+function lyToKm(ly) {
+	return ly * 9.46e12;
+}
+
+var Mouse = {
+	x: 0,
+	y: 0,
+	oldx: 0,
+	oldy: 0,
+	isDown: false,
+	getPosition: function(theCanvas, theEvent)
+	{
+		this.oldx = this.x;
+		this.oldy = this.y;
+		this.x = theEvent.clientX - theCanvas.offsetLeft + window.pageXOffset;
+        this.y = theEvent.clientY - theCanvas.offsetTop + window.pageYOffset;
+	}
+}
+
+function Planet(name, radius, x, y, color) {
+	this.name = name;
+	this.radius = radius;
+	this.x = x;
+	this.drawingX = this.x;
+	this.y = y;
+	this.drawingY = this.y;
+	this.color = color;
+}
+
+function Moon(name, radius, distance, planet, color) {
+	this.name = name;
+	this.radius = radius;
+	this.distance = distance;
+	this.drawingDistance = this.distance;
+	this.planet = planet;
+	this.color = color;
+	this.x = 0;
+	this.y = 600;
+}
+
+// Size scale for planets, change this to make planets bigger/smaller
+var scale = 2; 
+
+
+// Radius of planets in kilometers
+var earthRadius = 6378;
+var mercuryRadius = 2440;
+var sunRadius = 695500;
+var venusRadius = 6051;
+var marsRadius = 3397;
+var jupiterRadius = 71492;
+var saturnRadius = 60268;
+var uranusRadius = 25559;
+var neptuneRadius = 24764;
+var plutoRadius = 1160;
+
+// Radius of moons
+var moonRadius = 1737;
+
+// Distance from sun to planets in kilometers
+var sunMercuryDist = 57910000/earthRadius;
+var sunVenusDist = 108200000/earthRadius;
+var sunEarthDist = 149600000/earthRadius;
+var sunMarsDist = 227900000/earthRadius;
+var sunJupiterDist = 778500000/earthRadius;
+var sunSaturnDist = 1433000000/earthRadius;
+var sunUranusDist = 2877000000/earthRadius;
+var sunNeptuneDist = 4503000000/earthRadius;
+var sunPlutoDist = 7500000000/earthRadius;
+var sunVYCanisMajorisDist = 4.628e16/earthRadius;
+
+var earthMoonDist = 384400/earthRadius;
+
+var jupiterEuropaDist = 671000/earthRadius;
+var jupiterIoDist = 422000/earthRadius;
+var jupiterGanymedeDist = 1070000/earthRadius;
+var jupiterCallistoDist = 1883000/earthRadius;
+
+var saturnTitanDist = 1.2e6/earthRadius;
+
+var sunVoyagerDist = (19642695100)/earthRadius;
+
+// All the planets
+var planets = [
+new Planet("The sun", sunRadius, 0, 450, "#FFFF00"),
+new Planet("Mercury", mercuryRadius, sunMercuryDist, 450, "#FA0010"),
+new Planet("Venus", venusRadius, sunVenusDist, 450, "#AAAA00"),
+new Planet("Earth", earthRadius, sunEarthDist, 450, "#00FF00"),
+new Planet("Mars", marsRadius, sunMarsDist, 450, "#DD0101"),
+new Planet("Jupiter", jupiterRadius, sunJupiterDist, 450, "#FCAAAA"),
+new Planet("Saturn", saturnRadius, sunSaturnDist, 450, "#00FAFA"),
+new Planet("Uranus", uranusRadius, sunUranusDist, 450, "#11AAAA"),
+new Planet("Neptune", neptuneRadius, sunNeptuneDist, 450, "#2223FF"),
+new Planet("Pluto", plutoRadius, sunPlutoDist, 450, "#2223AF"),
+
+new Planet("Voyager 1 (December 2013)", 1, sunVoyagerDist, 450, "#FAFAFA"),
+
+new Planet("Sirius", 1.711 * sunRadius, lyToKm(8.6), 450, "#AFAFFF"),
+new Planet("Capella", 12.2 * sunRadius, lyToKm(42.2), 450, "#FFAA00"),
+new Planet("Arcturus", 25.7 * sunRadius, lyToKm(36.6), 450, "#FFDD00"),
+new Planet("Aldebaran", 44.2 * sunRadius, lyToKm(65.23), 450, "#FFAA00"),
+new Planet("VY Canis Majoris", sunRadius * 1420, sunVYCanisMajorisDist ,450,"#FAAA00"),
+new Planet("NML Cygni", 1650 * sunRadius, lyToKm(5300), 450, "#FFCC33")
+
+];
+
+var moons = [
+new Moon("The moon", moonRadius,earthMoonDist,planets[3],"#888888"),
+// Jupiter's moons
+new Moon("Europa", 1560, jupiterEuropaDist,planets[5],"#AA88AF"),
+new Moon("Io", 1815, jupiterIoDist,planets[5],"#AFAAEE"),
+new Moon("Ganymede", 2634, jupiterGanymedeDist,planets[5], "#AF8888"),
+new Moon("Callisto", 2403, jupiterCallistoDist,planets[5], "#99AFAF"),
+
+new Moon("Titan",2575, saturnTitanDist,planets[6], "#AA5511"),
+new Moon("International Space Station", 0.01, (400+earthRadius)/earthRadius, planets[3], "#FAFAFA")
+];
+
+calculateDistances();
+
+var keysDown = {};
+
+addEventListener("keydown", function (e) {
+	keysDown[e.keyCode] = true;
+}, false);
+
+addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+}, false);
+
+c.onmousedown = function(e) {
+	Mouse.isDown = true;
+	Mouse.getPosition(c,e);
+}
+
+// Set mouseup-listener on document so that doing mouseup 
+// outside of the canvas stops the drawing as well.
+document.onmouseup = function(e) {
+	Mouse.isDown = false;
+}
+
+c.onmousemove = function(e)
+{
+	if(Mouse.isDown == true)
+	{
+		Mouse.getPosition(c,e);
+		screenx += Mouse.x - Mouse.oldx;
+		screeny += Mouse.y - Mouse.oldy;
+	}
+}
+
+
+// Renders a planet
+function renderPlanet(planet)
+{
+	var resultingRadius = (planet.radius / earthRadius) * scale;
+	if(resultingRadius < 1)
+	{
+		resultingRadius = 1;
+	}
+	ctx.fillStyle = planet.color;
+	ctx.beginPath();
+	ctx.arc(screenx+offsetx + planet.drawingX, screeny + planet.drawingY, resultingRadius, 0, 2 * Math.PI, false);
+	ctx.closePath();
+	ctx.fill();
+	
+	ctx.fillStyle = "white";
+	ctx.font = "11px Verdana";
+	ctx.fillText(planet.name, screenx+offsetx + planet.drawingX + 10, screeny + planet.drawingY - planet.radius / earthRadius * scale - 5);
+}
+
+function renderMoon(moon)
+{
+	var resultingRadius = (moon.radius / earthRadius) * scale;
+	if(resultingRadius < 1)
+		resultingRadius = 1;
+	
+	ctx.fillStyle = moon.color;
+	ctx.beginPath();
+	ctx.arc(screenx+offsetx+moon.planet.drawingX, screeny + moon.planet.drawingY + moon.drawingDistance, resultingRadius, 0, 2*Math.PI,false);
+	ctx.closePath();
+	ctx.fill();
+	var alpha = (scale/1000*255);
+	if(alpha < 0.00001)
+		alpha = 0;
+	ctx.fillStyle = "rgba(255,255,255," + alpha + ")"; // Fade moon text
+	
+	ctx.font = "11px Verdana";
+	ctx.fillText(moon.name, screenx+offsetx + moon.planet.drawingX + 10, screeny + moon.planet.drawingY + moon.drawingDistance - moon.radius/earthRadius*scale);
+	
+	
+}
+
+function moveToAligned()
+{
+	var distanceSum = 0;
+	var distance;
+	for(var i = 1; i < planets.length; i++)
+	{
+		distance = (planets[i-1].radius/earthRadius)*scale + 50*scale + planets[i].radius/earthRadius*scale;
+		
+		distanceSum += distance;
+		planets[i].drawingX = distanceSum;
+	}
+	
+	for(var i = 0; i < moons.length; i++)
+	{
+		moons[i].drawingDistance = 2*moons[i].planet.radius/earthRadius*scale + 4*moons[i].radius/earthRadius*scale*i;
+		
+	}
+}
+
+function calculateDistances()
+{
+	if(displayMode == ALIGNED)
+		moveToAligned();
+		
+	
+	if(displayMode == REAL)
+	{
+		for(var i = 0; i < planets.length; i++)
+		{
+			planets[i].drawingX = planets[i].x * scale;
+		}
+		
+		for(var i = 0; i < moons.length; i++)
+		{
+			moons[i].drawingDistance = moons[i].distance * scale;
+		}
+	}
+}
+
+var mainLoop = function(){
+	
+	if (49 in keysDown) { // 1
+		 displayMode = ALIGNED;
+		 calculateDistances();
+	}
+	if (50 in keysDown) { // 2
+		displayMode = REAL;
+		calculateDistances();
+	}
+	
+	if (87 in keysDown) { // W
+		oldScreenx = (screenx)/scale;
+		scale*=1.05;
+		screenx=(oldScreenx)*scale;
+		calculateDistances();
+		
+	}
+	else if (83 in keysDown) { // S
+		oldScreenx = (screenx)/scale;
+		scale/=1.05;
+		screenx=(oldScreenx)*scale;
+		calculateDistances();
+	}
+	
+	ctx.fillStyle="#000000";
+	ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
+	ctx.fillStyle = "#111111";
+	ctx.fillRect(screenx + offsetx,screeny + 450,window.innerWidth-screenx,1);
+	for(var i = 0; i < planets.length; i++)
+		renderPlanet(planets[i]);
+	for(var i = 0; i < moons.length; i++)
+		renderMoon(moons[i]);
+	
+	ctx.fillStyle = "white";
+	ctx.fillText("W/S - Zoom in/out",10,10);
+	ctx.fillText("1 - Align the objects",10,20);
+	ctx.fillText("1 - Align the objects",10,20);
+	ctx.fillText("2 - Place objects at their real distance from the sun",10,30);
+	ctx.fillText("Use mouse to drag view",10,40);
+	
+	gLoop = setTimeout(mainLoop, 1000 / 50);
+}
+
+mainLoop();
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,17 @@
+body {
+	background-color: #000014;
+	font-family: Helvetica;
+}
+
+a.mainLink {
+	color: #FFFFFF;
+}
+
+a.mainLink:link {
+ text-decoration:none;
+}
+
+a.mainLink:hover {
+	color: #AFAFAF;
+	text-decoration:none;
+}
