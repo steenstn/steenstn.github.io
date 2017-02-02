@@ -13,7 +13,3 @@ var glidingStrategy = function(tilesize, levelWidth, currentLevel) {
 		}
 	}
 };
-
-var wop = function(yay) {
-	alert("wop " + yay);
-};
