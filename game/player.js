@@ -26,5 +26,9 @@ function Player(x, y, image) {
 	this.speedy = 0;
 	this.jumping = 0;
 	
+	this.keyUp = 0;
+	this.keyLeft = 0;
+	this.keyRight = 0;
+	
 	this.image = image;
 }
