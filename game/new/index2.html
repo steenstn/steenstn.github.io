@@ -3,7 +3,7 @@
 
 <head>
 
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title></title>
   <style>
     body {
@@ -11,7 +11,7 @@
       padding:0px;
       text-align:center;
     }
-    
+
     canvas{
       outline:0;
       border:1px solid #000;
@@ -23,18 +23,18 @@
 <body>
 
 <script src="player.js" type="text/javascript"></script>
-<script src="glidingStrategy.js" language="javascript" type="text/javascript"></script>
-<script src="jumpingStrategy.js" language="javascript" type="text/javascript"></script>
-<script src="flyingStrategy.js" language="javascript" type="text/javascript"></script>
+<script src="enemyMovementStrategies/glidingStrategy.js" language="javascript" type="text/javascript"></script>
+<script src="enemyMovementStrategies/jumpingStrategy.js" language="javascript" type="text/javascript"></script>
+<script src="enemyMovementStrategies/flyingStrategy.js" language="javascript" type="text/javascript"></script>
 <div align="center">
 <canvas id='c'></canvas>
 <script>
-var width = 600, 
+var width = 600,
 height = 400,
 gLoop,
-c = document.getElementById('c'), 
+c = document.getElementById('c'),
 ctx = c.getContext('2d');
-  
+
 c.width = width;
 c.height = height;
 
@@ -68,10 +68,10 @@ var player = new Player(2*tilesize, 2*tilesize, image);
 // 38 up 37 left 39 right
 players[0].keyLeft = 37
 players[0].keyUp = 38
-players[0].keyRight = 39	
-players[1].keyLeft = 65 
-players[1].keyRight = 68 
-players[1].keyUp = 87 
+players[0].keyRight = 39
+players[1].keyLeft = 65
+players[1].keyRight = 68
+players[1].keyUp = 87
 
 var playerAcc=0.3;
 var gravity=0.3;
@@ -112,8 +112,8 @@ playerImage.src = "playersprite.png";
 playerImage.width = 180;
 playerImage.height= 120;
  // Set up key-handling
- 
- 
+
+
 var init = function() // Init the player in a level
 {
 	screenx = 1;//width/2.5;
@@ -138,7 +138,7 @@ addEventListener("keydown", function (e) {
 
 addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
-	
+
 }, false);
 
 
@@ -161,7 +161,7 @@ var overlap = function(x,y,width,height,x2,y2,width2,height2) {
 
 // Draw player
 var render = function(){
-	
+
 	if(animationCounter>animationSpeed) {
 		animationCounter=0;
 		currentFrame=1-currentFrame;
@@ -188,13 +188,13 @@ var render = function(){
     ctx.rect(screenx+player.killZonex,screeny+player.killZoney,player.killZoneWidth,player.killZoneHeight);
     ctx.closePath();
     ctx.fill();
-	
+
 	ctx.fillStyle = '#ffaf00';
     ctx.beginPath();
     ctx.rect(screenx+player.hurtZonex,screeny+player.hurtZoney,player.hurtZoneWidth,player.hurtZoneHeight);
     ctx.closePath();
     ctx.fill();*/
-	
+
 };
 
 var renderEnemies = function()
@@ -230,9 +230,9 @@ var renderEnemies = function()
 var updatePlayer = function(index) {
 	players[index].oldx = players[index].x;
 	players[index].oldy = players[index].y;
-	 
+
 	players[index].x += players[index].speedx;
-	
+
 	// Check to the left if going left and stop the player if he collides with a blocking tile
 	if(players[index].speedx < 0) {
 		var arrayPos=Math.floor((players[index].x)/tilesize)+Math.floor((players[index].y+players[index].height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
@@ -241,7 +241,7 @@ var updatePlayer = function(index) {
 			players[index].speedx = 0;
 		}
 	} else {// Check to the right
-	
+
 		var arrayPos=Math.floor((players[index].x+players[index].width)/tilesize)+Math.floor((players[index].y+players[index].height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
 		if(currentLevel[arrayPos].blocking==1) {
 			players[index].x = players[index].oldx;
@@ -251,11 +251,11 @@ var updatePlayer = function(index) {
 	// Add gravity
 	if(players[index].speedy < maxSpeedy) {
 		players[index].speedy += gravity;
-	} 
-	
+	}
+
 	players[index].y += players[index].speedy;
-	
-	
+
+
 	// If going up, check for blocking tiles
 	if(players[index].speedy < 0) {
 		arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+2)/tilesize)*levelWidth;
@@ -269,7 +269,7 @@ var updatePlayer = function(index) {
 		// tile. This will remove bouncing when landing in high speed
 		if(currentLevel[arrayPos].blocking==1) {
 			players[index].jumping = 0;
-			
+
 			while(currentLevel[Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+players[index].height)/tilesize)*levelWidth].blocking==1) {
 				players[index].y-=0.2;
 			}
@@ -279,7 +279,7 @@ var updatePlayer = function(index) {
 	if(currentLevel[arrayPos].blocking==0) { // Disable jumping when in mid-air
 		players[index].jumping++;
 	}
-		
+
 	if(currentLevel[arrayPos].type=="g") // Ice block
 		friction=1; // No friction
 	else
@@ -288,30 +288,30 @@ var updatePlayer = function(index) {
 	// Move the screen when the players move
 	var betweenPlayersX = (players[0].x+players[1].x) / 2;
 	var betweenPlayersY = (players[0].y+players[1].y) / 2;
-	
+
 	screenx=-betweenPlayersX+9*tilesize;
 	screeny=-betweenPlayersY+6*tilesize;
-	
-	
+
+
 	// Do not move the screen outside of the level
 	if(screenx>0)
 		screenx=0;
 	if(screenx<-levelWidth*tilesize+19*tilesize)
 		screenx=-levelWidth*tilesize+19*tilesize;
-		
+
 	if(screeny>0)
 		screeny=0;
 	if(screeny<-levelHeight*tilesize+13*tilesize)
 		screeny=-levelHeight*tilesize+13*tilesize
-	
-	
+
+
 	players[index].killZonex=players[index].x;
 	players[index].killZoney=players[index].y+players[index].height-5;
-	
+
 	players[index].hurtZonex=players[index].x-2;
 	players[index].hurtZoney=players[index].y-5;
 	arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+players[index].height)/tilesize)*levelWidth;
-	
+
 	if(currentLevel[arrayPos].type=="p" || currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
 	{
 		if(players[index].hp<100)
@@ -322,7 +322,7 @@ var updatePlayer = function(index) {
 	}
 	if(currentLevel[arrayPos].type=="s") // Coins
 	{
-		score+=20;			
+		score+=20;
 		currentLevel[arrayPos].type=".";
 	}
 	if(currentLevel[arrayPos].type=="l" || currentLevel[arrayPos].type=="m" || currentLevel[arrayPos].type=="n" || currentLevel[arrayPos].type=="o") // Phadderist
@@ -331,15 +331,15 @@ var updatePlayer = function(index) {
 		score+=50;
 		currentLevel[arrayPos].type=".";
 	}
-	
+
 }
 
 var updateEnemies = function() {
-	
+
 	for(i=0;i<enemies.length;i++) {
 		enemies[i].oldx=enemies[i].x;
 		enemies[i].oldy=enemies[i].y;
-		
+
 		// If an enemy enters the player's hurtzone, shuffle the player around
 		// If the enemy enters the killzone, remove the enemy
 		if(overlap(enemies[i].x,enemies[i].y,20,20,players[0].hurtZonex,players[0].hurtZoney,players[0].hurtZoneWidth,players[0].hurtZoneHeight)) {
@@ -354,9 +354,9 @@ var updateEnemies = function() {
 		// The enemy has neither hurt the player or gotten killed, continue with its behaviour
 			switch(enemies[i].type) {
 				case "skurkerist": // Flies back and forth, no gravity
-				 
+
 				 var strat = new glidingStrategy(tilesize, levelWidth, currentLevel)
-					strat.move(enemies[i]);					
+					strat.move(enemies[i]);
 					break;
 				case "jumper": // Runs around, jumps when it discovers an edge
 					var strat = new jumpingStrategy(tilesize, levelWidth, currentLevel);
@@ -367,8 +367,8 @@ var updateEnemies = function() {
 					strat.move(enemies[i]);
 					break;
 			}
-		}	
-		
+		}
+
 	}
 }
 
@@ -379,7 +379,7 @@ var checkKeys = function (modifier) {
 		if (players[i].keyUp in keysDown) { // Player holding up
 			if(players[i].jumping < maxJump) {
 				players[i].jumping++;
-				
+
 				if(players[i].speedy>-jumpStrength)
 				players[i].speedy-=jumpAcc;
 			}
@@ -399,11 +399,11 @@ var checkKeys = function (modifier) {
 		}
 		else
 			players[i].speedx/=friction; // Decelerate
-			
+
 		}
 }
 
-var loadContent = function(levelName) {	
+var loadContent = function(levelName) {
 	//enemies.length = 0; // Reset the enemy array
 	var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
@@ -412,7 +412,7 @@ var loadContent = function(levelName) {
 	xobj.send(null);
 	var jsonTexto = xobj.responseText;
 	enemies = JSON.parse(jsonTexto);
-	
+
 	xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('GET', "levels/" + levelName+'content.json', false);
@@ -438,7 +438,7 @@ txtFile.onreadystatechange = function() {
       allText = txtFile.responseText;
 	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
      // lines = txtFile.responseText.split("\n"); // Will separate each line into an array
-	 
+
 		for(var y=0;y<levelHeight;y++) {
 			for(var x=0;x<levelWidth;x++) {
 				var arrayPos = x+y*levelWidth;
@@ -590,9 +590,9 @@ txtFile.onreadystatechange = function() {
 				}
 			}
 		}
-		
+
     }
-    
+
   }
 }
 txtFile.send(null);
@@ -616,7 +616,7 @@ var setUpContent = function() {
 
 var drawLevel = function() {
 	//Only loop through tiles that are almost in the screen
-	var startx=Math.floor(-screenx/tilesize)-1; 
+	var startx=Math.floor(-screenx/tilesize)-1;
 	var starty=Math.floor(-screeny/tilesize)-1;
 	if(startx<0)
 		startx=0;
@@ -624,28 +624,28 @@ var drawLevel = function() {
 		starty=0;
 	var endx=startx+width/tilesize+2;
 	var endy=starty+height/tilesize+2;
-	
-	
-	
+
+
+
 	if(endx>levelWidth)
 		endx=levelWidth;
 	if(endy>levelHeight)
 		endy=levelHeight;
-	
-   
+
+
 	for(var y=starty;y<endy;y++) {
 		for(var x=startx;x<endx;x++) {
 			var posx = Math.round(screenx+x*tilesize);
 			var posy = Math.round(screeny+y*tilesize);
-			
+
 			if(currentLevel[x+y*levelWidth].type!=".") {// If the tile is not an air-tile, draw it
 				ctx.drawImage(tileset,currentLevel[x+y*levelWidth].tileOffsetx,currentLevel[x+y*levelWidth].tileOffsety, tilesize,
 					tilesize,posx,posy, tilesize, tilesize);
 			}
-			
+
 		}
 	}
-	
+
 }
 var drawText = function() {
 	ctx.fillStyle    = '#F00';
@@ -656,9 +656,9 @@ var drawText = function() {
 	ctx.strokeRect(4,30,102,10);
 	if(players[0].dead==0) {
 		ctx.fillStyle = "rgb(50,129,28)";
-		ctx.fillRect (5,31,players[0].hp,8); 
+		ctx.fillRect (5,31,players[0].hp,8);
 	}
-	
+
 }
 
 var GameLoop = function(){
@@ -667,28 +667,28 @@ var GameLoop = function(){
 		players[0].hp=0;
 		score=lastScore;
 		loadLevel(levelNow);
-			
+
 		init();
 	}
 	if(players[0].dead==0) {
 		checkKeys(1);
-			
+
 		updatePlayer(0);
 		updatePlayer(1);
 		render();
 	}
-	
+
 	updateEnemies();
 	renderEnemies();
 	drawLevel();
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/tilesize)+Math.floor((players[0].y+players[0].height)/tilesize)*levelWidth;
-	
+
 	if(currentLevel[arrayPos].type=="k") {
 		if(pickedArtefacts>3) {
 			levelNow++;
 			lastScore=score;
 			loadLevel(levelNow);
-			
+
 			init();
 		} else {
 			ctx.fillStyle    = '#F00';
