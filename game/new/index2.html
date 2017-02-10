@@ -114,18 +114,23 @@ playerImage.height= 120;
  // Set up key-handling
 
 
-var init = function() // Init the player in a level
+var init = function()
 {
-	screenx = 1;//width/2.5;
-	screeny = 1;//height/2.5;
+	screenx = 1;
+	screeny = 1;
 
 	var oldscreenx = screenx;
 	var oldscreeny = screeny;
 
-	players[0].oldx = players[0].x;
-	players[0].oldy = players[0].y;
-	// score=0;
-	players[0].hp=100;
+  for(var i = 0; i < players.length; i++) {
+    players[i].oldx = players[i].x;
+  	players[i].oldy = players[i].y;
+
+  	// score=0;
+  	players[i].hp=100;
+
+  }
+
 	pickedArtefacts=0;
 }
 
@@ -328,38 +333,26 @@ var updateEnemies = function() {
 	for(i=0;i<enemies.length;i++) {
 		enemies[i].oldx=enemies[i].x;
 		enemies[i].oldy=enemies[i].y;
+    var enemyIsInteracting = false;
+    for(var playerIndex = 0; playerIndex < players.length; playerIndex++) {
+  		
+      var enemyInHurtZone = overlap(enemies[i].x,enemies[i].y,20,20,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
+      var enemyInKillZone = overlap(enemies[i].x,enemies[i].y,20,20,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
 
-		// If an enemy enters the player's hurtzone, shuffle the player around
-		// If the enemy enters the killzone, remove the enemy
-		if(overlap(enemies[i].x,enemies[i].y,20,20,players[0].hurtZonex,players[0].hurtZoney,players[0].hurtZoneWidth,players[0].hurtZoneHeight)) {
-			players[0].speedx=-1*Math.random()*4+Math.random()*4;
-			players[0].speedy=-1*Math.random()*4+Math.random()*4;
-			players[0].hp-=2;
-		} else if(overlap(enemies[i].x,enemies[i].y,20,20,players[0].killZonex,players[0].killZoney,players[0].killZoneWidth,players[0].killZoneHeight)) {
-			enemies.splice(i,1); // Remove the enemy from the array
-			players[0].speedy=-4;
-			score+=100;
-		} else {
-		// The enemy has neither hurt the player or gotten killed, continue with its behaviour
+  		if(enemyInHurtZone) {
+  			players[playerIndex].speedx=-1*Math.random()*4+Math.random()*4;
+  			players[playerIndex].speedy=-1*Math.random()*4+Math.random()*4;
+  			players[playerIndex].hp-=2;
+        enemyIsInteracting = true;
+  		} else if(enemyInKillZone) {
+  			enemies.splice(i,1); // Remove the enemy from the array
+  			players[playerIndex].speedy=-4;
+  			score+=100;
+  		}
+    }
+    if(!enemyIsInteracting) {
       enemies[i].strategy.move(enemies[i]);
-    /*
-			switch(enemies[i].type) {
-				case "skurkerist": // Flies back and forth, no gravity
-
-				 var strat = new glidingStrategy(tilesize, levelWidth, currentLevel)
-					strat.move(enemies[i]);
-					break;
-				case "jumper": // Runs around, jumps when it discovers an edge
-					var strat = new jumpingStrategy(tilesize, levelWidth, currentLevel);
-					strat.move(enemies[i]);
-					break;
-				case "bouncer": // Flies around and bounces on the walls
-					var strat = new flyingStrategy(tilesize, levelWidth, currentLevel);
-					strat.move(enemies[i]);
-					break;
-			}*/
-		}
-
+    }
 	}
 }
 
@@ -611,8 +604,10 @@ var setUpContent = function() {
 	for(var i = 0; i < content.length; i++) {
 		switch(content[i].type) {
 			case "startPos":
-				players[0].x = content[i].x;
-				players[0].y = content[i].y;
+        var offset = 10;
+				players[0].x = content[i].x - offset;
+        players[1].x = content[i].x + offset;
+				players[0].y = players[1].y = content[i].y;
 			break;
 		}
 	}
@@ -643,7 +638,8 @@ var drawLevel = function() {
 			var posx = Math.round(screenx+x*tilesize);
 			var posy = Math.round(screeny+y*tilesize);
 
-			if(currentLevel[x+y*levelWidth].type!=".") {// If the tile is not an air-tile, draw it
+      var isAirTile = currentLevel[x+y*levelWidth].type==="."
+			if(!isAirTile) {
 				ctx.drawImage(tileset,currentLevel[x+y*levelWidth].tileOffsetx,currentLevel[x+y*levelWidth].tileOffsety, tilesize,
 					tilesize,posx,posy, tilesize, tilesize);
 			}
