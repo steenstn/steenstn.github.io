@@ -42,7 +42,7 @@ var screenx = 100;//width/2.5;
 var screeny = 100;//height/2.5;
 
 
-var levelNow = 3; // Number of current level
+var levelNow = 1; // Number of current level
 var saving=0; // Is the level saved?
 var oldscreenx = screenx;
 var oldscreeny = screeny;
@@ -57,9 +57,12 @@ var image = new Image();
 image.src = "playersprite.png";
 image.width = 180;
 image.height = 120;
-var players = [new Player(2*tilesize, 2*tilesize, image), new Player(2*tilesize,2*tilesize,image)];
-var player = new Player(2*tilesize, 2*tilesize, image);
 
+var image2 = new Image();
+image2.src = "playersprite2.png";
+image2.width = 180;
+image2.height = 120;
+var players = [new Player(2*tilesize, 2*tilesize, image), new Player(2*tilesize,2*tilesize,image2)];
 
 // A - 65
 // D 68
@@ -107,11 +110,6 @@ var tileset = new Image();
 tileset.src = "tileset.png"; // Tileset for the level and all powerups
 tileset.width=tilesize;
 tileset.height=tilesize;
-var playerImage = new Image();
-playerImage.src = "playersprite.png";
-playerImage.width = 180;
-playerImage.height= 120;
- // Set up key-handling
 
 
 var init = function()
@@ -164,7 +162,7 @@ var overlap = function(x,y,width,height,x2,y2,width2,height2) {
 	return (x < x2+width2 && x+width > x2 && y < y2+height2 && y+height > y2);
 }
 
-// Draw player
+
 var render = function(){
 
 	if(animationCounter>animationSpeed) {
@@ -195,28 +193,26 @@ var renderEnemies = function()
 {
 	for(i=0;i<enemies.length;i++)
 	{
-		//if(enemies[i].x<-screenx && enemies[i].x>-screenx+width && enemies[i].y<-screeny && enemies[i].y>-screeny+height)
-		//{
-			switch(enemies[i].type)
-			{
-				case "skurkerist":
-					ctx.drawImage(skurkImage,5,0,18,30,screenx+enemies[i].x,screeny+enemies[i].y, 18, 30);
-					break;
-				case "jumper":
-					ctx.drawImage(skurkImage,36,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
-					break;
-				case "bouncer":
-					ctx.drawImage(skurkImage,67,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
-					break;
-				default:
-				// Non-implemented enemy, if the enemy does nto have a type, a grey rectangle will be drawn
-					ctx.fillStyle = '#111111';
-					ctx.beginPath();
-					ctx.rect(screenx+enemies[i].x,screeny+enemies[i].y,10,10);
-					ctx.closePath();
-					ctx.fill();
-			}
-		//}
+		switch(enemies[i].type)
+		{
+			case "skurkerist":
+				ctx.drawImage(skurkImage,5,0,18,30,screenx+enemies[i].x,screeny+enemies[i].y, 18, 30);
+				break;
+			case "jumper":
+				ctx.drawImage(skurkImage,36,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
+				break;
+			case "bouncer":
+				ctx.drawImage(skurkImage,67,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
+				break;
+			default:
+			// Non-implemented enemy, if the enemy does nto have a type, a grey rectangle will be drawn
+				ctx.fillStyle = '#111111';
+				ctx.beginPath();
+				ctx.rect(screenx+enemies[i].x,screeny+enemies[i].y,10,10);
+				ctx.closePath();
+				ctx.fill();
+		}
+
 	}
 }
 
@@ -334,8 +330,9 @@ var updateEnemies = function() {
 		enemies[i].oldx=enemies[i].x;
 		enemies[i].oldy=enemies[i].y;
     var enemyIsInteracting = false;
+    var enemyIsDead = false;
     for(var playerIndex = 0; playerIndex < players.length; playerIndex++) {
-  		
+
       var enemyInHurtZone = overlap(enemies[i].x,enemies[i].y,20,20,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
       var enemyInKillZone = overlap(enemies[i].x,enemies[i].y,20,20,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
 
@@ -348,9 +345,11 @@ var updateEnemies = function() {
   			enemies.splice(i,1); // Remove the enemy from the array
   			players[playerIndex].speedy=-4;
   			score+=100;
+        enemyIsDead = true;
+        break;
   		}
     }
-    if(!enemyIsInteracting) {
+    if(!enemyIsDead && !enemyIsInteracting) {
       enemies[i].strategy.move(enemies[i]);
     }
 	}
@@ -360,7 +359,7 @@ var checkKeys = function (modifier) {
 
 	for(var i = 0; i < players.length; i++) {
 
-		if (players[i].keyUp in keysDown) { // Player holding up
+		if (players[i].keyUp in keysDown) {
 			if(players[i].jumping < maxJump) {
 				players[i].jumping++;
 
@@ -369,13 +368,13 @@ var checkKeys = function (modifier) {
 			}
 		}
 
-		if (players[i].keyLeft in keysDown) { // Player holding left
+		if (players[i].keyLeft in keysDown) {
 		players[i].goingLeft = 1;
 		animationCounter++;
 			if(players[i].speedx>-maxSpeedx)
 				players[i].speedx -= playerAcc * modifier;
 		}
-		else if (players[i].keyRight in keysDown) { // Player holding right
+		else if (players[i].keyRight in keysDown) {
 		players[i].goingLeft = 0;
 		animationCounter++;
 			if(players[i].speedx<maxSpeedx)
