@@ -42,7 +42,7 @@ var screenx = 100;//width/2.5;
 var screeny = 100;//height/2.5;
 
 
-var levelNow = 3; // Number of current level
+var levelNow = 1; // Number of current level
 var saving=0; // Is the level saved?
 var oldscreenx = screenx;
 var oldscreeny = screeny;
@@ -285,9 +285,13 @@ var updatePlayer = function(index) {
 	else
 		friction=normalFriction;
 
-	// Move the screen when the player moves
-	screenx=-players[0].x+9*tilesize;
-	screeny=-players[0].y+6*tilesize;
+	// Move the screen when the players move
+	var betweenPlayersX = (players[0].x+players[1].x) / 2;
+	var betweenPlayersY = (players[0].y+players[1].y) / 2;
+	
+	screenx=-betweenPlayersX+9*tilesize;
+	screeny=-betweenPlayersY+6*tilesize;
+	
 	
 	// Do not move the screen outside of the level
 	if(screenx>0)
