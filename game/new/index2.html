@@ -10,6 +10,7 @@
       margin:0px;
       padding:0px;
       text-align:center;
+      background-color: #a1a1a1;
     }
 
     canvas{
@@ -27,10 +28,13 @@
 <script src="enemyMovementStrategies/jumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="enemyMovementStrategies/flyingStrategy.js" language="javascript" type="text/javascript"></script>
 <div align="center">
+  <br />
+  <br />
 <canvas id='c'></canvas>
+<p>Player 1: Arrows <br />Player 2: WASD </p>
 <script>
-var width = 600,
-height = 400,
+var width = 800,
+height = 500,
 gLoop,
 c = document.getElementById('c'),
 ctx = c.getContext('2d');
@@ -38,17 +42,19 @@ ctx = c.getContext('2d');
 c.width = width;
 c.height = height;
 
-var screenx = 100;//width/2.5;
-var screeny = 100;//height/2.5;
+var screenx = 200;//width/2.5;
+var screeny = 200;//height/2.5;
 
 
 var levelNow = 1; // Number of current level
-var saving=0; // Is the level saved?
+
 var oldscreenx = screenx;
 var oldscreeny = screeny;
 var tilesize=32; // The size of a tile(ground, powerups etc)
 var levelWidth=200; // The size of the level in tiles
 var levelHeight=100;
+var numTilesInScreenHeight = Math.round(height / tilesize);
+var numTilesInScreenWidth = Math.round(width / tilesize);
 var score = 0;
 var dead=0;
 var pickedArtefacts=0; // How many phadderists are collected?
@@ -86,7 +92,7 @@ var friction=normalFriction;
 var lastScore = 0;
 
 var skurkImage = new Image();
-skurkImage.src = "skurkerister.png"; // The tileset for the enemies
+skurkImage.src = "skurkerister.png";
 skurkImage.width = 120;
 skurkImage.height = 30;
 
@@ -100,10 +106,10 @@ var jumpAcc=2;
 var maxJump=7; // Maximum number of jumpsteps, the power of the jump
 var currentLevel = new Array(levelWidth*levelHeight);
 
-for(var i=0;i<currentLevel.length;i++) // set up an object for all tiles
+for(var i=0;i<currentLevel.length;i++)
 	currentLevel[i]=new Object();
 
-var enemies={}; // An array containing objects of all enemies
+var enemies={};
 var content = {};
 
 var tileset = new Image();
@@ -132,7 +138,7 @@ var init = function()
 	pickedArtefacts=0;
 }
 
-// Keyboard control
+
 var keysDown = {};
 
 addEventListener("keydown", function (e) {
@@ -147,7 +153,7 @@ addEventListener("keyup", function (e) {
 
 var canvas = document.getElementById('c');
 
-// Clear canvas
+
 var clear = function(){
   ctx.fillStyle = '#d0e7f9';
   ctx.clearRect(0, 0, width, height);
@@ -279,20 +285,20 @@ var updatePlayer = function(index) {
 	var betweenPlayersX = (players[0].x+players[1].x) / 2;
 	var betweenPlayersY = (players[0].y+players[1].y) / 2;
 
-	screenx=-betweenPlayersX+9*tilesize;
-	screeny=-betweenPlayersY+6*tilesize;
+	screenx=-betweenPlayersX+(numTilesInScreenWidth / 2)*tilesize;
+	screeny=-betweenPlayersY+(numTilesInScreenHeight / 2)*tilesize;
 
 
 	// Do not move the screen outside of the level
 	if(screenx>0)
 		screenx=0;
-	if(screenx<-levelWidth*tilesize+19*tilesize)
-		screenx=-levelWidth*tilesize+19*tilesize;
+	if(screenx<-levelWidth*tilesize+numTilesInScreenWidth*tilesize)
+		screenx=-levelWidth*tilesize+numTilesInScreenWidth*tilesize;
 
 	if(screeny>0)
 		screeny=0;
-	if(screeny<-levelHeight*tilesize+13*tilesize)
-		screeny=-levelHeight*tilesize+13*tilesize
+	if(screeny<-levelHeight*tilesize+numTilesInScreenHeight*tilesize)
+		screeny=-levelHeight*tilesize+numTilesInScreenHeight*tilesize
 
 
 	players[index].killZonex=players[index].x;
