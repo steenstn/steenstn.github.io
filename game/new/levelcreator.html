@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+    <title></title>
+  <style>
+    body {
+      margin:0px;
+      padding:0px;
+    }
+    
+    canvas{
+      outline:0;
+      border:1px solid #000;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+<div align="center">
+<h5>Level creator</h5>
+<canvas id='c'></canvas>
+</div>
+<script>
+var width = 800, 
+height = 400,
+gLoop,
+c = document.getElementById('c'), 
+ctx = c.getContext('2d');
+  
+c.width = width;
+c.height = height;
+
+var screenx = width/2.5;
+var screeny = height/2.5;
+
+var levelToLoad = "level1";
+var saving=0; // Is the level saved?
+var oldscreenx = screenx;
+var oldscreeny = screeny;
+var tilesize=32;
+var levelWidth=200;
+var levelHeight=100;
+var startx;
+var starty;
+
+var playerStartx = 64;
+var playerStarty = 64;
+var playerImage = new Image();
+playerImage.src = "playersprite.png";
+playerImage.width = 180;
+playerImage.height= 120;
+var skurkImage = new Image();
+skurkImage.src = "skurkerister.png"; // The tileset for the enemies
+skurkImage.width = 120;
+skurkImage.height = 30;
+
+var goalx;
+var goaly;
+var nextLevel;
+
+var mousex; // In world coordinates
+var mousey; // In world coordinates
+var mouseIsDown=0;
+var mouseClick=0; // counter to fake mouse clicking
+var tool=".";
+
+var editx;
+var edity;
+
+var playerx=2*tilesize,playery=2*tilesize;
+var oldplayerx = playerx;
+var oldplayery = playery;
+var playerAcc=0.8;
+var gravity=0.5;
+var maxSpeedx=12;
+var maxSpeedy=12;
+var friction=1.4;
+
+var playerSpeedx=0;
+var playerSpeedy=0;
+var jumping=0;
+var jumpStrength=9;
+var jumpAcc=1;
+var currentLevel = new Array(levelWidth*levelHeight);
+for(var i=0;i<levelWidth*levelHeight;i++)
+	currentLevel[i]="1";
+
+var tileset = new Image();
+tileset.src = "tileset.png";
+tileset.width=tilesize;
+tileset.height=tilesize;
+ // Set up key-handling
+ 
+ var enemies= []; // An array containing objects of all enemies
+ var content = [];
+
+
+var init = function()
+{
+	screenx = width/2.5;
+	screeny = height/2.5;
+
+	var oldscreenx = screenx;
+	var oldscreeny = screeny;
+
+	oldplayerx = playerx;
+	oldplayery = playery;
+}
+
+var keysDown = {};
+
+addEventListener("keydown", function (e) {
+	keysDown[e.keyCode] = true;
+}, false);
+
+addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+	
+}, false);
+
+addEventListener('mousedown', function (e) {
+	
+		mouseIsDown=1;
+
+}, false);
+addEventListener('mouseup', function (e) {
+	mouseIsDown=0;
+	mouseClick=0;
+}, false);
+
+function getMousePos(canvas, evt){
+    // get canvas position
+    var obj = canvas;
+    var top = 0;
+    var left = 0;
+    while (obj && obj.tagName != 'BODY') {
+        top += obj.offsetTop;
+        left += obj.offsetLeft;
+        obj = obj.offsetParent;
+    }
+ 
+    // return relative mouse position
+    mousex = evt.clientX - left + window.pageXOffset;
+    mousey = evt.clientY - top + window.pageYOffset;
+    
+}
+var canvas = document.getElementById('c');
+canvas.addEventListener('mousemove', function(evt){
+        getMousePos(canvas, evt);
+        
+    }, false);
+
+// Clear canvas
+var clear = function(){
+  ctx.fillStyle = '#d0e7f9';
+  ctx.clearRect(0, 0, width, height);
+  ctx.beginPath();
+  ctx.rect(0, 0, width, height);
+  ctx.closePath();
+  ctx.fill();
+}
+
+
+// Draw player
+var render = function(){
+   /* ctx.fillStyle = '#ddaaef';
+    ctx.beginPath();
+    ctx.rect(screenx+playerx,screeny+playery,10,10);
+    ctx.closePath();
+    ctx.fill();*/
+};
+
+
+var updatePlayer = function()
+{
+
+	playerx+=playerSpeedx;
+	screenx-=playerSpeedx;
+	
+		
+	playery+=playerSpeedy;
+	screeny-=playerSpeedy;
+	
+
+	// The position for the mouse to edit the level
+	editx=Math.floor(-screenx/tilesize+mousex/tilesize); 
+	edity=Math.floor(-screeny/tilesize+mousey/tilesize);
+
+}
+
+var checkKeys = function (modifier) {
+	if (38 in keysDown) { // Player holding up
+		if(playerSpeedy>-maxSpeedy)
+			playerSpeedy -= playerAcc * modifier;
+	}
+	else if (40 in keysDown) { // Player holding down
+		if(playerSpeedy<maxSpeedy)
+			playerSpeedy += playerAcc * modifier;
+	}
+	else
+		playerSpeedy/=friction; // Decelerate
+	if(49 in keysDown) // 1
+		tool="1";
+	if(50 in keysDown) // 2
+		tool="g"; // Ice ice baby!
+	if(51 in keysDown) // 3
+		tool="h"; // Tree
+	if(52 in keysDown) // 4
+		tool="skurkerist";
+	if(53 in keysDown) // 5
+		tool="jumper";
+	if(54 in keysDown) // 5
+		tool="bouncer";
+		
+	if(78 in keysDown) // n
+		tool="k";
+	if(90 in keysDown) // z
+		tool="l";
+	if(88 in keysDown) // x
+		tool="m";
+	if(67 in keysDown) // c
+		tool="n";
+	if(86 in keysDown) // v
+		tool="o";
+	if(66 in keysDown) // b
+		tool="p";
+	if(77 in keysDown) // m
+		tool="q";
+	if(87 in keysDown) // w
+		tool="s";
+	if(74 in keysDown) // j
+		tool="startPos";
+	
+	if(83 in keysDown) // S
+	{
+		saveLevel("lol");
+	}
+	if(76 in keysDown) // L
+	{
+		loadLevel(levelToLoad);
+		
+		init();
+	}
+	if(69 in keysDown) // e
+		tool=".";
+	if(82 in keysDown) // r
+		tool="r";
+		
+	if (37 in keysDown) { // Player holding left
+		if(playerSpeedx>-maxSpeedx)
+			playerSpeedx -= playerAcc * modifier;
+	}
+	else if (39 in keysDown) { // Player holding right
+		if(playerSpeedx<maxSpeedx)
+			playerSpeedx += playerAcc * modifier;
+	}
+	else
+		playerSpeedx/=friction; // Decelerate
+	
+	//console.log(keysDown);
+}
+
+var loadContent = function(levelName)
+{
+	
+	var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', "levels/" + levelName +'enemies.json', false);
+
+	xobj.send(null);
+	var jsonTexto = xobj.responseText;
+	if(jsonTexto!="")
+	 enemies = JSON.parse(jsonTexto);
+	 
+	xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', "levels/" + levelName +'content.json', false);
+
+	xobj.send(null);
+	var jsonTexto = xobj.responseText;
+	if(jsonTexto!="")
+	 content = JSON.parse(jsonTexto);
+
+}
+
+
+var loadLevel = function(levelName)
+{
+var txtFile = new XMLHttpRequest();
+txtFile.open("GET", "levels/" + levelName + ".txt", true);
+txtFile.onreadystatechange = function() {
+  if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
+    if (txtFile.status === 200 || txtFile.status == 0) {  // Makes sure it's found the file.
+      allText = txtFile.responseText;
+	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
+     // lines = txtFile.responseText.split("\n"); // Will separate each line into an array
+	 
+		for(var y=0;y<levelHeight;y++)
+		{
+			for(var x=0;x<levelWidth;x++)
+			{
+				var arrayPos = x+y*levelWidth;
+				currentLevel[arrayPos]=allText[arrayPos]; // What kind of block is it?
+				
+			}
+		}
+		
+    }
+	
+    
+	loadContent(levelName);
+	setUpContent();
+  }
+}
+txtFile.send(null);
+
+}
+
+var setUpContent = function() {
+
+	for(var i = 0; i < content.length; i++) {
+		switch(content[i].type) {
+			case "startPos":
+				playerStartx = content[i].x;
+				playerStarty = content[i].y;
+				break;
+		}
+	}
+}
+
+var saveLevel = function(levelname) {
+	var levelString = "";
+	for(var i = 0; i < currentLevel.length; i++) {
+		levelString = levelString + (""+currentLevel[i]);
+	}
+	
+	for(var i = 0; i < content.length; i++) {
+		if(content[i].type == "startPos") {
+			content.splice(i,1);
+		}
+	}
+	content.push({type:"startPos", x:playerStartx, y:playerStarty});
+
+	alert(levelString);
+	alert(JSON.stringify(enemies));
+	alert(JSON.stringify(content));
+}
+
+var renderEnemies = function()
+{
+
+	for(i=0;i<enemies.length;i++)
+	{
+		switch(enemies[i].type)
+		{
+			case "skurkerist":
+				ctx.drawImage(skurkImage,5,0,18,30,screenx+enemies[i].x,screeny+enemies[i].y, 18, 30);
+				
+				break;
+			case "jumper":
+				ctx.drawImage(skurkImage,36,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
+				break;
+			case "bouncer":
+				ctx.drawImage(skurkImage,67,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
+				break;
+			default: // Not implemented enemy type
+				ctx.fillStyle = '#111111';
+				ctx.beginPath();
+				ctx.rect(screenx+enemies[i].x,screeny+enemies[i].y,10,10);
+				
+				ctx.closePath();
+				ctx.fill();	
+		}
+	}
+}
+
+var drawLevel = function(){	
+	//Only draw tiles that are almost in the screen
+	var startx=Math.floor(-screenx/tilesize)-1; 
+	var starty=Math.floor(-screeny/tilesize)-1;
+	if(startx<0)
+		startx=0;
+	if(starty<0)
+		starty=0;
+	var endx=startx+width/tilesize+2;
+	var endy=starty+height/tilesize+2;
+	
+	
+	
+	if(endx>levelWidth)
+		endx=levelWidth;
+	if(endy>levelHeight)
+		endy=levelHeight;
+	
+	
+
+	for(var y=starty;y<endy;y++)
+		for(var x=startx;x<endx;x++)
+		{
+			var posx = Math.round(screenx+x*tilesize);
+			var posy = Math.round(screeny+y*tilesize);
+			if(currentLevel[x+y*levelWidth]=="1")
+			{
+				ctx.drawImage(tileset,0,0, tilesize,
+				tilesize,posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="2")
+			{
+				ctx.drawImage(tileset,32,0, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="3")
+			{
+				ctx.drawImage(tileset,64,0, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="4")
+			{
+				ctx.drawImage(tileset,96,0, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="5")
+			{
+				ctx.drawImage(tileset,0,32, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="6")
+			{
+				ctx.drawImage(tileset,32,32, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="7")
+			{
+				ctx.drawImage(tileset,64,32, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="8")
+			{
+				ctx.drawImage(tileset,96,32, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="9")
+			{
+				ctx.drawImage(tileset,0,64, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="0")
+			{
+				ctx.drawImage(tileset,32,64, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="a")
+			{
+				ctx.drawImage(tileset,64,64, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="b")
+			{
+				ctx.drawImage(tileset,96,64, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="c")
+			{
+				ctx.drawImage(tileset,0,96, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="d")
+			{
+				ctx.drawImage(tileset,32,96, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="e")
+			{
+				ctx.drawImage(tileset,64,96, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="f")
+			{
+				ctx.drawImage(tileset,96,96, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="g")
+			{
+				ctx.drawImage(tileset,0,128, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="h")
+			{
+				ctx.drawImage(tileset,32,128, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="i")
+			{
+				ctx.drawImage(tileset,64,128, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="j") // Info sign
+			{
+				ctx.drawImage(tileset,0,224, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="k") // End of level(NKPG sign)
+			{
+				ctx.drawImage(tileset,0,160, tilesize,
+				tilesize,posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="l") // LEgionen
+			{
+				ctx.drawImage(tileset,96,160, tilesize,
+				tilesize,posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="m") // Familjen
+			{
+				ctx.drawImage(tileset,32,192, tilesize,
+				tilesize,posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="n") // N-phadderiet
+			{
+				ctx.drawImage(tileset,64,192, tilesize,
+				tilesize,posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="o") // Kretsn
+			{
+				ctx.drawImage(tileset,0,192, tilesize,
+				tilesize,posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="p") // 3Cant
+			{
+				ctx.drawImage(tileset,96,224, tilesize,
+				tilesize,posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="q") // Tryckbar
+			{
+				ctx.drawImage(tileset,64,224, tilesize,
+				tilesize,posx,posy, tilesize, tilesize);
+			}
+			else if(currentLevel[x+y*levelWidth]=="s") // Pengar
+			{
+				ctx.drawImage(tileset,64,128, tilesize,
+				tilesize,posx,posy, tilesize, tilesize);
+			}
+			
+			/*
+			ctx.fillStyle    = '#00F';
+			ctx.font         = '12px Sans-Serif';
+			ctx.textBaseline = 'Top';
+			ctx.fillText  (currentLevel[x+y*levelWidth], posx+tilesize/2,posy+tilesize/2);
+				*/
+		}
+
+	
+}
+var drawText = function()
+{
+	ctx.fillStyle    = '#00F';
+    ctx.font         = '12px Sans-Serif';
+    ctx.textBaseline = 'Top';
+    ctx.fillText  ("Current tool: " + tool, 4,20);
+	ctx.fillText  ("MouseX: " + parseFloat(mousex-screenx), 4,40);
+	ctx.fillText  ("MouseY: " + parseFloat(mousey-screeny), 4,60);
+	for(i=0;i<enemies.length;i++)
+	{
+		ctx.fillText("x: "+parseInt(enemies[i].x),enemies[i].x+15+screenx,enemies[i].y+screeny)
+		ctx.fillText("y: "+parseInt(enemies[i].y),enemies[i].x+15+screenx,enemies[i].y+screeny+14)
+		
+	}
+	
+	
+}
+
+var checkNeighbours = function(x,y)
+{
+	var neighbours = 0;
+	// Tiles that should not be changed
+	var arrayIndex = x+y*levelWidth;
+	if(currentLevel[arrayIndex]==".")
+		return ".";
+	if(currentLevel[arrayIndex]=="g")
+		return "g";
+	if(currentLevel[arrayIndex]=="h")
+		return "h";
+	if(currentLevel[arrayIndex]=="k")
+		return "k";
+	if(currentLevel[arrayIndex]=="l")
+		return "l";
+	if(currentLevel[arrayIndex]=="m")
+		return "m";
+	if(currentLevel[arrayIndex]=="n")
+		return "n";
+	if(currentLevel[arrayIndex]=="o")
+		return "o";
+	if(currentLevel[arrayIndex]=="p")
+		return "p";
+	if(currentLevel[arrayIndex]=="q")
+		return "q";
+	if(currentLevel[arrayIndex]=="s")
+		return "s";
+	if(currentLevel[arrayIndex]=="j")
+		return "j";
+	
+	// A string of all non-blocking tiles. These tiles are considered empty, such as air(.) and decals such as trees
+	var nonBlockingTiles=".hklmnopqs"; 
+	
+	// Local binary pattern!
+		if(nonBlockingTiles.search(currentLevel[x+(y-1)*levelWidth])==-1) // If the tile is not found in nonBlockingTiles, the tile has a neighbour
+			neighbours=1;
+		if(nonBlockingTiles.search(currentLevel[x+1+(y)*levelWidth])==-1)
+			neighbours+=2;
+		if(nonBlockingTiles.search(currentLevel[x+(y+1)*levelWidth])==-1)
+			neighbours+=4;
+		if(nonBlockingTiles.search(currentLevel[x-1+(y)*levelWidth])==-1)
+			neighbours+=8;
+		
+		switch(neighbours) // Depending on number of neighbouring tiles, return correct tile
+		{
+			case 0:
+				return "b";
+			case 1:
+				return "f";
+			case 2:
+				return "c";
+			case 3:
+				return "8";
+			case 4:
+				return "d";
+			case 5:
+				return "a";
+			case 6:
+				return "9";
+			case 7:
+				return "5";
+			case 8:
+				return "e";
+			case 9:
+				return "7";
+			case 10:
+				return "0";
+			case 11: 
+				return "4";
+			case 12: 
+				return "6";
+			case 13: 
+				return "3";
+			case 14: 
+				return "2";
+			case 15: 
+				return "1";
+			
+		}
+	
+}
+var overlap = function(x,y,width,height,x2,y2,width2,height2) {
+	return (x < x2+width2 && x+width > x2 && y < y2+height2 && y+height > y2);
+}
+
+var GameLoop = function(){
+	clear();
+	checkKeys(1);
+	if(mouseIsDown)
+	{
+		
+		mouseClick++; // click-counter
+		if(editx>=0 && edity>=0 && editx<levelWidth && edity<levelHeight)
+		{	
+			if(tool=="1")
+			{
+				currentLevel[editx+edity*levelWidth]=tool;
+				currentLevel[editx+edity*levelWidth]=checkNeighbours(editx,edity);
+				
+				
+			// Fix neighbours
+				currentLevel[editx-1+edity*levelWidth]=checkNeighbours(editx-1,edity);
+				currentLevel[editx+(edity-1)*levelWidth]=checkNeighbours(editx,edity-1);
+				currentLevel[editx+1+edity*levelWidth]=checkNeighbours(editx+1,edity);
+				currentLevel[editx+(edity+1)*levelWidth]=checkNeighbours(editx,edity+1);
+				
+			}
+			else if(tool==".")
+			{
+				currentLevel[editx+edity*levelWidth]=tool;
+				
+			// Fix neighbours
+				currentLevel[editx-1+edity*levelWidth]=checkNeighbours(editx-1,edity);
+				currentLevel[editx+(edity-1)*levelWidth]=checkNeighbours(editx,edity-1);
+				currentLevel[editx+1+edity*levelWidth]=checkNeighbours(editx+1,edity);
+				currentLevel[editx+(edity+1)*levelWidth]=checkNeighbours(editx,edity+1);
+			}
+			else if(tool=="skurkerist") // Placera ut en skurkerist
+			{
+				if(mouseClick==1)
+				{
+					enemies.push({type:"skurkerist",x:parseInt(-screenx+mousex),y:parseInt(-screeny+mousey),oldx:0,oldy:0,direction:Math.round(Math.random())});
+				}
+			} else if(tool=="jumper") {// Placera ut en skurkerist
+				if(mouseClick==1) {
+					enemies.push({type:"jumper",x:parseInt(-screenx+mousex),y:parseInt(-screeny+mousey),oldx:0,oldy:0,speedy:0,jumping:1,direction:Math.round(Math.random())});
+				}
+			} else if(tool=="bouncer") {
+				if(mouseClick==1) {
+					enemies.push({type:"bouncer",x:parseInt(-screenx+mousex),y:parseInt(-screeny+mousey),oldx:0,oldy:0,speedx:Math.random()*2+1,speedy:Math.random()*2+1});
+				}
+			} else if(tool=="startPos") {
+				playerStartx = parseInt(-screenx+mousex)-5;
+				playerStarty = parseInt(-screeny+mousey)-7;
+			
+			} else if(tool=="r") { // Sudda content
+			 
+				for(i=0;i<enemies.length;i++) {
+					if(overlap(mousex,mousey,1,1,enemies[i].x+screenx,enemies[i].y+screeny,10,10)==true) {	
+						enemies.splice(i,1);
+						break;
+					}
+				}
+			} else {
+				currentLevel[editx+edity*levelWidth]=tool;
+			}
+		}
+		
+	}
+				
+		
+	updatePlayer();
+	render();
+	drawLevel();
+	renderEnemies();
+	ctx.drawImage(playerImage,30,20,30,20,screenx+playerStartx, screeny+playerStarty,30,20);
+	drawText();
+	gLoop = setTimeout(GameLoop, 1000 / 50);
+}
+
+init();
+//loadLevel("level1");
+
+
+	
+GameLoop();
+
+</script>
+
+<div style="font-family:verdana; font-size:10px; position:absolute; border:1px solid #000; top:0; left:0; width:200px;">
+<form>
+<select id="savelevelname">
+<?php $dir='levels';
+$files=scandir($dir);
+echo $files;
+foreach($files as $name)
+{
+if($name!="." && $name!=".." && substr($name,-4)==".txt")
+	echo '<option onClick="documentSelectById("savelevelname").blur();" value="' . substr($name,0,strlen($name)-4) . '">' . substr($name,0,strlen($name)-4) . '</option>'; // Ta bort .txt
+
+}
+?>
+</select>
+</form>
+<p>Välj bana i dropdown-menyn, se till att den inte är markerad efter och tryck L för att ladda eller S för att spara.</p>
+<ul>
+<li>1: Ground</li>
+<li>2: Ice ground</li>
+<li>3: Tree (blocks enemies)</li>
+<li>4: Floater (flies back and forth)</li>
+<li>5: Jumber (runs around and jumps)</li>
+<li>6: Bouncer(Bounces around</li>
+<li>s: Save</li>
+<li>e: Eraser ground tiles</li>
+<li>r: Eraser for enemies</li>
+<li>n: Goal</li>
+<li>z: Legionenmärke</li>
+<li>x: Familjenmärke</li>
+<li>c: N-Phadderietmärke</li>
+<li>v: Kretsnmärke</li>
+<li>b: 3Cantsmärke</li>
+<li>m: Tryckbarsbärke</li>
+<li>w: Money</li>
+<li>j: Start position</li>
+
+</ul>
+</div>
+
+
+</body>
+</html>
