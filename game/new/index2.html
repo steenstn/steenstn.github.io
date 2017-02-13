@@ -342,9 +342,15 @@ var updateEnemies = function() {
       var enemyInHurtZone = overlap(enemies[i].x,enemies[i].y,20,20,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
       var enemyInKillZone = overlap(enemies[i].x,enemies[i].y,20,20,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
 
-  		if(enemyInHurtZone) {
-  			players[playerIndex].speedx=-1*Math.random()*4+Math.random()*4;
-  			players[playerIndex].speedy=-1*Math.random()*4+Math.random()*4;
+  		if(enemyInHurtZone) { // 1 = right
+        if(enemies[i].direction==1) {
+          players[playerIndex].speedx=15;
+
+        }
+        else{
+  			     players[playerIndex].speedx=-15;
+        }
+        players[playerIndex].speedy=-3;
   			players[playerIndex].hp-=2;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
