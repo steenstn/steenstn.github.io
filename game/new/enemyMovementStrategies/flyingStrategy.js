@@ -1,5 +1,6 @@
-var flyingStrategy = function(tilesize, levelWidth, currentLevel) {
-	this.move = function(enemy) {
+var flyingStrategy = function(enemy, tilesize, levelWidth, currentLevel) {
+	this.enemy = enemy;
+	this.move = function() {
 		var xOffset = 0;
 		var yOffset = 15;
 		if(enemy.speedx>0) // Going right

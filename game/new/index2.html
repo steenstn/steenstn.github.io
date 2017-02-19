@@ -45,8 +45,9 @@ c.height = height;
 var screenx = 200;//width/2.5;
 var screeny = 200;//height/2.5;
 
+var kickbackForce = 15;
 
-var levelNow = 1; // Number of current level
+var levelNow = 3; // Number of current level
 
 var oldscreenx = screenx;
 var oldscreeny = screeny;
@@ -344,13 +345,13 @@ var updateEnemies = function() {
 
   		if(enemyInHurtZone) { // 1 = right
         if(enemies[i].direction==1) {
-          players[playerIndex].speedx=15;
+          players[playerIndex].speedx=kickbackForce;
 
         }
         else{
-  			     players[playerIndex].speedx=-15;
+  			     players[playerIndex].speedx=-1*kickbackForce;
         }
-        players[playerIndex].speedy=-3;
+        players[playerIndex].speedy=-0.25*kickbackForce;
   			players[playerIndex].hp-=2;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
@@ -362,7 +363,7 @@ var updateEnemies = function() {
   		}
     }
     if(!enemyIsDead && !enemyIsInteracting) {
-      enemies[i].strategy.move(enemies[i]);
+      enemies[i].strategy.move();
     }
 	}
 }
@@ -410,13 +411,13 @@ var loadContent = function(levelName) {
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
       case "skurkerist": // Flies back and forth, no gravity
-          enemies[i].strategy = new glidingStrategy(tilesize, levelWidth, currentLevel)
+          enemies[i].strategy = new glidingStrategy(enemies[i], tilesize, levelWidth, currentLevel)
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
-        enemies[i].strategy = new jumpingStrategy(tilesize, levelWidth, currentLevel);
+        enemies[i].strategy = new jumpingStrategy(enemies[i], tilesize, levelWidth, currentLevel);
         break;
       case "bouncer": // Flies around and bounces on the walls
-        enemies[i].strategy = new flyingStrategy(tilesize, levelWidth, currentLevel);
+        enemies[i].strategy = new flyingStrategy(enemies[i], tilesize, levelWidth, currentLevel);
         break;
     }
 
