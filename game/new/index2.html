@@ -385,10 +385,22 @@ var updateEnemies = function() {
 var updateParticles = function() {
   for(var i = 0; i < particles.length; i++) {
     var arrayPos = Math.floor((particles[i].x)/tilesize)+Math.floor((particles[i].y)/tilesize)*levelWidth;
+    var downRight = Math.floor((particles[i].x+1)/tilesize)+Math.floor((particles[i].y+1)/tilesize)*levelWidth;
+    var downLeft = Math.floor((particles[i].x-1)/tilesize)+Math.floor((particles[i].y+1)/tilesize)*levelWidth;
+    var down = Math.floor((particles[i].x)/tilesize)+Math.floor((particles[i].y+1)/tilesize)*levelWidth;
 
-    if(currentLevel[arrayPos].blocking==1) {
-      particles[i].active = false;
+    var isDownLeftBlocked = currentLevel[downLeft].blocking==1;
+    var isDownRightBlocked = currentLevel[downRight].blocking==1;
+    var isDownBlocked = currentLevel[down].blocking==1;
+
+    if(isDownBlocked && isDownRightBlocked && isDownLeftBlocked) {
+      particles[i].state = 0;
+    } else if(isDownBlocked && (!isDownRightBlocked || !isDownLeftBlocked)) {
+      particles[i].state = 2;
+    } else {
+      particles[i].state = 1;
     }
+
     particles[i].move();
   }
 }
