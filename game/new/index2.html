@@ -62,6 +62,7 @@ var score = 0;
 var dead=0;
 var pickedArtefacts=0; // How many phadderists are collected?
 
+var bloodAmount = 20;
 var bloodImage = new Image();
 bloodImage.src = "bloodpixel.png";
 bloodImage.width=1;
@@ -354,15 +355,15 @@ var updateEnemies = function() {
 
   		if(enemyInHurtZone) { // 1 = right
         if(enemies[i].direction==1) {
-          players[playerIndex].speedx=kickbackForce;
-          for(var bloodIndex = 0; bloodIndex < 20; bloodIndex++) {
-            particles.push(new Particle(players[playerIndex].x, players[playerIndex].y+Math.random()*25, kickbackForce*Math.random(), 0, bloodImage));
+          players[playerIndex].speedx=enemies[i].xspeed*kickbackForce;
+          for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
+            particles.push(new Particle(players[playerIndex].x, players[playerIndex].y+Math.random()*25, kickbackForce*3*Math.random(), -3*Math.random(), bloodImage));
           }
         }
         else{
   			     players[playerIndex].speedx=-1*kickbackForce;
-             for(var bloodIndex = 0; bloodIndex < 20; bloodIndex++) {
-             particles.push(new Particle(players[playerIndex].x, players[playerIndex].y+Math.random()*25, -1*kickbackForce*Math.random(), 0, bloodImage));
+             for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
+             particles.push(new Particle(players[playerIndex].x, players[playerIndex].y+Math.random()*25, -1*kickbackForce*3*Math.random(), -3*Math.random(), bloodImage));
            }
         }
         players[playerIndex].speedy=-0.25*kickbackForce;

@@ -18,7 +18,7 @@ function Particle(x, y, xSpeed, ySpeed, image) {
       this.ySpeed+=0.3;
       this.xSpeed/=this.xFriction;
     } else if (this.state === DRIPPING) {
-      this.ySpeed = 0.2
+      this.ySpeed = 0.02;
       this.xSpeed = 0;
       this.y+=this.ySpeed;
     }
