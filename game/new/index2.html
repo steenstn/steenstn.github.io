@@ -23,9 +23,9 @@
 </head>
 <body>
 
-<script src="player.js" type="text/javascript"></script>
+<script src="Player.js" type="text/javascript"></script>
 <script src="particle.js" type="text/javascript"></script>
-<script src="enemyMovementStrategies/glidingStrategy.js" language="javascript" type="text/javascript"></script>
+<script src="enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="enemyMovementStrategies/jumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="enemyMovementStrategies/flyingStrategy.js" language="javascript" type="text/javascript"></script>
 
@@ -49,7 +49,7 @@ var screeny = 200;//height/2.5;
 
 var kickbackForce = 7;
 
-var levelNow = 3; // Number of current level
+var levelNow = 1; // Number of current level
 
 var oldscreenx = screenx;
 var oldscreeny = screeny;
@@ -450,7 +450,7 @@ var loadContent = function(levelName) {
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
       case "skurkerist": // Flies back and forth, no gravity
-          enemies[i].strategy = new glidingStrategy(enemies[i], tilesize, levelWidth, currentLevel)
+          enemies[i].strategy = new GlidingStrategy(enemies[i], tilesize, levelWidth, currentLevel)
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
         enemies[i].strategy = new jumpingStrategy(enemies[i], tilesize, levelWidth, currentLevel);
@@ -738,7 +738,7 @@ var GameLoop = function(){
   renderEnemies();
 	drawLevel();
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/tilesize)+Math.floor((players[0].y+players[0].height)/tilesize)*levelWidth;
-  
+
 	if(currentLevel[arrayPos].type=="k") {
 		if(pickedArtefacts>3) {
 			levelNow++;
