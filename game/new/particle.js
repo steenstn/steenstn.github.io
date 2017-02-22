@@ -29,3 +29,4 @@ function Particle(x, y, xSpeed, ySpeed, image) {
     }
 
 }
+  

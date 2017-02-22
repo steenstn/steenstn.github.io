@@ -390,6 +390,7 @@ var updateParticles = function() {
     var downLeft = Math.floor((particles[i].x-1)/tilesize)+Math.floor((particles[i].y+1)/tilesize)*levelWidth;
     var down = Math.floor((particles[i].x)/tilesize)+Math.floor((particles[i].y+1)/tilesize)*levelWidth;
 
+
     var isDownLeftBlocked = currentLevel[downLeft].blocking==1;
     var isDownRightBlocked = currentLevel[downRight].blocking==1;
     var isDownBlocked = currentLevel[down].blocking==1;
@@ -737,7 +738,7 @@ var GameLoop = function(){
   renderEnemies();
 	drawLevel();
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/tilesize)+Math.floor((players[0].y+players[0].height)/tilesize)*levelWidth;
-
+  
 	if(currentLevel[arrayPos].type=="k") {
 		if(pickedArtefacts>3) {
 			levelNow++;
