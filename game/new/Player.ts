@@ -1,6 +1,5 @@
 class Player {
-  x : number;
-  y : number;
+
   oldx : number;
   oldy : number;
   width : number;
@@ -29,9 +28,8 @@ class Player {
   keyLeft : number;
   keyRight : number;
 
-  image = new Image();
 
-  constructor(x, y, image) {
+  constructor(public x,public y,public image) {
     this.x = x;
     this.y = y;
     this.image = image;

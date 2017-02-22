@@ -1,6 +1,8 @@
 var Player = (function () {
     function Player(x, y, image) {
-        this.image = new Image();
+        this.x = x;
+        this.y = y;
+        this.image = image;
         this.x = x;
         this.y = y;
         this.image = image;
