@@ -16,8 +16,17 @@
     canvas{
       outline:0;
       border:1px solid #000;
+	  image-rendering: optimizeSpeed;             /* Older versions of FF          */
+	  image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+	  image-rendering: -webkit-optimize-contrast; /* Safari                        */
+	  image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+	  image-rendering: pixelated;                 /* Awesome future-browsers       */
+	  -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+	  transform:scale(1.4);
+	  transform-origin: top;
       margin-left: auto;
       margin-right: auto;
+	  margin-top:auto;
     }
   </style>
 </head>
@@ -30,8 +39,6 @@
 <script src="enemyMovementStrategies/flyingStrategy.js" language="javascript" type="text/javascript"></script>
 
 <div align="center">
-  <br />
-  <br />
 <canvas id='c'></canvas>
 <p>Player 1: Arrows <br />Player 2: WASD </p>
 <script>
@@ -136,6 +143,8 @@ var init = function()
 
 	var oldscreenx = screenx;
 	var oldscreeny = screeny;
+	
+	particles = [];
 
   for(var i = 0; i < players.length; i++) {
     players[i].oldx = players[i].x;
@@ -174,6 +183,17 @@ var clear = function(){
   ctx.fill();
 }
 
+var showRect = function(pos){
+  var x = pos%levelWidth;
+
+  var y = Math.floor(pos/levelWidth);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath();
+  ctx.rect(x*tilesize,y*tilesize, tilesize, tilesize);
+  ctx.closePath();
+  ctx.fill();
+}
+
 // Function for checking for overlap between two rectangles
 var overlap = function(x,y,width,height,x2,y2,width2,height2) {
 	return (x < x2+width2 && x+width > x2 && y < y2+height2 && y+height > y2);
@@ -186,22 +206,29 @@ var render = function(){
 		animationCounter=0;
 		currentFrame=1-currentFrame;
 	}
-
+	
 	for(var i = 0; i < players.length; i++) {
 		if(players[i].speedy<-0.5) // JUmping up
 		{
-			ctx.drawImage(players[i].image,30,20*players[i].goingLeft, 30,20,screenx+players[i].x-10,screeny+players[i].y-5, 30, 20);
+			ctx.drawImage(players[i].image,20,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
 		}
 		else if(players[i].speedy>0.5) // Jumping down
 		{
-			ctx.drawImage(players[i].image,150,20*players[i].goingLeft, 30,20,screenx+players[i].x-10,screeny+players[i].y-5, 30, 20);
+			ctx.drawImage(players[i].image,40,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
 		}
 		else if(players[i].speedx>0.05 || players[i].speedx<-0.05) // Running
 		{
-			ctx.drawImage(players[i].image,68+60*currentFrame,20*players[i].goingLeft, 20,20,screenx+players[i].x-10,screeny+players[i].y-5, 20, 20);
+			ctx.drawImage(players[i].image,60+20*currentFrame,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
 		}
 		else
-			ctx.drawImage(players[i].image,5,20*players[i].goingLeft, 25,20,screenx+players[i].x-10,screeny+players[i].y-5, 25, 20);
+			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
+			
+		/*
+		ctx.fillStyle = '#aFFaFF';
+	  ctx.beginPath();
+	  ctx.rect(players[i].x + screenx, players[i].y + screeny, 20, 30);
+	  ctx.closePath();
+	  ctx.fill();*/
 	}
 };
 
@@ -242,6 +269,7 @@ var updatePlayer = function(index) {
 	// Check to the left if going left and stop the player if he collides with a blocking tile
 	if(players[index].speedx < 0) {
 		var arrayPos=Math.floor((players[index].x)/tilesize)+Math.floor((players[index].y+players[index].height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
+		//showRect(arrayPos);
 		if(currentLevel[arrayPos].blocking==1) {
 			players[index].x = players[index].oldx;
 			players[index].speedx = 0;
@@ -249,7 +277,9 @@ var updatePlayer = function(index) {
 	} else {// Check to the right
 
 		var arrayPos=Math.floor((players[index].x+players[index].width)/tilesize)+Math.floor((players[index].y+players[index].height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
-		if(currentLevel[arrayPos].blocking==1) {
+		
+		console.log(arrayPos);
+		if(typeof arrayPos !== 'NaN' && currentLevel[arrayPos].blocking==1) {
 			players[index].x = players[index].oldx;
 			players[index].speedx = 0;
 		}
@@ -264,13 +294,13 @@ var updatePlayer = function(index) {
 
 	// If going up, check for blocking tiles
 	if(players[index].speedy < 0) {
-		arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+2)/tilesize)*levelWidth;
+		arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+5)/tilesize)*levelWidth;
 		if(currentLevel[arrayPos].blocking==1) {
 			players[index].y = players[index].oldy;
 			players[index].speedy = 0;
 		}
 	} else if(players[index].speedy > 0) { // Going down, check for blocking tiles
-		arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+players[index].height)/tilesize)*levelWidth;
+		arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+players[index].height)/(tilesize))*levelWidth;
 		// If the player lands on a blocking tile, iteratively move him upwards until he is free from the
 		// tile. This will remove bouncing when landing in high speed
 		if(currentLevel[arrayPos].blocking==1) {
@@ -355,7 +385,7 @@ var updateEnemies = function() {
 
   		if(enemyInHurtZone) { // 1 = right
         if(enemies[i].direction==1) {
-          players[playerIndex].speedx=enemies[i].xspeed*kickbackForce;
+          players[playerIndex].speedx=kickbackForce;
           for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
             particles.push(new Particle(players[playerIndex].x, players[playerIndex].y+Math.random()*25, kickbackForce*3*Math.random(), -3*Math.random(), bloodImage));
           }
@@ -738,7 +768,7 @@ var GameLoop = function(){
   renderEnemies();
 	drawLevel();
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/tilesize)+Math.floor((players[0].y+players[0].height)/tilesize)*levelWidth;
-
+	
 	if(currentLevel[arrayPos].type=="k") {
 		if(pickedArtefacts>3) {
 			levelNow++;
