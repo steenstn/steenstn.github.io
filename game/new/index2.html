@@ -36,7 +36,7 @@
 <script src="js/Particle.js" type="text/javascript"></script>
 <script src="js/Level.js" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/glidingStrategy.js" language="javascript" type="text/javascript"></script>
-<script src="enemyMovementStrategies/jumpingStrategy.js" language="javascript" type="text/javascript"></script>
+<script src="js/enemyMovementStrategies/jumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/flyingStrategy.js" language="javascript" type="text/javascript"></script>
 
 <canvas id='c'></canvas>
@@ -493,7 +493,7 @@ var loadContent = function(levelName) {
           enemies[i].strategy = new GlidingStrategy(enemies[i], Level.tileSize, currentLevel)
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
-        enemies[i].strategy = new jumpingStrategy(enemies[i], Level.tileSize, Level.width, currentLevel);
+        enemies[i].strategy = new JumpingStrategy(enemies[i], currentLevel, maxSpeedy, gravity);
         break;
       case "bouncer": // Flies around and bounces on the walls
         enemies[i].strategy = new FlyingStrategy(enemies[i], Level.tileSize, currentLevel);
