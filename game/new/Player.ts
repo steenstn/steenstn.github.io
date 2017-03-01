@@ -71,10 +71,10 @@ class Player {
  }
   drawHurtZone(context, screenx, screeny) {
     context.fillStyle = '#FF0a00';
-	  context.beginPath();
-	  context.rect(this.hurtZonex + screenx, this.hurtZoney + screeny,this.hurtZoneWidth, this.hurtZoneHeight);
-	  context.closePath();
-	  context.fill();
+    context.beginPath();
+    context.rect(this.hurtZonex + screenx, this.hurtZoney + screeny,this.hurtZoneWidth, this.hurtZoneHeight);
+    context.closePath();
+    context.fill();
   }
 
   drawKillZone(context, screenx, screeny) {

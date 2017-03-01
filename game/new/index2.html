@@ -22,7 +22,7 @@
 	  image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
 	  image-rendering: pixelated;                 /* Awesome future-browsers       */
 	  -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
-	  transform:scale(1.4);
+	  transform:scale(1.5);
 	  transform-origin: top;
       margin-left: auto;
       margin-right: auto;
@@ -276,7 +276,7 @@ var updatePlayer = function(index) {
 
 		var arrayPos=Math.floor((players[index].x+players[index].width)/tilesize)+Math.floor((players[index].y+players[index].height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
 
-		console.log(arrayPos);
+
 		if(typeof arrayPos !== 'NaN' && currentLevel[arrayPos].blocking==1) {
 			players[index].x = players[index].oldx;
 			players[index].speedx = 0;
@@ -323,8 +323,8 @@ var updatePlayer = function(index) {
 	var betweenPlayersX = (players[0].x+players[1].x) / 2;
 	var betweenPlayersY = (players[0].y+players[1].y) / 2;
 
-	screenx=-betweenPlayersX+(numTilesInScreenWidth / 2)*tilesize;
-	screeny=-betweenPlayersY+(numTilesInScreenHeight / 2)*tilesize;
+	screenx=Math.round(-betweenPlayersX+(numTilesInScreenWidth / 2)*tilesize);
+	screeny=Math.round(-betweenPlayersY+(numTilesInScreenHeight / 2)*tilesize);
 
 
 	// Do not move the screen outside of the level
@@ -435,6 +435,9 @@ var updateParticles = function() {
 
 var checkKeys = function (modifier) {
 
+  if(79 in keysDown) { // o
+    debug = 1 - debug;
+  }
 	for(var i = 0; i < players.length; i++) {
 
 		if (players[i].keyUp in keysDown) {
@@ -460,7 +463,9 @@ var checkKeys = function (modifier) {
 		}
 		else
 			players[i].speedx/=friction; // Decelerate
-
+      if(Math.abs(players[i].speedx) < 0.05) {
+        players[i].x = Math.round(players[i].x);
+      }
 		}
 }
 
