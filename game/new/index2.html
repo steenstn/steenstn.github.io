@@ -493,7 +493,7 @@ var loadContent = function(levelName) {
           enemies[i].strategy = new GlidingStrategy(enemies[i], Level.tileSize, currentLevel)
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
-        enemies[i].strategy = new JumpingStrategy(enemies[i], currentLevel, maxSpeedy, gravity);
+        enemies[i].strategy = new jumpingStrategy(enemies[i], currentLevel, maxSpeedy, gravity);
         break;
       case "bouncer": // Flies around and bounces on the walls
         enemies[i].strategy = new FlyingStrategy(enemies[i], Level.tileSize, currentLevel);
