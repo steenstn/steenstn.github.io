@@ -1,43 +1,36 @@
-var flyingStrategy = function(enemy, tilesize, levelWidth, currentLevel) {
-	this.enemy = enemy;
-	this.move = function() {
-		var xOffset = 0;
-		var yOffset = 15;
-		if(enemy.speedx>0) // Going right
-		{
-			xOffset = 20;
-		}
-		else if(enemy.speedx<0) // Going left
-		{
-			xOffset = 0;
-		}
-
-		arrayPos=Math.floor((enemy.x+xOffset)/tilesize)+Math.floor((enemy.y+yOffset)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
-
-		if(currentLevel[arrayPos].blocking==1 || currentLevel[arrayPos].type=="h" )
-		{
-			enemy.speedx*=-1;
-		}
-
-		xOffset = 10;
-
-		if(enemy.speedy<0) // Going up up up
-		{
-			yOffset = -1;
-		}
-		else if(enemy.speedy>0) // Going down
-		{
-			yOffset = 31;
-		}
-
-		arrayPos=Math.floor((enemy.x+xOffset)/tilesize)+Math.floor((enemy.y+yOffset)/tilesize)*levelWidth; // The position in the level array(Middle of the enemy at the moment)
-
-		if(currentLevel[arrayPos].blocking==1 || currentLevel[arrayPos].type=="h" )
-		{
-			enemy.speedy*=-1;
-		}
-
-		enemy.x+=enemy.speedx;
-		enemy.y+=enemy.speedy;
-		}
-}
+var FlyingStrategy = (function () {
+    function FlyingStrategy(enemy, tilesize, levelWidth, currentLevel) {
+        this.enemy = enemy;
+        this.tilesize = tilesize;
+        this.levelWidth = levelWidth;
+        this.currentLevel = currentLevel;
+    }
+    FlyingStrategy.prototype.move = function () {
+        var xOffset = 0;
+        var yOffset = 15;
+        if (this.enemy.speedx > 0) {
+            xOffset = 20;
+        }
+        else if (this.enemy.speedx < 0) {
+            xOffset = 0;
+        }
+        var arrayPos = Math.floor((this.enemy.x + xOffset) / this.tilesize) + Math.floor((this.enemy.y + yOffset) / this.tilesize) * this.levelWidth;
+        if (this.currentLevel[arrayPos].blocking == 1 || this.currentLevel[arrayPos].type == "h") {
+            this.enemy.speedx *= -1;
+        }
+        xOffset = 10;
+        if (this.enemy.speedy < 0) {
+            yOffset = -1;
+        }
+        else if (this.enemy.speedy > 0) {
+            yOffset = 31;
+        }
+        arrayPos = Math.floor((this.enemy.x + xOffset) / this.tilesize) + Math.floor((this.enemy.y + yOffset) / this.tilesize) * this.levelWidth;
+        if (this.currentLevel[arrayPos].blocking == 1 || this.currentLevel[arrayPos].type == "h") {
+            this.enemy.speedy *= -1;
+        }
+        this.enemy.x += this.enemy.speedx;
+        this.enemy.y += this.enemy.speedy;
+    };
+    return FlyingStrategy;
+}());
