@@ -318,25 +318,7 @@ var updatePlayer = function(index) {
 	else
 		friction=normalFriction;
 
-	// Move the screen when the players move
-	var betweenPlayersX = (players[0].x+players[1].x) / 2;
-	var betweenPlayersY = (players[0].y+players[1].y) / 2;
-
-	Viewport.x=Math.round(-betweenPlayersX+(numTilesInScreenWidth / 2)*Level.tileSize);
-	Viewport.y=Math.round(-betweenPlayersY+(numTilesInScreenHeight / 2)*Level.tileSize);
-
-
-
-	// Do not move the screen outside of the level
-	if(Viewport.x>0)
-		Viewport.x=0;
-	if(Viewport.x<-Level.width*Level.tileSize+numTilesInScreenWidth*Level.tileSize)
-		Viewport.x=-Level.width*Level.tileSize+numTilesInScreenWidth*Level.tileSize;
-
-	if(Viewport.y>0)
-		Viewport.y=0;
-	if(Viewport.y<-Level.height*Level.tileSize+numTilesInScreenHeight*Level.tileSize)
-		Viewport.y=-Level.height*Level.tileSize+numTilesInScreenHeight*Level.tileSize
+  Viewport.move(players[0].x, players[0].y, players[1].x, players[1].y);
 
 
 	players[index].updateKillZone();
