@@ -26,16 +26,17 @@
 	  transform-origin: top;
       margin-left: auto;
       margin-right: auto;
-	  margin-top:auto;
+	  margin-top:40px;
     }
   </style>
 </head>
 <body>
 
-<script src="js/Player.js" type="text/javascript"></script>
-<script src="js/Particle.js" type="text/javascript"></script>
 <script src="js/Level.js" type="text/javascript"></script>
 <script src="js/Viewport.js" type="text/javascript"></script>
+<script src="js/Player.js" type="text/javascript"></script>
+<script src="js/Particle.js" type="text/javascript"></script>
+
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/FlyingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -113,10 +114,9 @@ var currentFrame = 0; // The current frame of the character
 var jumpStrength=7;
 var jumpAcc=2;
 var maxJump=7; // Maximum number of jumpsteps, the power of the jump
-var currentLevel = new Array(Level.width*Level.height);
 
-for(var i=0;i<currentLevel.length;i++)
-	currentLevel[i]=new Object();
+for(var i=0;i<Level.currentLevel.length;i++)
+	Level.currentLevel[i]=new Object();
 
 var enemies={};
 var content = {};
@@ -263,7 +263,7 @@ var updatePlayer = function(index) {
 	if(players[index].speedx < 0) {
 		var arrayPos=Math.floor((players[index].x)/Level.tileSize)+Math.floor((players[index].y+players[index].height-2)/Level.tileSize)*Level.width; // The position in the level array(Middle of the player at the moment)
 		//showRect(arrayPos);
-		if(currentLevel[arrayPos].blocking==1) {
+		if(Level.currentLevel[arrayPos].blocking==1) {
 			players[index].x = players[index].oldx;
 			players[index].speedx = 0;
 		}
@@ -272,7 +272,7 @@ var updatePlayer = function(index) {
 		var arrayPos=Math.floor((players[index].x+players[index].width)/Level.tileSize)+Math.floor((players[index].y+players[index].height-2)/Level.tileSize)*Level.width; // The position in the level array(Middle of the player at the moment)
 
 
-		if(typeof arrayPos !== 'NaN' && currentLevel[arrayPos].blocking==1) {
+		if(typeof arrayPos !== 'NaN' && Level.currentLevel[arrayPos].blocking==1) {
 			players[index].x = players[index].oldx;
 			players[index].speedx = 0;
 		}
@@ -288,7 +288,7 @@ var updatePlayer = function(index) {
 	// If going up, check for blocking tiles
 	if(players[index].speedy < 0) {
 		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+5)/Level.tileSize)*Level.width;
-		if(currentLevel[arrayPos].blocking==1) {
+		if(Level.currentLevel[arrayPos].blocking==1) {
 			players[index].y = players[index].oldy;
 			players[index].speedy = 0;
 		}
@@ -296,20 +296,20 @@ var updatePlayer = function(index) {
 		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/(Level.tileSize))*Level.width;
 		// If the player lands on a blocking tile, iteratively move him upwards until he is free from the
 		// tile. This will remove bouncing when landing in high speed
-		if(currentLevel[arrayPos].blocking==1) {
+		if(Level.currentLevel[arrayPos].blocking==1) {
 			players[index].jumping = 0;
 
-			while(currentLevel[Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/Level.tileSize)*Level.width].blocking==1) {
+			while(Level.currentLevel[Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/Level.tileSize)*Level.width].blocking==1) {
 				players[index].y-=0.2;
 			}
 			players[index].speedy=0;
 		}
 	}
-	if(currentLevel[arrayPos].blocking==0) { // Disable jumping when in mid-air
+	if(Level.currentLevel[arrayPos].blocking==0) { // Disable jumping when in mid-air
 		players[index].jumping++;
 	}
 
-	if(currentLevel[arrayPos].type=="g") // Ice block
+	if(Level.currentLevel[arrayPos].type=="g") // Ice block
 		friction=1; // No friction
 	else
 		friction=normalFriction;
@@ -322,24 +322,24 @@ var updatePlayer = function(index) {
 
 	arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/Level.tileSize)*Level.width;
 
-	if(currentLevel[arrayPos].type=="p" || currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
+	if(Level.currentLevel[arrayPos].type=="p" || Level.currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
 	{
 		if(players[index].hp<100)
 			players[index].hp+=10;
 		if(players[index].hp>100)
 			players[index].hp=100;
-		currentLevel[arrayPos].type=".";
+		Level.currentLevel[arrayPos].type=".";
 	}
-	if(currentLevel[arrayPos].type=="s") // Coins
+	if(Level.currentLevel[arrayPos].type=="s") // Coins
 	{
 		score+=20;
-		currentLevel[arrayPos].type=".";
+		Level.currentLevel[arrayPos].type=".";
 	}
-	if(currentLevel[arrayPos].type=="l" || currentLevel[arrayPos].type=="m" || currentLevel[arrayPos].type=="n" || currentLevel[arrayPos].type=="o") // Phadderist
+	if(Level.currentLevel[arrayPos].type=="l" || Level.currentLevel[arrayPos].type=="m" || Level.currentLevel[arrayPos].type=="n" || Level.currentLevel[arrayPos].type=="o") // Phadderist
 	{
 		pickedArtefacts++;
 		score+=50;
-		currentLevel[arrayPos].type=".";
+		Level.currentLevel[arrayPos].type=".";
 	}
 
 }
@@ -395,9 +395,9 @@ var updateParticles = function() {
     var down = Math.floor((particles[i].x)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
 
 
-    var isDownLeftBlocked = currentLevel[downLeft].blocking==1;
-    var isDownRightBlocked = currentLevel[downRight].blocking==1;
-    var isDownBlocked = currentLevel[down].blocking==1;
+    var isDownLeftBlocked = Level.currentLevel[downLeft].blocking==1;
+    var isDownRightBlocked = Level.currentLevel[downRight].blocking==1;
+    var isDownBlocked = Level.currentLevel[down].blocking==1;
 
     if(isDownBlocked && isDownRightBlocked && isDownLeftBlocked) {
       particles[i].state = 0;
@@ -465,13 +465,13 @@ var loadContent = function(levelName) {
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
       case "skurkerist": // Flies back and forth, no gravity
-          enemies[i].strategy = new GlidingStrategy(enemies[i], currentLevel)
+          enemies[i].strategy = new GlidingStrategy(enemies[i], Level.currentLevel)
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
-        enemies[i].strategy = new JumpingStrategy(enemies[i], currentLevel, maxSpeedy, gravity);
+        enemies[i].strategy = new JumpingStrategy(enemies[i], Level.currentLevel, maxSpeedy, gravity);
         break;
       case "bouncer": // Flies around and bounces on the walls
-        enemies[i].strategy = new FlyingStrategy(enemies[i], currentLevel);
+        enemies[i].strategy = new FlyingStrategy(enemies[i], Level.currentLevel);
         break;
     }
 
@@ -488,10 +488,10 @@ var loadContent = function(levelName) {
 
 var loadLevel = function(levelNumber) {
 var levelName = "level"+levelNumber;
- currentLevel = new Array(Level.width*Level.height);
+ Level.currentLevel = new Array(Level.width*Level.height);
 
-for(var i=0;i<currentLevel.length;i++) { // set up an object for all tiles
-	currentLevel[i]=new Object();
+for(var i=0;i<Level.currentLevel.length;i++) { // set up an object for all tiles
+	Level.currentLevel[i]=new Object();
 }
 var txtFile = new XMLHttpRequest();
 
@@ -506,150 +506,150 @@ txtFile.onreadystatechange = function() {
 		for(var y=0;y<Level.height;y++) {
 			for(var x=0;x<Level.width;x++) {
 				var arrayPos = x+y*Level.width;
-				currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
-				switch(currentLevel[arrayPos].type) {
+				Level.currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
+				switch(Level.currentLevel[arrayPos].type) {
 					case ".": // Empty tile
-						currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].blocking=0;
 						break;
 					case "1": // Ground tile
-						currentLevel[arrayPos].blocking=1; // Blocking tile
-						currentLevel[arrayPos].tileOffsetx=0; // Where in the tileset the tile is
-						currentLevel[arrayPos].tileOffsety=0;
+						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
+						Level.currentLevel[arrayPos].tileOffsetx=0; // Where in the tileset the tile is
+						Level.currentLevel[arrayPos].tileOffsety=0;
 						break;
 					case "2": // Ground tile
-						currentLevel[arrayPos].blocking=1; // Blocking tile
-						currentLevel[arrayPos].tileOffsetx=32;
-						currentLevel[arrayPos].tileOffsety=0;
+						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
+						Level.currentLevel[arrayPos].tileOffsetx=32;
+						Level.currentLevel[arrayPos].tileOffsety=0;
 						break;
 					case "3": // Ground tile
-						currentLevel[arrayPos].blocking=1; // Blocking tile
-						currentLevel[arrayPos].tileOffsetx=64;
-						currentLevel[arrayPos].tileOffsety=0;
+						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
+						Level.currentLevel[arrayPos].tileOffsetx=64;
+						Level.currentLevel[arrayPos].tileOffsety=0;
 						break;
 					case "4": // Ground tile
-						currentLevel[arrayPos].blocking=1; // Blocking tile
-						currentLevel[arrayPos].tileOffsetx=96;
-						currentLevel[arrayPos].tileOffsety=0;
+						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
+						Level.currentLevel[arrayPos].tileOffsetx=96;
+						Level.currentLevel[arrayPos].tileOffsety=0;
 						break;
 					case "5": // Ground tile
-						currentLevel[arrayPos].blocking=1; // Blocking tile
-						currentLevel[arrayPos].tileOffsetx=0;
-						currentLevel[arrayPos].tileOffsety=32;
+						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
+						Level.currentLevel[arrayPos].tileOffsetx=0;
+						Level.currentLevel[arrayPos].tileOffsety=32;
 						break;
 					case "6": // Ground tile
-						currentLevel[arrayPos].blocking=1; // Blocking tile
-						currentLevel[arrayPos].tileOffsetx=32;
-						currentLevel[arrayPos].tileOffsety=32;
+						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
+						Level.currentLevel[arrayPos].tileOffsetx=32;
+						Level.currentLevel[arrayPos].tileOffsety=32;
 						break;
 					case "7": // Ground tile
-						currentLevel[arrayPos].blocking=1; // Blocking tile
-						currentLevel[arrayPos].tileOffsetx=64;
-						currentLevel[arrayPos].tileOffsety=32;
+						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
+						Level.currentLevel[arrayPos].tileOffsetx=64;
+						Level.currentLevel[arrayPos].tileOffsety=32;
 						break;
 					case "8": // Ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=96;
-						currentLevel[arrayPos].tileOffsety=32;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=96;
+						Level.currentLevel[arrayPos].tileOffsety=32;
 						break;
 					case "9": // Ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=0;
-						currentLevel[arrayPos].tileOffsety=64;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=0;
+						Level.currentLevel[arrayPos].tileOffsety=64;
 						break;
 					case "0": // Ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=32;
-						currentLevel[arrayPos].tileOffsety=64;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=32;
+						Level.currentLevel[arrayPos].tileOffsety=64;
 						break;
 					case "a": // Ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=64;
-						currentLevel[arrayPos].tileOffsety=64;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=64;
+						Level.currentLevel[arrayPos].tileOffsety=64;
 						break;
 					case "b": // Ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=96;
-						currentLevel[arrayPos].tileOffsety=64;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=96;
+						Level.currentLevel[arrayPos].tileOffsety=64;
 						break;
 					case "c": // Ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=0;
-						currentLevel[arrayPos].tileOffsety=96;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=0;
+						Level.currentLevel[arrayPos].tileOffsety=96;
 						break;
 					case "d": // Ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=32;
-						currentLevel[arrayPos].tileOffsety=96;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=32;
+						Level.currentLevel[arrayPos].tileOffsety=96;
 						break;
 					case "e": // Ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=64;
-						currentLevel[arrayPos].tileOffsety=96;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=64;
+						Level.currentLevel[arrayPos].tileOffsety=96;
 						break;
 					case "f": // Ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=96;
-						currentLevel[arrayPos].tileOffsety=96;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=96;
+						Level.currentLevel[arrayPos].tileOffsety=96;
 						break;
 					case "g": // Ice ground tile
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=0;
-						currentLevel[arrayPos].tileOffsety=128;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=0;
+						Level.currentLevel[arrayPos].tileOffsety=128;
 						break;
 					case "h": // Tree
-						currentLevel[arrayPos].blocking=0;
-						currentLevel[arrayPos].tileOffsetx=32;
-						currentLevel[arrayPos].tileOffsety=128;
+						Level.currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].tileOffsetx=32;
+						Level.currentLevel[arrayPos].tileOffsety=128;
 						break;
 					case "i":
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=64;
-						currentLevel[arrayPos].tileOffsety=128;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=64;
+						Level.currentLevel[arrayPos].tileOffsety=128;
 						break;
 					case "j":
-						currentLevel[arrayPos].blocking=1;
-						currentLevel[arrayPos].tileOffsetx=96;
-						currentLevel[arrayPos].tileOffsety=128;
+						Level.currentLevel[arrayPos].blocking=1;
+						Level.currentLevel[arrayPos].tileOffsetx=96;
+						Level.currentLevel[arrayPos].tileOffsety=128;
 						break;
 					case "k":
-						currentLevel[arrayPos].blocking=0;
-						currentLevel[arrayPos].tileOffsetx=0;
-						currentLevel[arrayPos].tileOffsety=160;
+						Level.currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].tileOffsetx=0;
+						Level.currentLevel[arrayPos].tileOffsety=160;
 						break;
 					case "l":
-						currentLevel[arrayPos].blocking=0;
-						currentLevel[arrayPos].tileOffsetx=96;
-						currentLevel[arrayPos].tileOffsety=160;
+						Level.currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].tileOffsetx=96;
+						Level.currentLevel[arrayPos].tileOffsety=160;
 						break;
 					case "m":
-						currentLevel[arrayPos].blocking=0;
-						currentLevel[arrayPos].tileOffsetx=32;
-						currentLevel[arrayPos].tileOffsety=192;
+						Level.currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].tileOffsetx=32;
+						Level.currentLevel[arrayPos].tileOffsety=192;
 						break;
 					case "n":
-						currentLevel[arrayPos].blocking=0;
-						currentLevel[arrayPos].tileOffsetx=64;
-						currentLevel[arrayPos].tileOffsety=192;
+						Level.currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].tileOffsetx=64;
+						Level.currentLevel[arrayPos].tileOffsety=192;
 						break;
 					case "o":
-						currentLevel[arrayPos].blocking=0;
-						currentLevel[arrayPos].tileOffsetx=0;
-						currentLevel[arrayPos].tileOffsety=192;
+						Level.currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].tileOffsetx=0;
+						Level.currentLevel[arrayPos].tileOffsety=192;
 						break;
 					case "p": // 3Cant
-						currentLevel[arrayPos].blocking=0;
-						currentLevel[arrayPos].tileOffsetx=96;
-						currentLevel[arrayPos].tileOffsety=224;
+						Level.currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].tileOffsetx=96;
+						Level.currentLevel[arrayPos].tileOffsety=224;
 						break;
 					case "q": // Tryckbar
-						currentLevel[arrayPos].blocking=0;
-						currentLevel[arrayPos].tileOffsetx=64;
-						currentLevel[arrayPos].tileOffsety=224;
+						Level.currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].tileOffsetx=64;
+						Level.currentLevel[arrayPos].tileOffsety=224;
 						break;
 					case "s": // Cash
-						currentLevel[arrayPos].blocking=0;
-						currentLevel[arrayPos].tileOffsetx=64;
-						currentLevel[arrayPos].tileOffsety=128;
+						Level.currentLevel[arrayPos].blocking=0;
+						Level.currentLevel[arrayPos].tileOffsetx=64;
+						Level.currentLevel[arrayPos].tileOffsety=128;
 						break;
 				}
 			}
@@ -704,9 +704,9 @@ var drawLevel = function() {
 			var posx = Math.round(Viewport.x+x*Level.tileSize);
 			var posy = Math.round(Viewport.y+y*Level.tileSize);
 
-      var isAirTile = currentLevel[x+y*Level.width].type==="."
+      var isAirTile = Level.currentLevel[x+y*Level.width].type==="."
 			if(!isAirTile) {
-				ctx.drawImage(tileset,currentLevel[x+y*Level.width].tileOffsetx,currentLevel[x+y*Level.width].tileOffsety, Level.tileSize,
+				ctx.drawImage(tileset,Level.currentLevel[x+y*Level.width].tileOffsetx,Level.currentLevel[x+y*Level.width].tileOffsety, Level.tileSize,
 					Level.tileSize,posx,posy, Level.tileSize, Level.tileSize);
 			}
 
@@ -761,7 +761,7 @@ var GameLoop = function(){
 	drawLevel();
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/Level.tileSize)+Math.floor((players[0].y+players[0].height)/Level.tileSize)*Level.width;
 
-	if(currentLevel[arrayPos].type=="k") {
+	if(Level.currentLevel[arrayPos].type=="k") {
 		if(pickedArtefacts>3) {
 			levelNow++;
 			lastScore=score;
