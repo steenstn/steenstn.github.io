@@ -37,7 +37,7 @@ class Particle {
     }
   }
 
-  render(context, screenx, screeny) {
-    context.drawImage(this.image, this.x + screenx, this.y + screeny);
+  render(context) {
+    context.drawImage(this.image, this.x + Viewport.x, this.y + Viewport.y);
   }
 }

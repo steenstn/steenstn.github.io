@@ -24,8 +24,8 @@ var Particle = (function () {
             this.y = Math.round(this.y);
         }
     };
-    Particle.prototype.render = function (context, screenx, screeny) {
-        context.drawImage(this.image, this.x + screenx, this.y + screeny);
+    Particle.prototype.render = function (context) {
+        context.drawImage(this.image, this.x + Viewport.x, this.y + Viewport.y);
     };
     return Particle;
 }());
