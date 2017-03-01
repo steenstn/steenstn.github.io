@@ -141,7 +141,7 @@ var init = function()
 
 	var oldscreenx = screenx;
 	var oldscreeny = screeny;
-	
+
 	particles = [];
 
   for(var i = 0; i < players.length; i++) {
@@ -204,7 +204,7 @@ var render = function(){
 		animationCounter=0;
 		currentFrame=1-currentFrame;
 	}
-	
+
 	for(var i = 0; i < players.length; i++) {
 		if(players[i].speedy<-0.5) // JUmping up
 		{
@@ -220,7 +220,7 @@ var render = function(){
 		}
 		else
 			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
-			
+
 		/*
 		ctx.fillStyle = '#aFFaFF';
 	  ctx.beginPath();
@@ -275,7 +275,7 @@ var updatePlayer = function(index) {
 	} else {// Check to the right
 
 		var arrayPos=Math.floor((players[index].x+players[index].width)/tilesize)+Math.floor((players[index].y+players[index].height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
-		
+
 		console.log(arrayPos);
 		if(typeof arrayPos !== 'NaN' && currentLevel[arrayPos].blocking==1) {
 			players[index].x = players[index].oldx;
@@ -766,7 +766,7 @@ var GameLoop = function(){
   renderEnemies();
 	drawLevel();
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/tilesize)+Math.floor((players[0].y+players[0].height)/tilesize)*levelWidth;
-	
+
 	if(currentLevel[arrayPos].type=="k") {
 		if(pickedArtefacts>3) {
 			levelNow++;
