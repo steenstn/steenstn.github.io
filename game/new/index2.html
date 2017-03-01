@@ -45,22 +45,18 @@
 var debug = 0;
 var keyHeldDown = 0;
 var numFramesSinceStart = 0;
-var width = 800,
-height = 500,
-gLoop,
+
+var gLoop,
 c = document.getElementById('c'),
 ctx = c.getContext('2d');
 
-c.width = width;
-c.height = height;
+c.width = Viewport.width;
+c.height = Viewport.height;
 
 var kickbackForce = 7;
 
 var levelNow = 1; // Number of current level
 
-
-var numTilesInScreenHeight = Math.round(height / Level.tileSize);
-var numTilesInScreenWidth = Math.round(width / Level.tileSize);
 var score = 0;
 var dead=0;
 var pickedArtefacts=0; // How many phadderists are collected?
@@ -174,9 +170,9 @@ var canvas = document.getElementById('c');
 
 var clear = function(){
   ctx.fillStyle = '#d0e7f9';
-  ctx.clearRect(0, 0, width, height);
+  ctx.clearRect(0, 0, Viewport.width, Viewport.height);
   ctx.beginPath();
-  ctx.rect(0, 0, width, height);
+  ctx.rect(0, 0, Viewport.width, Viewport.height);
   ctx.closePath();
   ctx.fill();
 }
@@ -692,8 +688,8 @@ var drawLevel = function() {
 		startx=0;
 	if(starty<0)
 		starty=0;
-	var endx=startx+width/Level.tileSize+2;
-	var endy=starty+height/Level.tileSize+2;
+	var endx=startx+Viewport.width/Level.tileSize+2;
+	var endy=starty+Viewport.height/Level.tileSize+2;
 
 
 
