@@ -21,6 +21,9 @@ function Particle(x, y, xSpeed, ySpeed, image) {
       this.ySpeed = 0.02;
       this.xSpeed = 0;
       this.y+=this.ySpeed;
+    } else {
+      this.x = Math.round(this.x);
+      this.y = Math.round(this.y);
     }
   }
 
@@ -29,4 +32,3 @@ function Particle(x, y, xSpeed, ySpeed, image) {
     }
 
 }
-  
