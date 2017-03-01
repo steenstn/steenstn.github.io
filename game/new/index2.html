@@ -35,6 +35,7 @@
 <script src="js/Player.js" type="text/javascript"></script>
 <script src="js/Particle.js" type="text/javascript"></script>
 <script src="js/Level.js" type="text/javascript"></script>
+<script src="js/Viewport.js" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/FlyingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -53,15 +54,10 @@ ctx = c.getContext('2d');
 c.width = width;
 c.height = height;
 
-var screenx = 200;
-var screeny = 200;
-
 var kickbackForce = 7;
 
 var levelNow = 1; // Number of current level
 
-var oldscreenx = screenx;
-var oldscreeny = screeny;
 
 var numTilesInScreenHeight = Math.round(height / Level.tileSize);
 var numTilesInScreenWidth = Math.round(width / Level.tileSize);
@@ -69,7 +65,7 @@ var score = 0;
 var dead=0;
 var pickedArtefacts=0; // How many phadderists are collected?
 
-var bloodAmount = 20;
+var bloodAmount = 10;
 var bloodImage = new Image();
 bloodImage.src = "bloodpixel.png";
 bloodImage.width=1;
@@ -212,22 +208,22 @@ var render = function(){
 	for(var i = 0; i < players.length; i++) {
 		if(players[i].speedy<-0.5) // JUmping up
 		{
-			ctx.drawImage(players[i].image,20,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,20,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
 		}
 		else if(players[i].speedy>0.5) // Jumping down
 		{
-			ctx.drawImage(players[i].image,40,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,40,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
 		}
 		else if(players[i].speedx>0.05 || players[i].speedx<-0.05) // Running
 		{
-			ctx.drawImage(players[i].image,60+20*currentFrame,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,60+20*currentFrame,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
 		}
 		else
-			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
 
     if(debug===1) {
-      players[i].drawHurtZone(ctx, screenx, screeny);
-      players[i].drawKillZone(ctx, screenx, screeny);
+      players[i].drawHurtZone(ctx, Viewport.x, Viewport.y);
+      players[i].drawKillZone(ctx, Viewport.x, Viewport.y);
     }
 
 	}
@@ -240,19 +236,19 @@ var renderEnemies = function()
 		switch(enemies[i].type)
 		{
 			case "skurkerist":
-				ctx.drawImage(skurkImage,5,0,18,30,screenx+enemies[i].x,screeny+enemies[i].y, 18, 30);
+				ctx.drawImage(skurkImage,5,0,18,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 18, 30);
 				break;
 			case "jumper":
-				ctx.drawImage(skurkImage,36,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
+				ctx.drawImage(skurkImage,36,0,17,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 17, 30);
 				break;
 			case "bouncer":
-				ctx.drawImage(skurkImage,67,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
+				ctx.drawImage(skurkImage,67,0,17,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 17, 30);
 				break;
 			default:
 			// Non-implemented enemy, if the enemy does nto have a type, a grey rectangle will be drawn
 				ctx.fillStyle = '#111111';
 				ctx.beginPath();
-				ctx.rect(screenx+enemies[i].x,screeny+enemies[i].y,10,10);
+				ctx.rect(Viewport.x+enemies[i].x,Viewport.y+enemies[i].y,10,10);
 				ctx.closePath();
 				ctx.fill();
 		}
@@ -326,20 +322,21 @@ var updatePlayer = function(index) {
 	var betweenPlayersX = (players[0].x+players[1].x) / 2;
 	var betweenPlayersY = (players[0].y+players[1].y) / 2;
 
-	screenx=Math.round(-betweenPlayersX+(numTilesInScreenWidth / 2)*Level.tileSize);
-	screeny=Math.round(-betweenPlayersY+(numTilesInScreenHeight / 2)*Level.tileSize);
+	Viewport.x=Math.round(-betweenPlayersX+(numTilesInScreenWidth / 2)*Level.tileSize);
+	Viewport.y=Math.round(-betweenPlayersY+(numTilesInScreenHeight / 2)*Level.tileSize);
+
 
 
 	// Do not move the screen outside of the level
-	if(screenx>0)
-		screenx=0;
-	if(screenx<-Level.width*Level.tileSize+numTilesInScreenWidth*Level.tileSize)
-		screenx=-Level.width*Level.tileSize+numTilesInScreenWidth*Level.tileSize;
+	if(Viewport.x>0)
+		Viewport.x=0;
+	if(Viewport.x<-Level.width*Level.tileSize+numTilesInScreenWidth*Level.tileSize)
+		Viewport.x=-Level.width*Level.tileSize+numTilesInScreenWidth*Level.tileSize;
 
-	if(screeny>0)
-		screeny=0;
-	if(screeny<-Level.height*Level.tileSize+numTilesInScreenHeight*Level.tileSize)
-		screeny=-Level.height*Level.tileSize+numTilesInScreenHeight*Level.tileSize
+	if(Viewport.y>0)
+		Viewport.y=0;
+	if(Viewport.y<-Level.height*Level.tileSize+numTilesInScreenHeight*Level.tileSize)
+		Viewport.y=-Level.height*Level.tileSize+numTilesInScreenHeight*Level.tileSize
 
 
 	players[index].updateKillZone();
@@ -453,7 +450,7 @@ var checkKeys = function (modifier) {
 				players[i].jumping++;
 
 				if(players[i].speedy>-jumpStrength)
-				players[i].speedy-=jumpAcc;
+				    players[i].speedy-=jumpAcc;
 			}
 		}
 
@@ -707,8 +704,8 @@ var setUpContent = function() {
 
 var drawLevel = function() {
 	//Only loop through tiles that are almost in the screen
-	var startx=Math.floor(-screenx/Level.tileSize)-1;
-	var starty=Math.floor(-screeny/Level.tileSize)-1;
+	var startx=Math.floor(-Viewport.x/Level.tileSize)-1;
+	var starty=Math.floor(-Viewport.y/Level.tileSize)-1;
 	if(startx<0)
 		startx=0;
 	if(starty<0)
@@ -726,8 +723,8 @@ var drawLevel = function() {
 
 	for(var y=starty;y<endy;y++) {
 		for(var x=startx;x<endx;x++) {
-			var posx = Math.round(screenx+x*Level.tileSize);
-			var posy = Math.round(screeny+y*Level.tileSize);
+			var posx = Math.round(Viewport.x+x*Level.tileSize);
+			var posy = Math.round(Viewport.y+y*Level.tileSize);
 
       var isAirTile = currentLevel[x+y*Level.width].type==="."
 			if(!isAirTile) {
@@ -739,7 +736,7 @@ var drawLevel = function() {
 	}
 
   for(var i = 0; i < particles.length; i++) {
-    particles[i].render(ctx, screenx, screeny);
+    particles[i].render(ctx, Viewport.x, Viewport.y);
   }
 }
 var drawText = function() {
