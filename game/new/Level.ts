@@ -6,6 +6,7 @@ class Level {
 
   static readonly tileSize = 32;
 
+
   constructor() {
   }
 }
