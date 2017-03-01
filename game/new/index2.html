@@ -41,6 +41,7 @@
 <canvas id='c'></canvas>
 <script>
 var debug = 0;
+var keyHeldDown = 0;
 var width = 800,
 height = 500,
 gLoop,
@@ -85,7 +86,6 @@ image2.width = 180;
 image2.height = 120;
 var players = [new Player(2*tilesize, 2*tilesize, image), new Player(2*tilesize,2*tilesize,image2)];
 
-var particles = [];
 
 // A - 65
 // D 68
@@ -128,6 +128,7 @@ for(var i=0;i<currentLevel.length;i++)
 
 var enemies={};
 var content = {};
+var particles = [];
 
 var tileset = new Image();
 tileset.src = "tileset.png"; // Tileset for the level and all powerups
@@ -137,6 +138,8 @@ tileset.height=tilesize;
 
 var init = function()
 {
+
+
 	screenx = 1;
 	screeny = 1;
 
@@ -436,7 +439,12 @@ var updateParticles = function() {
 var checkKeys = function (modifier) {
 
   if(79 in keysDown) { // o
-    debug = 1 - debug;
+    keyHeldDown++;
+    if(keyHeldDown === 1) {
+      debug = 1 - debug;
+    }
+  } else {
+    keyHeldDown = 0;
   }
 	for(var i = 0; i < players.length; i++) {
 
@@ -467,6 +475,7 @@ var checkKeys = function (modifier) {
         players[i].x = Math.round(players[i].x);
       }
 		}
+
 }
 
 var loadContent = function(levelName) {
@@ -735,9 +744,13 @@ var drawLevel = function() {
 }
 var drawText = function() {
 	ctx.fillStyle    = '#F00';
-    ctx.font         = '16px Sans-Serif';
+    ctx.font         = '10px Verdana';
     ctx.textBaseline = 'Top';
     ctx.fillText  ("Score: " + score, 4,20);
+
+    if(debug===1) {
+      ctx.fillText  ("particles: " + particles.length, 4,60);
+    }
 	ctx.strokeStyle = "black";
 	ctx.strokeRect(4,30,102,10);
 	if(players[0].dead==0) {
