@@ -34,6 +34,7 @@
 
 <script src="Player.js" type="text/javascript"></script>
 <script src="particle.js" type="text/javascript"></script>
+<script src="Level.js" type="text/javascript"></script>
 <script src="enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="enemyMovementStrategies/jumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="enemyMovementStrategies/FlyingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -61,11 +62,9 @@ var levelNow = 1; // Number of current level
 
 var oldscreenx = screenx;
 var oldscreeny = screeny;
-var tilesize=32; // The size of a tile(ground, powerups etc)
-var levelWidth=200; // The size of the level in tiles
-var levelHeight=100;
-var numTilesInScreenHeight = Math.round(height / tilesize);
-var numTilesInScreenWidth = Math.round(width / tilesize);
+
+var numTilesInScreenHeight = Math.round(height / Level.tileSize);
+var numTilesInScreenWidth = Math.round(width / Level.tileSize);
 var score = 0;
 var dead=0;
 var pickedArtefacts=0; // How many phadderists are collected?
@@ -85,7 +84,7 @@ var image2 = new Image();
 image2.src = "playersprite2.png";
 image2.width = 180;
 image2.height = 120;
-var players = [new Player(2*tilesize, 2*tilesize, image), new Player(2*tilesize,2*tilesize,image2)];
+var players = [new Player(2*Level.tileSize, 2*Level.tileSize, image), new Player(2*Level.tileSize,2*Level.tileSize,image2)];
 
 
 // A - 65
@@ -122,7 +121,7 @@ var currentFrame = 0; // The current frame of the character
 var jumpStrength=7;
 var jumpAcc=2;
 var maxJump=7; // Maximum number of jumpsteps, the power of the jump
-var currentLevel = new Array(levelWidth*levelHeight);
+var currentLevel = new Array(Level.width*Level.height);
 
 for(var i=0;i<currentLevel.length;i++)
 	currentLevel[i]=new Object();
@@ -133,8 +132,8 @@ var particles = [];
 
 var tileset = new Image();
 tileset.src = "tileset.png"; // Tileset for the level and all powerups
-tileset.width=tilesize;
-tileset.height=tilesize;
+tileset.width=Level.tileSize;
+tileset.height=Level.tileSize;
 
 
 var init = function()
@@ -187,12 +186,12 @@ var clear = function(){
 }
 
 var showRect = function(pos){
-  var x = pos%levelWidth;
+  var x = pos%Level.width;
 
-  var y = Math.floor(pos/levelWidth);
+  var y = Math.floor(pos/Level.width);
   ctx.fillStyle = '#FFFFFF';
   ctx.beginPath();
-  ctx.rect(x*tilesize,y*tilesize, tilesize, tilesize);
+  ctx.rect(x*Level.tileSize,y*Level.tileSize, Level.tileSize, Level.tileSize);
   ctx.closePath();
   ctx.fill();
 }
@@ -270,7 +269,7 @@ var updatePlayer = function(index) {
 
 	// Check to the left if going left and stop the player if he collides with a blocking tile
 	if(players[index].speedx < 0) {
-		var arrayPos=Math.floor((players[index].x)/tilesize)+Math.floor((players[index].y+players[index].height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
+		var arrayPos=Math.floor((players[index].x)/Level.tileSize)+Math.floor((players[index].y+players[index].height-2)/Level.tileSize)*Level.width; // The position in the level array(Middle of the player at the moment)
 		//showRect(arrayPos);
 		if(currentLevel[arrayPos].blocking==1) {
 			players[index].x = players[index].oldx;
@@ -278,7 +277,7 @@ var updatePlayer = function(index) {
 		}
 	} else {// Check to the right
 
-		var arrayPos=Math.floor((players[index].x+players[index].width)/tilesize)+Math.floor((players[index].y+players[index].height-2)/tilesize)*levelWidth; // The position in the level array(Middle of the player at the moment)
+		var arrayPos=Math.floor((players[index].x+players[index].width)/Level.tileSize)+Math.floor((players[index].y+players[index].height-2)/Level.tileSize)*Level.width; // The position in the level array(Middle of the player at the moment)
 
 
 		if(typeof arrayPos !== 'NaN' && currentLevel[arrayPos].blocking==1) {
@@ -296,19 +295,19 @@ var updatePlayer = function(index) {
 
 	// If going up, check for blocking tiles
 	if(players[index].speedy < 0) {
-		arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+5)/tilesize)*levelWidth;
+		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+5)/Level.tileSize)*Level.width;
 		if(currentLevel[arrayPos].blocking==1) {
 			players[index].y = players[index].oldy;
 			players[index].speedy = 0;
 		}
 	} else if(players[index].speedy > 0) { // Going down, check for blocking tiles
-		arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+players[index].height)/(tilesize))*levelWidth;
+		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/(Level.tileSize))*Level.width;
 		// If the player lands on a blocking tile, iteratively move him upwards until he is free from the
 		// tile. This will remove bouncing when landing in high speed
 		if(currentLevel[arrayPos].blocking==1) {
 			players[index].jumping = 0;
 
-			while(currentLevel[Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+players[index].height)/tilesize)*levelWidth].blocking==1) {
+			while(currentLevel[Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/Level.tileSize)*Level.width].blocking==1) {
 				players[index].y-=0.2;
 			}
 			players[index].speedy=0;
@@ -327,26 +326,26 @@ var updatePlayer = function(index) {
 	var betweenPlayersX = (players[0].x+players[1].x) / 2;
 	var betweenPlayersY = (players[0].y+players[1].y) / 2;
 
-	screenx=Math.round(-betweenPlayersX+(numTilesInScreenWidth / 2)*tilesize);
-	screeny=Math.round(-betweenPlayersY+(numTilesInScreenHeight / 2)*tilesize);
+	screenx=Math.round(-betweenPlayersX+(numTilesInScreenWidth / 2)*Level.tileSize);
+	screeny=Math.round(-betweenPlayersY+(numTilesInScreenHeight / 2)*Level.tileSize);
 
 
 	// Do not move the screen outside of the level
 	if(screenx>0)
 		screenx=0;
-	if(screenx<-levelWidth*tilesize+numTilesInScreenWidth*tilesize)
-		screenx=-levelWidth*tilesize+numTilesInScreenWidth*tilesize;
+	if(screenx<-Level.width*Level.tileSize+numTilesInScreenWidth*Level.tileSize)
+		screenx=-Level.width*Level.tileSize+numTilesInScreenWidth*Level.tileSize;
 
 	if(screeny>0)
 		screeny=0;
-	if(screeny<-levelHeight*tilesize+numTilesInScreenHeight*tilesize)
-		screeny=-levelHeight*tilesize+numTilesInScreenHeight*tilesize
+	if(screeny<-Level.height*Level.tileSize+numTilesInScreenHeight*Level.tileSize)
+		screeny=-Level.height*Level.tileSize+numTilesInScreenHeight*Level.tileSize
 
 
 	players[index].updateKillZone();
 	players[index].updateHurtZone();
 
-	arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+players[index].height)/tilesize)*levelWidth;
+	arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/Level.tileSize)*Level.width;
 
 	if(currentLevel[arrayPos].type=="p" || currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
 	{
@@ -415,10 +414,10 @@ var updateEnemies = function() {
 
 var updateParticles = function() {
   for(var i = 0; i < particles.length; i++) {
-    var arrayPos = Math.floor((particles[i].x)/tilesize)+Math.floor((particles[i].y)/tilesize)*levelWidth;
-    var downRight = Math.floor((particles[i].x+1)/tilesize)+Math.floor((particles[i].y+1)/tilesize)*levelWidth;
-    var downLeft = Math.floor((particles[i].x-1)/tilesize)+Math.floor((particles[i].y+1)/tilesize)*levelWidth;
-    var down = Math.floor((particles[i].x)/tilesize)+Math.floor((particles[i].y+1)/tilesize)*levelWidth;
+    var arrayPos = Math.floor((particles[i].x)/Level.tileSize)+Math.floor((particles[i].y)/Level.tileSize)*Level.width;
+    var downRight = Math.floor((particles[i].x+1)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
+    var downLeft = Math.floor((particles[i].x-1)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
+    var down = Math.floor((particles[i].x)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
 
 
     var isDownLeftBlocked = currentLevel[downLeft].blocking==1;
@@ -491,13 +490,13 @@ var loadContent = function(levelName) {
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
       case "skurkerist": // Flies back and forth, no gravity
-          enemies[i].strategy = new GlidingStrategy(enemies[i], tilesize, levelWidth, currentLevel)
+          enemies[i].strategy = new GlidingStrategy(enemies[i], Level.tileSize, currentLevel)
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
-        enemies[i].strategy = new jumpingStrategy(enemies[i], tilesize, levelWidth, currentLevel);
+        enemies[i].strategy = new jumpingStrategy(enemies[i], Level.tileSize, Level.width, currentLevel);
         break;
       case "bouncer": // Flies around and bounces on the walls
-        enemies[i].strategy = new FlyingStrategy(enemies[i], tilesize, levelWidth, currentLevel);
+        enemies[i].strategy = new FlyingStrategy(enemies[i], Level.tileSize, currentLevel);
         break;
     }
 
@@ -514,7 +513,7 @@ var loadContent = function(levelName) {
 
 var loadLevel = function(levelNumber) {
 var levelName = "level"+levelNumber;
- currentLevel = new Array(levelWidth*levelHeight);
+ currentLevel = new Array(Level.width*Level.height);
 
 for(var i=0;i<currentLevel.length;i++) { // set up an object for all tiles
 	currentLevel[i]=new Object();
@@ -529,9 +528,9 @@ txtFile.onreadystatechange = function() {
 	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
      // lines = txtFile.responseText.split("\n"); // Will separate each line into an array
 
-		for(var y=0;y<levelHeight;y++) {
-			for(var x=0;x<levelWidth;x++) {
-				var arrayPos = x+y*levelWidth;
+		for(var y=0;y<Level.height;y++) {
+			for(var x=0;x<Level.width;x++) {
+				var arrayPos = x+y*Level.width;
 				currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
 				switch(currentLevel[arrayPos].type) {
 					case ".": // Empty tile
@@ -708,32 +707,32 @@ var setUpContent = function() {
 
 var drawLevel = function() {
 	//Only loop through tiles that are almost in the screen
-	var startx=Math.floor(-screenx/tilesize)-1;
-	var starty=Math.floor(-screeny/tilesize)-1;
+	var startx=Math.floor(-screenx/Level.tileSize)-1;
+	var starty=Math.floor(-screeny/Level.tileSize)-1;
 	if(startx<0)
 		startx=0;
 	if(starty<0)
 		starty=0;
-	var endx=startx+width/tilesize+2;
-	var endy=starty+height/tilesize+2;
+	var endx=startx+width/Level.tileSize+2;
+	var endy=starty+height/Level.tileSize+2;
 
 
 
-	if(endx>levelWidth)
-		endx=levelWidth;
-	if(endy>levelHeight)
-		endy=levelHeight;
+	if(endx>Level.width)
+		endx=Level.width;
+	if(endy>Level.height)
+		endy=Level.height;
 
 
 	for(var y=starty;y<endy;y++) {
 		for(var x=startx;x<endx;x++) {
-			var posx = Math.round(screenx+x*tilesize);
-			var posy = Math.round(screeny+y*tilesize);
+			var posx = Math.round(screenx+x*Level.tileSize);
+			var posy = Math.round(screeny+y*Level.tileSize);
 
-      var isAirTile = currentLevel[x+y*levelWidth].type==="."
+      var isAirTile = currentLevel[x+y*Level.width].type==="."
 			if(!isAirTile) {
-				ctx.drawImage(tileset,currentLevel[x+y*levelWidth].tileOffsetx,currentLevel[x+y*levelWidth].tileOffsety, tilesize,
-					tilesize,posx,posy, tilesize, tilesize);
+				ctx.drawImage(tileset,currentLevel[x+y*Level.width].tileOffsetx,currentLevel[x+y*Level.width].tileOffsety, Level.tileSize,
+					Level.tileSize,posx,posy, Level.tileSize, Level.tileSize);
 			}
 
 		}
@@ -785,7 +784,7 @@ var GameLoop = function(){
   updateParticles();
   renderEnemies();
 	drawLevel();
-	arrayPos=Math.floor((players[0].x+players[0].width/2)/tilesize)+Math.floor((players[0].y+players[0].height)/tilesize)*levelWidth;
+	arrayPos=Math.floor((players[0].x+players[0].width/2)/Level.tileSize)+Math.floor((players[0].y+players[0].height)/Level.tileSize)*Level.width;
 
 	if(currentLevel[arrayPos].type=="k") {
 		if(pickedArtefacts>3) {
