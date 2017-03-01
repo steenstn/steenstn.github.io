@@ -7,7 +7,7 @@ class Player {
   hp : number;
   dead : number;
 
-  // Zone that hurts enemies
+  // Zone that kills enemies
   killZonex : number;
   killZoney : number;
   killZoneWidth : number;
@@ -36,20 +36,18 @@ class Player {
 
     this.oldx = x;
   	this.oldy = y;
-  	this.width = 10;
-  	this.height = 15;
+  	this.width = 20;
+  	this.height = 30;
   	this.hp = 100;
   	this.dead = 0;
 
-    this.killZonex = x;
-  	this.killZoney = y + this.height - 5;
+    this.updateKillZone();
   	this.killZoneWidth = this.width;
   	this.killZoneHeight = 5;
 
-  	this.hurtZonex = this.x - 2;
-  	this.hurtZoney = this.y + this.height;
-  	this.hurtZoneWidth = this.width;
-  	this.hurtZoneHeight = 15;
+  	this.updateHurtZone();
+  	this.hurtZoneWidth = this.width - 6;
+  	this.hurtZoneHeight = this.height/1.8;
 
   	this.currentFrame = 0;
   	this.goingLeft = 0;
@@ -60,5 +58,30 @@ class Player {
   	this.keyUp = 0;
   	this.keyLeft = 0;
   	this.keyRight = 0;
+  }
+
+ updateHurtZone() {
+   this.hurtZonex = this.x + 3;
+   this.hurtZoney = this.y;
+ }
+
+ updateKillZone() {
+   this.killZonex = this.x;
+   this.killZoney = this.y + this.height - 5;
+ }
+  drawHurtZone(context, screenx, screeny) {
+    context.fillStyle = '#FF0a00';
+	  context.beginPath();
+	  context.rect(this.hurtZonex + screenx, this.hurtZoney + screeny,this.hurtZoneWidth, this.hurtZoneHeight);
+	  context.closePath();
+	  context.fill();
+  }
+
+  drawKillZone(context, screenx, screeny) {
+    context.fillStyle = '#0aDD00';
+	  context.beginPath();
+	  context.rect(this.killZonex + screenx, this.killZoney + screeny,this.killZoneWidth, this.killZoneHeight);
+	  context.closePath();
+	  context.fill();
   }
 }

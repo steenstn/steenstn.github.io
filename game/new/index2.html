@@ -40,6 +40,7 @@
 
 <canvas id='c'></canvas>
 <script>
+var debug = 0;
 var width = 800,
 height = 500,
 gLoop,
@@ -221,12 +222,11 @@ var render = function(){
 		else
 			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,screenx+players[i].x,screeny+players[i].y, players[i].width, players[i].height);
 
-		/*
-		ctx.fillStyle = '#aFFaFF';
-	  ctx.beginPath();
-	  ctx.rect(players[i].x + screenx, players[i].y + screeny, 20, 30);
-	  ctx.closePath();
-	  ctx.fill();*/
+    if(debug===1) {
+      players[i].drawHurtZone(ctx, screenx, screeny);
+      players[i].drawKillZone(ctx, screenx, screeny);
+    }
+
 	}
 };
 
@@ -339,11 +339,9 @@ var updatePlayer = function(index) {
 		screeny=-levelHeight*tilesize+numTilesInScreenHeight*tilesize
 
 
-	players[index].killZonex=players[index].x;
-	players[index].killZoney=players[index].y+players[index].height-5;
+	players[index].updateKillZone();
+	players[index].updateHurtZone();
 
-	players[index].hurtZonex=players[index].x-2;
-	players[index].hurtZoney=players[index].y-5;
 	arrayPos=Math.floor((players[index].x+players[index].width/2)/tilesize)+Math.floor((players[index].y+players[index].height)/tilesize)*levelWidth;
 
 	if(currentLevel[arrayPos].type=="p" || currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
