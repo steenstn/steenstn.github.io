@@ -222,8 +222,8 @@ var render = function(){
 			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
 
     if(debug===1) {
-      players[i].drawHurtZone(ctx, Viewport.x, Viewport.y);
-      players[i].drawKillZone(ctx, Viewport.x, Viewport.y);
+      players[i].drawHurtZone(ctx);
+      players[i].drawKillZone(ctx);
     }
 
 	}
@@ -487,13 +487,13 @@ var loadContent = function(levelName) {
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
       case "skurkerist": // Flies back and forth, no gravity
-          enemies[i].strategy = new GlidingStrategy(enemies[i], Level.tileSize, currentLevel)
+          enemies[i].strategy = new GlidingStrategy(enemies[i], currentLevel)
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
         enemies[i].strategy = new JumpingStrategy(enemies[i], currentLevel, maxSpeedy, gravity);
         break;
       case "bouncer": // Flies around and bounces on the walls
-        enemies[i].strategy = new FlyingStrategy(enemies[i], Level.tileSize, currentLevel);
+        enemies[i].strategy = new FlyingStrategy(enemies[i], currentLevel);
         break;
     }
 

@@ -35,17 +35,17 @@ var Player = (function () {
         this.killZonex = this.x;
         this.killZoney = this.y + this.height - 5;
     };
-    Player.prototype.drawHurtZone = function (context, screenx, screeny) {
+    Player.prototype.drawHurtZone = function (context) {
         context.fillStyle = '#FF0a00';
         context.beginPath();
-        context.rect(this.hurtZonex + screenx, this.hurtZoney + screeny, this.hurtZoneWidth, this.hurtZoneHeight);
+        context.rect(this.hurtZonex + Viewport.x, this.hurtZoney + Viewport.y, this.hurtZoneWidth, this.hurtZoneHeight);
         context.closePath();
         context.fill();
     };
-    Player.prototype.drawKillZone = function (context, screenx, screeny) {
+    Player.prototype.drawKillZone = function (context) {
         context.fillStyle = '#0aDD00';
         context.beginPath();
-        context.rect(this.killZonex + screenx, this.killZoney + screeny, this.killZoneWidth, this.killZoneHeight);
+        context.rect(this.killZonex + Viewport.x, this.killZoney + Viewport.y, this.killZoneWidth, this.killZoneHeight);
         context.closePath();
         context.fill();
     };

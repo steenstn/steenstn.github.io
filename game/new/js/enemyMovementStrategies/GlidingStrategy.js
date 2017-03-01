@@ -1,7 +1,6 @@
 var GlidingStrategy = (function () {
-    function GlidingStrategy(enemy, tilesize, currentLevel) {
+    function GlidingStrategy(enemy, currentLevel) {
         this.enemy = enemy;
-        this.tilesize = tilesize;
         this.currentLevel = currentLevel;
     }
     GlidingStrategy.prototype.move = function () {
@@ -11,7 +10,7 @@ var GlidingStrategy = (function () {
         else {
             this.enemy.x -= 2;
         }
-        var arrayPos = Math.floor((this.enemy.x + 5) / this.tilesize) + Math.floor((this.enemy.y + 5) / this.tilesize) * Level.width;
+        var arrayPos = Math.floor((this.enemy.x + 5) / Level.tileSize) + Math.floor((this.enemy.y + 5) / Level.tileSize) * Level.width;
         if (this.currentLevel[arrayPos].blocking == 1) {
             this.enemy.direction = 1 - this.enemy.direction;
         }

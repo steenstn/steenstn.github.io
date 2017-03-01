@@ -1,5 +1,5 @@
 class FlyingStrategy {
-  constructor(public enemy, public tilesize, public currentLevel){
+  constructor(public enemy, public currentLevel){
 
   }
 
@@ -14,7 +14,7 @@ class FlyingStrategy {
 			xOffset = 0;
 		}
 
-    var arrayPos=Math.floor((this.enemy.x+xOffset)/this.tilesize)+Math.floor((this.enemy.y+yOffset)/this.tilesize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
+    var arrayPos=Math.floor((this.enemy.x+xOffset)/Level.tileSize)+Math.floor((this.enemy.y+yOffset)/Level.tileSize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
     if(this.currentLevel[arrayPos].blocking==1 || this.currentLevel[arrayPos].type=="h" )
     {
       this.enemy.speedx*=-1;
@@ -31,7 +31,7 @@ class FlyingStrategy {
 			yOffset = 31;
 		}
 
-    arrayPos=Math.floor((this.enemy.x+xOffset)/this.tilesize)+Math.floor((this.enemy.y+yOffset)/this.tilesize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
+    arrayPos=Math.floor((this.enemy.x+xOffset)/Level.tileSize)+Math.floor((this.enemy.y+yOffset)/Level.tileSize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
 
 		if(this.currentLevel[arrayPos].blocking==1 || this.currentLevel[arrayPos].type=="h" )
 		{
