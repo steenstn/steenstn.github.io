@@ -36,6 +36,7 @@
 <script src="js/Viewport.js" type="text/javascript"></script>
 <script src="js/Player.js" type="text/javascript"></script>
 <script src="js/Particle.js" type="text/javascript"></script>
+<script src="js/BloodParticle.js" type="text/javascript"></script>
 
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -361,13 +362,13 @@ var updateEnemies = function() {
         if(enemies[i].direction==1) {
           players[playerIndex].speedx=kickbackForce;
           for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
-            particles.push(new Particle(players[playerIndex].x, players[playerIndex].y+Math.random()*25, kickbackForce*3*Math.random(), -3*Math.random(), bloodImage));
+            particles.push(new BloodParticle(players[playerIndex].x, players[playerIndex].y+Math.random()*25, kickbackForce*3*Math.random(), -3*Math.random(), bloodImage));
           }
         }
         else{
   			     players[playerIndex].speedx=-1*kickbackForce;
              for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
-             particles.push(new Particle(players[playerIndex].x, players[playerIndex].y+Math.random()*25, -1*kickbackForce*3*Math.random(), -3*Math.random(), bloodImage));
+             particles.push(new BloodParticle(players[playerIndex].x, players[playerIndex].y+Math.random()*25, -1*kickbackForce*3*Math.random(), -3*Math.random(), bloodImage));
            }
         }
         players[playerIndex].speedy=-0.25*kickbackForce;

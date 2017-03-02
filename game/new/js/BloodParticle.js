@@ -1,0 +1,37 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var BloodParticle = (function (_super) {
+    __extends(BloodParticle, _super);
+    function BloodParticle() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    BloodParticle.prototype.move = function () {
+        if (this.state === BloodParticle.ACTIVE) {
+            this.x += this.xSpeed;
+            this.y += this.ySpeed;
+            this.ySpeed += 0.3;
+            this.xSpeed /= this.xFriction;
+        }
+        else if (this.state === BloodParticle.DRIPPING) {
+            this.ySpeed = 0.02;
+            this.xSpeed = 0;
+            this.y += this.ySpeed;
+        }
+        else {
+            this.x = Math.round(this.x);
+            this.y = Math.round(this.y);
+        }
+    };
+    return BloodParticle;
+}(Particle));
+BloodParticle.ACTIVE = 1;
+BloodParticle.INACTIVE = 0;
+BloodParticle.DRIPPING = 2;
