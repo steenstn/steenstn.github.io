@@ -5,7 +5,7 @@ var Viewport = (function () {
         Viewport.oldx = Viewport.x;
         Viewport.oldy = Viewport.y;
     }
-    Viewport.move = function (x1, y1, x2, y2) {
+    Viewport.moveToCenter = function (x1, y1, x2, y2) {
         var xMidpoint = (x1 + x2) / 2;
         var yMidpoint = (y1 + y2) / 2;
         Viewport.x = Math.round(-xMidpoint + (Viewport.numTilesInScreenWidth / 2) * Level.tileSize);
@@ -21,7 +21,7 @@ var Viewport = (function () {
     };
     return Viewport;
 }());
-Viewport.width = 800;
-Viewport.height = 450;
+Viewport.width = 640;
+Viewport.height = 400;
 Viewport.numTilesInScreenWidth = Math.round(Viewport.width / Level.tileSize);
 Viewport.numTilesInScreenHeight = Math.round(Viewport.height / Level.tileSize);

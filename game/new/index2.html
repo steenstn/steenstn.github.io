@@ -70,6 +70,11 @@ bloodImage.src = "bloodpixel.png";
 bloodImage.width=1;
 bloodImage.height=1;
 
+var testImage = new Image();
+testImage.src = "tesst.png";
+testImage.width = 640;
+testImage.height = 400;
+
 var bloodFactory = new BloodFactory(bloodImage);
 
 var image = new Image();
@@ -179,6 +184,7 @@ var clear = function(){
   ctx.rect(0, 0, Viewport.width, Viewport.height);
   ctx.closePath();
   ctx.fill();
+  //ctx.drawImage(testImage,0,0);
 }
 
 var showRect = function(pos){
@@ -318,7 +324,7 @@ var updatePlayer = function(index) {
 	else
 		friction=normalFriction;
 
-  Viewport.move(players[0].x, players[0].y, players[1].x, players[1].y);
+  Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 
 
 	players[index].updateKillZone();
@@ -362,7 +368,7 @@ var updateEnemies = function() {
       var enemyInKillZone = overlap(enemies[i].x,enemies[i].y,20,20,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
 
   		if(enemyInHurtZone) { // 1 = right
-        if(enemies[i].direction==1) {
+        if(enemies[i].speedx>0) {
           players[playerIndex].speedx=kickbackForce;
           for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
             particles.push(bloodFactory.createBlood(players[playerIndex].x, players[playerIndex].y, 1));
@@ -470,9 +476,11 @@ var loadContent = function(levelName) {
     switch(enemies[i].type) {
       case "skurkerist": // Flies back and forth, no gravity
           enemies[i].strategy = new GlidingStrategy(enemies[i], Level.currentLevel)
+          enemies[i].speedx = 2;
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
         enemies[i].strategy = new JumpingStrategy(enemies[i], Level.currentLevel, maxSpeedy, gravity);
+        enemies[i].speedx = 3.5;
         break;
       case "bouncer": // Flies around and bounces on the walls
         enemies[i].strategy = new FlyingStrategy(enemies[i], Level.currentLevel);

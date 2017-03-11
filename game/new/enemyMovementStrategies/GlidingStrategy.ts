@@ -4,9 +4,9 @@ class GlidingStrategy {
   }
   move() {
     if(this.enemy.direction===1) {
-      this.enemy.x+=2;
+      this.enemy.x+=this.enemy.speedx;
     } else {
-      this.enemy.x-=2;
+      this.enemy.x-=this.enemy.speedx;
     }
 
     var arrayPos=Math.floor((this.enemy.x+5)/Level.tileSize)+Math.floor((this.enemy.y+5)/Level.tileSize)*Level.width; // The position in the level array(Middle of the enemy at the moment)

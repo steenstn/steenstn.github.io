@@ -7,9 +7,9 @@ var JumpingStrategy = (function () {
     }
     JumpingStrategy.prototype.move = function () {
         if (this.enemy.direction == 1)
-            this.enemy.x += 3.5;
+            this.enemy.x += this.enemy.speedx;
         else
-            this.enemy.x -= 3.5;
+            this.enemy.x -= this.enemy.speedx;
         var arrayPos = Math.floor((this.enemy.x + 5) / Level.tileSize) + Math.floor((this.enemy.y + 5) / Level.tileSize) * Level.width;
         if (this.currentLevel[arrayPos].blocking == 1 || this.currentLevel[arrayPos].type == "h")
             this.enemy.direction = 1 - this.enemy.direction;

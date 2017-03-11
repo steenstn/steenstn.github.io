@@ -3,8 +3,8 @@ class Viewport {
   static y : number;
   static oldx : number;
   static oldy : number;
-  static width = 800;
-  static height = 450;
+  static width = 640;
+  static height = 400;
   static numTilesInScreenWidth = Math.round(Viewport.width / Level.tileSize);
   static numTilesInScreenHeight = Math.round(Viewport.height / Level.tileSize);
   constructor() {
@@ -15,7 +15,7 @@ class Viewport {
     Viewport.oldy = Viewport.y;
   }
 
-  static move(x1, y1, x2, y2) {
+  static moveToCenter(x1, y1, x2, y2) {
     let xMidpoint = (x1 + x2) / 2;
     let yMidpoint = (y1 + y2) / 2;
 
