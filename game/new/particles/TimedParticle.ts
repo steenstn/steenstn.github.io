@@ -9,7 +9,7 @@ class TimedParticle extends Particle {
 
     move() {
       this.lifetime--;
-      
+
       if(this.lifetime <= 0) {
         return;
       }
@@ -18,5 +18,8 @@ class TimedParticle extends Particle {
 
       this.xSpeed/=this.xFriction;
       this.ySpeed+=0.8;
+
+      this.x = Math.round(this.x);
+      this.y = Math.round(this.y);
     }
 }

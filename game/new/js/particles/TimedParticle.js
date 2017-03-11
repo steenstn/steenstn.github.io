@@ -24,6 +24,8 @@ var TimedParticle = (function (_super) {
         this.y += this.ySpeed;
         this.xSpeed /= this.xFriction;
         this.ySpeed += 0.8;
+        this.x = Math.round(this.x);
+        this.y = Math.round(this.y);
     };
     return TimedParticle;
 }(Particle));
