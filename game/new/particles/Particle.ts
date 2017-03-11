@@ -6,6 +6,7 @@ class Particle {
   image : any;
   state : number;
   xFriction : number;
+  shouldBeDeleted : boolean;
 
 
   constructor(x, y, xSpeed, ySpeed, image) {
@@ -16,6 +17,7 @@ class Particle {
     this.image = image;
 
     this.xFriction = 1.1;
+    this.shouldBeDeleted = false;
   }
 
   render(context) {

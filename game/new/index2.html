@@ -35,9 +35,11 @@
 <script src="js/Level.js" type="text/javascript"></script>
 <script src="js/Viewport.js" type="text/javascript"></script>
 <script src="js/Player.js" type="text/javascript"></script>
-<script src="js/Particle.js" type="text/javascript"></script>
-<script src="js/BloodParticle.js" type="text/javascript"></script>
-<script src="js/BloodFactory.js" type="text/javascript"></script>
+<script src="js/particles/Particle.js" type="text/javascript"></script>
+<script src="js/particles/BloodParticle.js" type="text/javascript"></script>
+<script src="js/particles/TimedParticle.js" type="text/javascript"></script>
+<script src="js/particles/BloodFactory.js" type="text/javascript"></script>
+<script src="js/particles/TimedParticleFactory.js" type="text/javascript"></script>
 
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -66,9 +68,16 @@ var pickedArtefacts=0; // How many phadderists are collected?
 
 var bloodAmount = 10;
 var bloodImage = new Image();
-bloodImage.src = "bloodpixel.png";
+bloodImage.src = "particles/bloodpixel.png";
 bloodImage.width=1;
 bloodImage.height=1;
+
+var coinParticleImage=new Image();
+coinParticleImage.src = "particles/coinpixel.png";
+coinParticleImage.width=2;
+coinParticleImage.height=2;
+
+var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
 
 var testImage = new Image();
 testImage.src = "tesst.png";
@@ -344,6 +353,9 @@ var updatePlayer = function(index) {
 	{
 		score+=20;
 		Level.currentLevel[arrayPos].type=".";
+    for(let i = 0; i < 20; i++) {
+      particles.push(coinParticleFactory.createParticle(players[index].x, players[index].y,100));
+    }
 	}
 	if(Level.currentLevel[arrayPos].type=="l" || Level.currentLevel[arrayPos].type=="m" || Level.currentLevel[arrayPos].type=="n" || Level.currentLevel[arrayPos].type=="o") // Phadderist
 	{
@@ -399,25 +411,38 @@ var updateEnemies = function() {
 
 var updateParticles = function() {
   for(var i = 0; i < particles.length; i++) {
-    var arrayPos = Math.floor((particles[i].x)/Level.tileSize)+Math.floor((particles[i].y)/Level.tileSize)*Level.width;
-    var downRight = Math.floor((particles[i].x+1)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
-    var downLeft = Math.floor((particles[i].x-1)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
-    var down = Math.floor((particles[i].x)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
+    if(!particles[i].shouldBeDeleted) {
+      var arrayPos = Math.floor((particles[i].x)/Level.tileSize)+Math.floor((particles[i].y)/Level.tileSize)*Level.width;
+      var downRight = Math.floor((particles[i].x+1)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
+      var downLeft = Math.floor((particles[i].x-1)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
+      var down = Math.floor((particles[i].x)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
 
 
-    var isDownLeftBlocked = Level.currentLevel[downLeft].blocking==1;
-    var isDownRightBlocked = Level.currentLevel[downRight].blocking==1;
-    var isDownBlocked = Level.currentLevel[down].blocking==1;
+      var arrayPosOutsideLevel = typeof Level.currentLevel[arrayPos]==='undefined';
+      var downRightOutsideLevel = typeof Level.currentLevel[downRight]==='undefined';
+      var downLeftOutsideLevel = typeof Level.currentLevel[downLeft]==='undefined';
+      var downOutsideLevel = typeof Level.currentLevel[down]==='undefined';
 
-    if(isDownBlocked && isDownRightBlocked && isDownLeftBlocked) {
-      particles[i].state = 0;
-    } else if(isDownBlocked && (!isDownRightBlocked || !isDownLeftBlocked)) {
-      particles[i].state = 2;
-    } else {
-      particles[i].state = 1;
+      var anyCheckingPointOutsideOfLevel = arrayPosOutsideLevel || downRightOutsideLevel || downLeftOutsideLevel || downOutsideLevel;
+
+      if(anyCheckingPointOutsideOfLevel) {
+        particles[i].shouldBeDeleted = true;
+      } else {
+        var isDownLeftBlocked = Level.currentLevel[downLeft].blocking==1;
+        var isDownRightBlocked = Level.currentLevel[downRight].blocking==1;
+        var isDownBlocked = Level.currentLevel[down].blocking==1;
+
+        if(isDownBlocked && isDownRightBlocked && isDownLeftBlocked) {
+          particles[i].state = 0;
+        } else if(isDownBlocked && (!isDownRightBlocked || !isDownLeftBlocked)) {
+          particles[i].state = 2;
+        } else {
+          particles[i].state = 1;
+        }
+
+        particles[i].move();
+      }
     }
-
-    particles[i].move();
   }
 }
 
