@@ -60,7 +60,7 @@ c.height = Viewport.height;
 
 var kickbackForce = 7;
 
-var levelNow = 1; // Number of current level
+var levelNow = 3; // Number of current level
 
 var score = 0;
 var dead=0;
@@ -761,8 +761,13 @@ var drawText = function() {
     ctx.fillText  ("Score: " + score, 4,20);
 
     if(debug===1) {
+      var particlesThatShouldBeDeleted = 0;
+      for(var i = 0; i < particles.length; i++){
+        if(particles[i].shouldBeDeleted) particlesThatShouldBeDeleted++;
+      }
       ctx.fillText  ("particles: " + particles.length, 4,60);
-      ctx.fillText  ("numFramesSinceStart: " + numFramesSinceStart, 4,75);
+      ctx.fillText  ("particlesThatShouldBeDeleted: " + particlesThatShouldBeDeleted, 4,75);
+      ctx.fillText  ("numFramesSinceStart: " + numFramesSinceStart, 4,90);
 
     }
 	ctx.strokeStyle = "black";
@@ -796,6 +801,14 @@ var GameLoop = function(){
   updateParticles();
   renderEnemies();
 	drawLevel();
+  if(numFramesSinceStart%100 === 0) {
+    console.log("Removing particles");
+    for(var i = 0; i < particles.length; i++) {
+      if(particles[i].shouldBeDeleted) {
+        particles.splice(i,1);
+      }
+    }
+  }
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/Level.tileSize)+Math.floor((players[0].y+players[0].height)/Level.tileSize)*Level.width;
 
 	if(Level.currentLevel[arrayPos].type=="k") {
