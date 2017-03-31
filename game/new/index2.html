@@ -41,6 +41,8 @@
 <script src="js/particles/BloodFactory.js" type="text/javascript"></script>
 <script src="js/particles/TimedParticleFactory.js" type="text/javascript"></script>
 
+<script src="js/particles/ParticleCleaner.js" type="text/javascript"></script>
+
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/FlyingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -60,7 +62,7 @@ c.height = Viewport.height;
 
 var kickbackForce = 7;
 
-var levelNow = 3; // Number of current level
+var levelNow = 1; // Number of current level
 
 var score = 0;
 var dead=0;
@@ -85,6 +87,8 @@ testImage.width = 640;
 testImage.height = 400;
 
 var bloodFactory = new BloodFactory(bloodImage);
+
+var particleCleaner = new ParticleCleaner();
 
 var image = new Image();
 image.src = "playersprite.png";
@@ -801,14 +805,17 @@ var GameLoop = function(){
   updateParticles();
   renderEnemies();
 	drawLevel();
-  if(numFramesSinceStart%100 === 0) {
-    console.log("Removing particles");
+  if(numFramesSinceStart%200 === 0) {
+    particleCleaner.cleanupBlood(particles);
+  } else if(numFramesSinceStart%100 === 0) {
+
     for(var i = 0; i < particles.length; i++) {
       if(particles[i].shouldBeDeleted) {
         particles.splice(i,1);
       }
     }
   }
+
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/Level.tileSize)+Math.floor((players[0].y+players[0].height)/Level.tileSize)*Level.width;
 
 	if(Level.currentLevel[arrayPos].type=="k") {
