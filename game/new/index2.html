@@ -65,8 +65,8 @@ c.height = Viewport.height;
 
 var kickbackForce = 7;
 
-var levelNow = 3; // Number of current level
-
+var levelNow = 1; // Number of current level
+var levelSongs = ["teflon.mp3", "teflon.mp3", "vermicide.mp3"];
 var score = 0;
 var dead=0;
 var pickedArtefacts=0; // How many phadderists are collected?
@@ -93,7 +93,7 @@ var logoImage = new Image();
 logoImage.src = "logo2.png";
 
 var introSong = new Audio('roulette_dares.mp3');
-var currentSong = new Audio('teflon.mp3');
+var currentSong;
 var bloodFactory = new BloodFactory(bloodImage);
 
 var particleCleaner = new ParticleCleaner();
@@ -543,6 +543,7 @@ var loadContent = function(levelName) {
 }
 
 var loadLevel = function(levelNumber) {
+
   clearBlack();
 
 var levelName = "level"+levelNumber;
@@ -552,7 +553,13 @@ for(var i=0;i<Level.currentLevel.length;i++) { // set up an object for all tiles
 	Level.currentLevel[i]=new Object();
 }
 var txtFile = new XMLHttpRequest();
-drawText("Loading level...", 10,10);
+drawText("Loading song...", 10,10);
+if(levelNumber < levelSongs.length) {
+  currentSong = new Audio(levelSongs[levelNow]);
+} else {
+  currentSong = new Audio("roulette_dares.mp3");
+}
+drawText("Loading level...", 10, 20);
 txtFile.open("GET", "levels/" + levelName + ".txt", true);
 txtFile.onreadystatechange = function() {
   if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
@@ -560,7 +567,7 @@ txtFile.onreadystatechange = function() {
       allText = txtFile.responseText;
 	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
      // lines = txtFile.responseText.split("\n"); // Will separate each line into an array
-     drawText("Parsing level...", 10,20);
+     drawText("Parsing level...", 10,30);
 
     var loadingBarMaxWidth = 600;
 
@@ -731,6 +738,7 @@ txtFile.send(null);
 
 loadContent(levelName);
 setUpContent();
+currentSong.play();
 }
 
 var setUpContent = function() {
@@ -855,18 +863,19 @@ var GameLoop = function(){
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/Level.tileSize)+Math.floor((players[0].y+players[0].height)/Level.tileSize)*Level.width;
 
 	if(Level.currentLevel[arrayPos].type=="k") {
-		if(pickedArtefacts>3) {
+		//if(pickedArtefacts>3) {
 			levelNow++;
 			lastScore=score;
+      currentSong.pause();
 			loadLevel(levelNow);
 
 			init();
-		} else {
-			ctx.fillStyle    = '#F00';
+		//} else {
+			/*ctx.fillStyle    = '#F00';
 			ctx.font         = '16px Sans-Serif';
 			ctx.textBaseline = 'Top';
-			ctx.fillText  ("Find all the beardy heads...", 100,100);
-		}
+			ctx.fillText  ("Find all the beardy heads...", 100,100);*/
+		//}
 	}
 	drawAllText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);
@@ -882,6 +891,7 @@ var IntroScreen = function() {
 
     if(32 in keysDown) {
       introSong.pause();
+      loadLevel(levelNow);
       currentSong.play();
       GameLoop();
     } else if (80 in keysDown) {
@@ -894,7 +904,7 @@ var IntroScreen = function() {
 }
 
 init();
-loadLevel(levelNow);
+
 introSong.play();
 IntroScreen();
 
