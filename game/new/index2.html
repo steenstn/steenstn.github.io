@@ -66,7 +66,6 @@ c.height = Viewport.height;
 var kickbackForce = 7;
 
 var levelNow = 1; // Number of current level
-var levelSongs = ["teflon.mp3", "teflon.mp3", "vermicide.mp3"];
 var score = 0;
 var dead=0;
 var pickedArtefacts=0; // How many phadderists are collected?
@@ -92,7 +91,9 @@ testImage.height = 400;
 var logoImage = new Image();
 logoImage.src = "logo2.png";
 
-var introSong = new Audio('roulette_dares.mp3');
+var levelSongs = ["teflon.mp3", "teflon.mp3", "vermicide.mp3"];
+var introSongName = "roulette_dares.mp3";
+var introSong = new Audio(introSongName);
 var currentSong;
 var bloodFactory = new BloodFactory(bloodImage);
 
@@ -557,7 +558,7 @@ drawText("Loading song...", 10,10);
 if(levelNumber < levelSongs.length) {
   currentSong = new Audio(levelSongs[levelNow]);
 } else {
-  currentSong = new Audio("roulette_dares.mp3");
+  currentSong = new Audio(introSongName);
 }
 drawText("Loading level...", 10, 20);
 txtFile.open("GET", "levels/" + levelName + ".txt", true);
