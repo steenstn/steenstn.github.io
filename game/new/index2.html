@@ -49,6 +49,9 @@
 
 <canvas id='c'></canvas>
 <script>
+var MENU = 0;
+var PLAYING = 1;
+var gameState = MENU;
 var debug = 0;
 var keyHeldDown = 0;
 var numFramesSinceStart = 0;
@@ -62,7 +65,7 @@ c.height = Viewport.height;
 
 var kickbackForce = 7;
 
-var levelNow = 1; // Number of current level
+var levelNow = 3; // Number of current level
 
 var score = 0;
 var dead=0;
@@ -86,6 +89,11 @@ testImage.src = "tesst.png";
 testImage.width = 640;
 testImage.height = 400;
 
+var logoImage = new Image();
+logoImage.src = "logo2.png";
+
+var introSong = new Audio('roulette_dares.mp3');
+var currentSong = new Audio('teflon.mp3');
 var bloodFactory = new BloodFactory(bloodImage);
 
 var particleCleaner = new ParticleCleaner();
@@ -150,8 +158,7 @@ tileset.width=Level.tileSize;
 tileset.height=Level.tileSize;
 
 
-var init = function()
-{
+var init = function() {
 numFramesSinceStart = 0;
 
 	screenx = 1;
@@ -836,9 +843,32 @@ var GameLoop = function(){
 	gLoop = setTimeout(GameLoop, 1000 / 50);
 }
 
+var IntroScreen = function() {
+  //clear();
+  ctx.drawImage(logoImage,220,40);
+    ctx.fillStyle    = '#F00';
+    ctx.font         = '10px Verdana';
+    ctx.textAlign = 'center';
+    ctx.fillText  ("Press SPACE to play", 320,200);
+
+    if(32 in keysDown) {
+      introSong.pause();
+      currentSong.play();
+      GameLoop();
+    } else if (80 in keysDown) {
+      //introSong.mute();
+    } else {
+      gLoop = setTimeout(IntroScreen, 1000 / 50);
+    }
+
+
+}
+
 init();
 loadLevel(levelNow);
-GameLoop();
+introSong.play();
+IntroScreen();
+//GameLoop();
 
 </script>
 
