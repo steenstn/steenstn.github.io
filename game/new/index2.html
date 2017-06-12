@@ -206,6 +206,14 @@ var clear = function(){
   ctx.fill();
   //ctx.drawImage(testImage,0,0);
 }
+var clearBlack = function() {
+  ctx.fillStyle = '#000';
+  ctx.clearRect(0, 0, Viewport.width, Viewport.height);
+  ctx.beginPath();
+  ctx.rect(0, 0, Viewport.width, Viewport.height);
+  ctx.closePath();
+  ctx.fill();
+}
 
 var showRect = function(pos){
   var x = pos%Level.width;
@@ -535,6 +543,8 @@ var loadContent = function(levelName) {
 }
 
 var loadLevel = function(levelNumber) {
+  clearBlack();
+
 var levelName = "level"+levelNumber;
  Level.currentLevel = new Array(Level.width*Level.height);
 
@@ -542,7 +552,7 @@ for(var i=0;i<Level.currentLevel.length;i++) { // set up an object for all tiles
 	Level.currentLevel[i]=new Object();
 }
 var txtFile = new XMLHttpRequest();
-
+drawText("Loading level...", 10,10);
 txtFile.open("GET", "levels/" + levelName + ".txt", true);
 txtFile.onreadystatechange = function() {
   if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
@@ -550,8 +560,18 @@ txtFile.onreadystatechange = function() {
       allText = txtFile.responseText;
 	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
      // lines = txtFile.responseText.split("\n"); // Will separate each line into an array
+     drawText("Parsing level...", 10,20);
+
+    var loadingBarMaxWidth = 600;
 
 		for(var y=0;y<Level.height;y++) {
+      var progress = (y/Level.height) * loadingBarMaxWidth;
+      ctx.beginPath();
+
+      ctx.rect(30, 30, progress, 2);
+      ctx.closePath();
+      ctx.fill();
+
 			for(var x=0;x<Level.width;x++) {
 				var arrayPos = x+y*Level.width;
 				Level.currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
@@ -765,10 +785,19 @@ var drawLevel = function() {
     particles[i].render(ctx);
   }
 }
-var drawText = function() {
+
+var drawText = function(textToDraw, x, y) {
+  ctx.fillStyle    = '#F00';
+  ctx.font         = '10px Verdana';
+  ctx.textBaseline = 'Top';
+  ctx.fillText  (textToDraw, x, y);
+}
+
+var drawAllText = function() {
 	ctx.fillStyle    = '#F00';
     ctx.font         = '10px Verdana';
     ctx.textBaseline = 'Top';
+    ctx.textAlign = 'left';
     ctx.fillText  ("Score: " + score, 4,20);
 
     if(debug===1) {
@@ -839,7 +868,7 @@ var GameLoop = function(){
 			ctx.fillText  ("Find all the beardy heads...", 100,100);
 		}
 	}
-	drawText();
+	drawAllText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);
 }
 
@@ -868,11 +897,8 @@ init();
 loadLevel(levelNow);
 introSong.play();
 IntroScreen();
-//GameLoop();
+
 
 </script>
-
-
-
 </body>
 </html>
