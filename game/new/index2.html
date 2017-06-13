@@ -36,6 +36,7 @@
 <script src="js/Viewport.js" type="text/javascript"></script>
 <script src="js/Player.js" type="text/javascript"></script>
 <script src="js/Jukebox.js" type="text/javascript"></script>
+<script src="js/WorldConstants.js" type="text/javascript"></script>
 <script src="js/particles/Particle.js" type="text/javascript"></script>
 <script src="js/particles/BloodParticle.js" type="text/javascript"></script>
 <script src="js/particles/TimedParticle.js" type="text/javascript"></script>
@@ -50,9 +51,7 @@
 
 <canvas id='c'></canvas>
 <script>
-var MENU = 0;
-var PLAYING = 1;
-var gameState = MENU;
+
 var debug = 0;
 var keyHeldDown = 0;
 var numFramesSinceStart = 0;
@@ -64,14 +63,11 @@ ctx = c.getContext('2d');
 c.width = Viewport.width;
 c.height = Viewport.height;
 
-var kickbackForce = 7;
-
 var levelNow = 1; // Number of current level
 var score = 0;
 var dead=0;
 var pickedArtefacts=0; // How many phadderists are collected?
 
-var bloodAmount = 10;
 var bloodImage = new Image();
 bloodImage.src = "particles/bloodpixel.png";
 bloodImage.width=1;
@@ -83,11 +79,6 @@ coinParticleImage.width=2;
 coinParticleImage.height=2;
 
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
-
-var testImage = new Image();
-testImage.src = "tesst.png";
-testImage.width = 640;
-testImage.height = 400;
 
 var logoImage = new Image();
 logoImage.src = "logo2.png";
@@ -121,12 +112,7 @@ players[1].keyLeft = 65
 players[1].keyRight = 68
 players[1].keyUp = 87
 
-var playerAcc=0.3;
-var gravity=0.3;
-var maxSpeedx=3; // Max speed for player
-var maxSpeedy=6;
-var normalFriction=1.2;
-var friction=normalFriction;
+var friction=WorldConstants.normalFriction;
 
 var lastScore = 0;
 
@@ -140,9 +126,6 @@ var animationCounter = 0; // COunter for framerate of character
 var animationSpeed = 5; // Number of ticks before changing frame
 var currentFrame = 0; // The current frame of the character
 
-var jumpStrength=7;
-var jumpAcc=2;
-var maxJump=7; // Maximum number of jumpsteps, the power of the jump
 
 for(var i=0;i<Level.currentLevel.length;i++)
 	Level.currentLevel[i]=new Object();
@@ -203,7 +186,6 @@ var clear = function(){
   ctx.rect(0, 0, Viewport.width, Viewport.height);
   ctx.closePath();
   ctx.fill();
-  //ctx.drawImage(testImage,0,0);
 }
 var clearBlack = function() {
   ctx.fillStyle = '#000';
@@ -315,8 +297,8 @@ var updatePlayer = function(index) {
 		}
 	}
 	// Add gravity
-	if(players[index].speedy < maxSpeedy) {
-		players[index].speedy += gravity;
+	if(players[index].speedy < WorldConstants.maxSpeedy) {
+		players[index].speedy += WorldConstants.gravity;
 	}
 
 	players[index].y += players[index].speedy;
@@ -349,7 +331,7 @@ var updatePlayer = function(index) {
 	if(Level.currentLevel[arrayPos].type=="g") // Ice block
 		friction=1; // No friction
 	else
-		friction=normalFriction;
+		friction=WorldConstants.normalFriction;
 
   Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 
@@ -399,18 +381,18 @@ var updateEnemies = function() {
 
   		if(enemyInHurtZone) { // 1 = right
         if(enemies[i].speedx>0) {
-          players[playerIndex].speedx=kickbackForce;
-          for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
+          players[playerIndex].speedx=WorldConstants.kickbackForce;
+          for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
             particles.push(bloodFactory.createBlood(players[playerIndex].x, players[playerIndex].y, 1));
           }
         }
         else{
-  			     players[playerIndex].speedx=-1*kickbackForce;
-             for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
+  			     players[playerIndex].speedx=-1*WorldConstants.kickbackForce;
+             for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
              particles.push(bloodFactory.createBlood(players[playerIndex].x, players[playerIndex].y, -1));
            }
         }
-        players[playerIndex].speedy=-0.25*kickbackForce;
+        players[playerIndex].speedy=-0.25*WorldConstants.kickbackForce;
   			players[playerIndex].hp-=2;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
@@ -477,25 +459,25 @@ var checkKeys = function (modifier) {
 	for(var i = 0; i < players.length; i++) {
 
 		if (players[i].keyUp in keysDown) {
-			if(players[i].jumping < maxJump) {
+			if(players[i].jumping < WorldConstants.maxJump) {
 				players[i].jumping++;
 
-				if(players[i].speedy>-jumpStrength)
-				    players[i].speedy-=jumpAcc;
+				if(players[i].speedy>-WorldConstants.jumpStrength)
+				    players[i].speedy-=WorldConstants.jumpAcc;
 			}
 		}
 
 		if (players[i].keyLeft in keysDown) {
 		players[i].goingLeft = 1;
 		animationCounter++;
-			if(players[i].speedx>-maxSpeedx)
-				players[i].speedx -= playerAcc * modifier;
+			if(players[i].speedx>-WorldConstants.maxSpeedx)
+				players[i].speedx -= WorldConstants.playerAcc * modifier;
 		}
 		else if (players[i].keyRight in keysDown) {
 		players[i].goingLeft = 0;
 		animationCounter++;
-			if(players[i].speedx<maxSpeedx)
-				players[i].speedx += playerAcc * modifier;
+			if(players[i].speedx<WorldConstants.maxSpeedx)
+				players[i].speedx += WorldConstants.playerAcc * modifier;
 		}
 		else
 			players[i].speedx/=friction; // Decelerate
@@ -522,7 +504,7 @@ var loadContent = function(levelName) {
           enemies[i].speedx = 2;
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
-        enemies[i].strategy = new JumpingStrategy(enemies[i], Level.currentLevel, maxSpeedy, gravity);
+        enemies[i].strategy = new JumpingStrategy(enemies[i], Level.currentLevel, WorldConstants.maxSpeedy, WorldConstants.gravity);
         enemies[i].speedx = 3.5;
         break;
       case "bouncer": // Flies around and bounces on the walls
@@ -886,13 +868,8 @@ var IntroScreen = function() {
     ctx.fillText  ("Press SPACE to play", 320,200);
 
     if(32 in keysDown) {
-
-
       loadLevel(levelNow);
-
       GameLoop();
-    } else if (80 in keysDown) {
-      //introSong.mute();
     } else {
       gLoop = setTimeout(IntroScreen, 1000 / 50);
     }
