@@ -33,6 +33,7 @@
 <body>
 
 <script src="js/Level.js" type="text/javascript"></script>
+<script src="js/LevelTile.js" type="text/javascript"></script>
 <script src="js/Viewport.js" type="text/javascript"></script>
 <script src="js/Player.js" type="text/javascript"></script>
 <script src="js/Jukebox.js" type="text/javascript"></script>
@@ -489,7 +490,7 @@ var checkKeys = function (modifier) {
 }
 
 var loadContent = function(levelName) {
-	//enemies.length = 0; // Reset the enemy array
+
 	var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('GET', "levels/" + levelName+'enemies.json', false);
@@ -560,151 +561,11 @@ txtFile.onreadystatechange = function() {
 			for(var x=0;x<Level.width;x++) {
 				var arrayPos = x+y*Level.width;
 				Level.currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
-				switch(Level.currentLevel[arrayPos].type) {
-					case ".": // Empty tile
-						Level.currentLevel[arrayPos].blocking=0;
-						break;
-					case "1": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
-						Level.currentLevel[arrayPos].tileOffsetx=0; // Where in the tileset the tile is
-						Level.currentLevel[arrayPos].tileOffsety=0;
-						break;
-					case "2": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
-						Level.currentLevel[arrayPos].tileOffsetx=32;
-						Level.currentLevel[arrayPos].tileOffsety=0;
-						break;
-					case "3": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
-						Level.currentLevel[arrayPos].tileOffsetx=64;
-						Level.currentLevel[arrayPos].tileOffsety=0;
-						break;
-					case "4": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
-						Level.currentLevel[arrayPos].tileOffsetx=96;
-						Level.currentLevel[arrayPos].tileOffsety=0;
-						break;
-					case "5": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
-						Level.currentLevel[arrayPos].tileOffsetx=0;
-						Level.currentLevel[arrayPos].tileOffsety=32;
-						break;
-					case "6": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
-						Level.currentLevel[arrayPos].tileOffsetx=32;
-						Level.currentLevel[arrayPos].tileOffsety=32;
-						break;
-					case "7": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1; // Blocking tile
-						Level.currentLevel[arrayPos].tileOffsetx=64;
-						Level.currentLevel[arrayPos].tileOffsety=32;
-						break;
-					case "8": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=96;
-						Level.currentLevel[arrayPos].tileOffsety=32;
-						break;
-					case "9": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=0;
-						Level.currentLevel[arrayPos].tileOffsety=64;
-						break;
-					case "0": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=32;
-						Level.currentLevel[arrayPos].tileOffsety=64;
-						break;
-					case "a": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=64;
-						Level.currentLevel[arrayPos].tileOffsety=64;
-						break;
-					case "b": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=96;
-						Level.currentLevel[arrayPos].tileOffsety=64;
-						break;
-					case "c": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=0;
-						Level.currentLevel[arrayPos].tileOffsety=96;
-						break;
-					case "d": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=32;
-						Level.currentLevel[arrayPos].tileOffsety=96;
-						break;
-					case "e": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=64;
-						Level.currentLevel[arrayPos].tileOffsety=96;
-						break;
-					case "f": // Ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=96;
-						Level.currentLevel[arrayPos].tileOffsety=96;
-						break;
-					case "g": // Ice ground tile
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=0;
-						Level.currentLevel[arrayPos].tileOffsety=128;
-						break;
-					case "h": // Tree
-						Level.currentLevel[arrayPos].blocking=0;
-						Level.currentLevel[arrayPos].tileOffsetx=32;
-						Level.currentLevel[arrayPos].tileOffsety=128;
-						break;
-					case "i":
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=64;
-						Level.currentLevel[arrayPos].tileOffsety=128;
-						break;
-					case "j":
-						Level.currentLevel[arrayPos].blocking=1;
-						Level.currentLevel[arrayPos].tileOffsetx=96;
-						Level.currentLevel[arrayPos].tileOffsety=128;
-						break;
-					case "k":
-						Level.currentLevel[arrayPos].blocking=0;
-						Level.currentLevel[arrayPos].tileOffsetx=0;
-						Level.currentLevel[arrayPos].tileOffsety=160;
-						break;
-					case "l":
-						Level.currentLevel[arrayPos].blocking=0;
-						Level.currentLevel[arrayPos].tileOffsetx=96;
-						Level.currentLevel[arrayPos].tileOffsety=160;
-						break;
-					case "m":
-						Level.currentLevel[arrayPos].blocking=0;
-						Level.currentLevel[arrayPos].tileOffsetx=32;
-						Level.currentLevel[arrayPos].tileOffsety=192;
-						break;
-					case "n":
-						Level.currentLevel[arrayPos].blocking=0;
-						Level.currentLevel[arrayPos].tileOffsetx=64;
-						Level.currentLevel[arrayPos].tileOffsety=192;
-						break;
-					case "o":
-						Level.currentLevel[arrayPos].blocking=0;
-						Level.currentLevel[arrayPos].tileOffsetx=0;
-						Level.currentLevel[arrayPos].tileOffsety=192;
-						break;
-					case "p": // 3Cant
-						Level.currentLevel[arrayPos].blocking=0;
-						Level.currentLevel[arrayPos].tileOffsetx=96;
-						Level.currentLevel[arrayPos].tileOffsety=224;
-						break;
-					case "q": // Tryckbar
-						Level.currentLevel[arrayPos].blocking=0;
-						Level.currentLevel[arrayPos].tileOffsetx=64;
-						Level.currentLevel[arrayPos].tileOffsety=224;
-						break;
-					case "s": // Cash
-						Level.currentLevel[arrayPos].blocking=0;
-						Level.currentLevel[arrayPos].tileOffsetx=64;
-						Level.currentLevel[arrayPos].tileOffsety=128;
-						break;
-				}
+        var tile = LevelTile.newFromCharacter(Level.currentLevel[arrayPos].type);
+        Level.currentLevel[arrayPos].blocking=tile.blocking; // Blocking tile
+        Level.currentLevel[arrayPos].tileOffsetx=tile.drawingOffsetx; // Where in the tileset the tile is
+        Level.currentLevel[arrayPos].tileOffsety=tile.drawingOffsety;
+
 			}
 		}
 
