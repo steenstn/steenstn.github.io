@@ -1,6 +1,6 @@
 var Jukebox = (function () {
-    function Jukebox() {
-        this.levelSongs = ["roulette_dares.mp3", "teflon.mp3", "vermicide.mp3"];
+    function Jukebox(songs) {
+        this.levelSongs = songs;
     }
     Jukebox.prototype.selectSong = function (songNumber) {
         var songIsPlaying = this.currentSong && (!this.currentSong.paused || this.currentSong.currentTime);

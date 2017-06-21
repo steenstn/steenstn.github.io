@@ -1,8 +1,8 @@
 class Jukebox {
   private currentSong : any;
   private levelSongs : Array<string>;
-  constructor() {
-    this.levelSongs = ["roulette_dares.mp3","teflon.mp3", "vermicide.mp3"];
+  constructor(songs: string[]) {
+    this.levelSongs = songs;
   }
 
   selectSong(songNumber : number) {
