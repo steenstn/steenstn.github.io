@@ -720,15 +720,42 @@ var GameLoop = function(){
 	gLoop = setTimeout(GameLoop, 1000 / 50);
 }
 
+var stars = [];
+for(var i = 0; i < 300; i++) {
+  var randomAngle = Math.random()*360;
+  var xadd = Math.cos(randomAngle);
+  var yadd = Math.sin(randomAngle);
+  var startx = Viewport.width*Math.random();
+  var starty = Viewport.height*Math.random();
+  stars.push(new Particle(320, 100, xadd*5*Math.random(), yadd*5*Math.random(), logoImage));
+}
+
 var IntroScreen = function() {
-  //clear();
-  ctx.drawImage(logoImage,220,40);
+    clearBlack();
+    ctx.drawImage(logoImage,220,40);
     ctx.fillStyle    = '#F00';
     ctx.font         = '10px Verdana';
     ctx.textAlign = 'center';
     ctx.fillText  ("Press SPACE to play", 320,200);
 
+    ctx.fillStyle    = '#FFF';
+    for(var i = 0; i < stars.length; i++) {
+      stars[i].x+=stars[i].xSpeed;
+      stars[i].y+=stars[i].ySpeed;
+      var starIsOutsideOfScreen = stars[i].x < 0
+      || stars[i].y < 0
+      || stars[i].x > Viewport.width
+      || stars[i].y > Viewport.height;
+      if(starIsOutsideOfScreen) {
+        stars[i].x = 320;
+        stars[i].y = 100;
+      }
+    //  ctx.drawImage(logoImage,stars[i].x,stars[i].y);
+      ctx.fillRect(Math.round(stars[i].x),Math.round(stars[i].y), 2, 2 );
+    }
+
     if(32 in keysDown) {
+      stars = null;
       loadLevel(levelNow);
       GameLoop();
     } else {
