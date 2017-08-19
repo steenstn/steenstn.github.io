@@ -16,6 +16,7 @@ class Particle {
     this.ySpeed = ySpeed;
     this.image = image;
 
+
     this.xFriction = 1.1;
     this.shouldBeDeleted = false;
   }

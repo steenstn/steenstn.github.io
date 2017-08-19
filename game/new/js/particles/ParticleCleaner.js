@@ -7,10 +7,10 @@ var ParticleCleaner = (function () {
                 continue;
             }
             var p1 = particles[i];
-            for (var j = 0; j < particles.length; j++) {
+            for (var j = i + 1; j < particles.length; j++) {
                 var p2 = particles[j];
                 var particlesOverlapping = Math.abs(p1.x - p2.x) < 1 && Math.abs(p1.y - p2.y) < 1;
-                if (particlesOverlapping) {
+                if (particlesOverlapping && p1.state === BloodParticle.INACTIVE) {
                     p2.shouldBeDeleted = true;
                 }
             }

@@ -6,10 +6,10 @@ class ParticleCleaner {
         continue;
       }
       let p1 = particles[i];
-      for(let j = 0; j < particles.length; j++) {
+      for(let j = i + 1; j < particles.length; j++) {
         let p2 = particles[j];
         let particlesOverlapping = Math.abs(p1.x-p2.x)<1 && Math.abs(p1.y-p2.y)<1;
-        if(particlesOverlapping) {
+        if(particlesOverlapping && p1.state === BloodParticle.INACTIVE) {
           p2.shouldBeDeleted = true;
         }
       }

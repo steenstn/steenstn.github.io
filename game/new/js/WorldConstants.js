@@ -4,7 +4,7 @@ var WorldConstants = (function () {
     return WorldConstants;
 }());
 WorldConstants.kickbackForce = 7;
-WorldConstants.bloodAmount = 10;
+WorldConstants.bloodAmount = 40;
 WorldConstants.playerAcc = 0.3;
 WorldConstants.gravity = 0.3;
 WorldConstants.jumpStrength = 7;
