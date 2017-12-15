@@ -397,7 +397,13 @@ var updateEnemies = function() {
   			players[playerIndex].hp-=2;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
+        for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount/4; bloodIndex++) {
+          particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, 1));
+          particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, -1));
+        }
   			enemies.splice(i,1); // Remove the enemy from the array
+
+
   			players[playerIndex].speedy=-4;
   			score+=100;
         enemyIsDead = true;
@@ -750,7 +756,6 @@ var IntroScreen = function() {
         stars[i].x = 320;
         stars[i].y = 100;
       }
-    //  ctx.drawImage(logoImage,stars[i].x,stars[i].y);
       ctx.fillRect(Math.round(stars[i].x),Math.round(stars[i].y), 2, 2 );
     }
 
