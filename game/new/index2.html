@@ -122,9 +122,7 @@ skurkImage.src = "skurkerister.png";
 skurkImage.width = 120;
 skurkImage.height = 30;
 
-
 var animationSpeed = 3; // Number of ticks before changing frame
-
 
 for(var i=0;i<Level.currentLevel.length;i++)
 	Level.currentLevel[i]=new Object();
@@ -664,10 +662,10 @@ var drawAllText = function() {
 
     }
 	ctx.strokeStyle = "black";
-	ctx.strokeRect(4,30,102,10);
+	ctx.strokeRect(Viewport.width/2-51,30,102,10);
 	if(players[0].dead==0) {
 		ctx.fillStyle = "rgb(50,129,28)";
-		ctx.fillRect (5,31,players[0].hp,8);
+		ctx.fillRect (Viewport.width/2-50,31,players[0].hp,8);
 	}
 
 }
@@ -708,18 +706,11 @@ var GameLoop = function(){
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/Level.tileSize)+Math.floor((players[0].y+players[0].height)/Level.tileSize)*Level.width;
 
 	if(Level.currentLevel[arrayPos].type=="k") {
-		//if(pickedArtefacts>3) {
 			levelNow++;
 			lastScore=score;
 			loadLevel(levelNow);
 
 			init();
-		//} else {
-			/*ctx.fillStyle    = '#F00';
-			ctx.font         = '16px Sans-Serif';
-			ctx.textBaseline = 'Top';
-			ctx.fillText  ("Find all the beardy heads...", 100,100);*/
-		//}
 	}
 	drawAllText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);
