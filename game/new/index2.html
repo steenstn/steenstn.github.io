@@ -341,10 +341,10 @@ var updatePlayer = function(index) {
 
 	if(Level.currentLevel[arrayPos].type=="p" || Level.currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
 	{
-		if(players[index].hp<100)
-			players[index].hp+=10;
-		if(players[index].hp>100)
-			players[index].hp=100;
+		if(players[0].hp<100)
+			players[0].hp+=10;
+		if(players[0].hp>100)
+			players[0].hp=100;
 		Level.currentLevel[arrayPos].type=".";
 	}
 	if(Level.currentLevel[arrayPos].type=="s") // Coins
@@ -391,7 +391,7 @@ var updateEnemies = function() {
            }
         }
         players[playerIndex].speedy=-0.25*WorldConstants.kickbackForce;
-  			players[playerIndex].hp-=2;
+  			players[0].hp-=2;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
         for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount/4; bloodIndex++) {
@@ -662,10 +662,10 @@ var drawAllText = function() {
 
     }
 	ctx.strokeStyle = "black";
-	ctx.strokeRect(Viewport.width/2-51,30,102,10);
+	ctx.strokeRect(Viewport.width/2-51,15,102,10);
 	if(players[0].dead==0) {
 		ctx.fillStyle = "rgb(50,129,28)";
-		ctx.fillRect (Viewport.width/2-50,31,players[0].hp,8);
+		ctx.fillRect (Viewport.width/2-50,16,players[0].hp,8);
 	}
 
 }
