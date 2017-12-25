@@ -704,8 +704,9 @@ var GameLoop = function(){
   }
 
 	arrayPos=Math.floor((players[0].x+players[0].width/2)/Level.tileSize)+Math.floor((players[0].y+players[0].height)/Level.tileSize)*Level.width;
+  var arrayPos2 = Math.floor((players[1].x+players[1].width/2)/Level.tileSize)+Math.floor((players[1].y+players[1].height)/Level.tileSize)*Level.width;
 
-	if(Level.currentLevel[arrayPos].type=="k") {
+	if(Level.currentLevel[arrayPos].type=="k" || Level.currentLevel[arrayPos2].type=="k") {
 			levelNow++;
 			lastScore=score;
 			loadLevel(levelNow);
