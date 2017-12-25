@@ -19,6 +19,7 @@ var Player = (function () {
         this.hurtZoneWidth = this.width - 6;
         this.hurtZoneHeight = this.height / 1.8;
         this.currentFrame = 0;
+        this.animationCounter = 0;
         this.goingLeft = 0;
         this.speedx = 0;
         this.speedy = 0;

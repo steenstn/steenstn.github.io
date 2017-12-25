@@ -123,9 +123,7 @@ skurkImage.width = 120;
 skurkImage.height = 30;
 
 
-var animationCounter = 0; // COunter for framerate of character
-var animationSpeed = 5; // Number of ticks before changing frame
-var currentFrame = 0; // The current frame of the character
+var animationSpeed = 3; // Number of ticks before changing frame
 
 
 for(var i=0;i<Level.currentLevel.length;i++)
@@ -216,12 +214,13 @@ var overlap = function(x,y,width,height,x2,y2,width2,height2) {
 
 var render = function(){
 
-	if(animationCounter>animationSpeed) {
-		animationCounter=0;
-		currentFrame=1-currentFrame;
-	}
+
 
 	for(var i = 0; i < players.length; i++) {
+    if(players[i].animationCounter>animationSpeed) {
+  		players[i].animationCounter=0;
+  		players[i].currentFrame=1-players[i].currentFrame;
+  	}
 		if(players[i].speedy<-0.5) // JUmping up
 		{
 			ctx.drawImage(players[i].image,20,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
@@ -232,7 +231,7 @@ var render = function(){
 		}
 		else if(players[i].speedx>0.05 || players[i].speedx<-0.05) // Running
 		{
-			ctx.drawImage(players[i].image,60+20*currentFrame,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,60+20*players[i].currentFrame,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
 		}
 		else
 			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
@@ -476,13 +475,13 @@ var checkKeys = function (modifier) {
 
 		if (players[i].keyLeft in keysDown) {
 		players[i].goingLeft = 1;
-		animationCounter++;
+		players[i].animationCounter++;
 			if(players[i].speedx>-WorldConstants.maxSpeedx)
 				players[i].speedx -= WorldConstants.playerAcc * modifier;
 		}
 		else if (players[i].keyRight in keysDown) {
 		players[i].goingLeft = 0;
-		animationCounter++;
+		players[i].animationCounter++;
 			if(players[i].speedx<WorldConstants.maxSpeedx)
 				players[i].speedx += WorldConstants.playerAcc * modifier;
 		}

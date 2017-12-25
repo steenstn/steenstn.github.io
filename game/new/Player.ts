@@ -20,6 +20,7 @@ class Player {
   hurtZoneHeight : number;
 
   currentFrame : number;
+  animationCounter : number;
   goingLeft : number;
   speedx : number;
   speedy : number;
@@ -27,6 +28,8 @@ class Player {
   keyUp : number;
   keyLeft : number;
   keyRight : number;
+
+
 
 
   constructor(public x,public y,public image) {
@@ -50,6 +53,7 @@ class Player {
   	this.hurtZoneHeight = this.height/1.8;
 
   	this.currentFrame = 0;
+    this.animationCounter = 0;
   	this.goingLeft = 0;
   	this.speedx = 0;
   	this.speedy = 0;
