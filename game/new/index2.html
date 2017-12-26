@@ -178,7 +178,7 @@ var canvas = document.getElementById('c');
 
 
 var clear = function(){
-  ctx.fillStyle = '#d0e7f9';
+  ctx.fillStyle = '#74a6cd';
   ctx.clearRect(0, 0, Viewport.width, Viewport.height);
   ctx.beginPath();
   ctx.rect(0, 0, Viewport.width, Viewport.height);
@@ -276,7 +276,7 @@ var updatePlayer = function(index) {
 	players[index].oldy = players[index].y;
 
 
-  if(players[index].x + Viewport.x < -15) {
+  if(players[index].x + Viewport.x < -1*players[index].width+5) {
     players[index].speedx = WorldConstants.kickbackForce;
     playerIsOutOfBounds = true;
   }
@@ -284,7 +284,7 @@ var updatePlayer = function(index) {
     players[index].speedx = -1*WorldConstants.kickbackForce;
     playerIsOutOfBounds = true;
   }
-  if(players[index].y + Viewport.y > Viewport.height - 20) {
+  if(players[index].y + Viewport.y > Viewport.height - players[index].height+10) {
     players[index].speedy = -1*WorldConstants.kickbackForce;
     playerIsOutOfBounds = true;
   }
