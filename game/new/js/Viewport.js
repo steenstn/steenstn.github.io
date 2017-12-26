@@ -22,6 +22,6 @@ var Viewport = (function () {
     return Viewport;
 }());
 Viewport.width = 640;
-Viewport.height = 400;
+Viewport.height = 300;
 Viewport.numTilesInScreenWidth = Math.round(Viewport.width / Level.tileSize);
 Viewport.numTilesInScreenHeight = Math.round(Viewport.height / Level.tileSize);

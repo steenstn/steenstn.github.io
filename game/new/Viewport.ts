@@ -4,7 +4,7 @@ class Viewport {
   static oldx : number;
   static oldy : number;
   static width = 640;
-  static height = 400;
+  static height = 300;
   static numTilesInScreenWidth = Math.round(Viewport.width / Level.tileSize);
   static numTilesInScreenHeight = Math.round(Viewport.height / Level.tileSize);
   constructor() {

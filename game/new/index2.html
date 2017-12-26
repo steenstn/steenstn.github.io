@@ -22,7 +22,7 @@
 	  image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
 	  image-rendering: pixelated;                 /* Awesome future-browsers       */
 	  -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
-	  transform:scale(1.5);
+	  transform:scale(2);
 	  transform-origin: top;
       margin-left: auto;
       margin-right: auto;
@@ -221,18 +221,18 @@ var render = function(){
   	}
 		if(players[i].speedy<-0.5) // JUmping up
 		{
-			ctx.drawImage(players[i].image,20,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,20,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
 		}
 		else if(players[i].speedy>0.5) // Jumping down
 		{
-			ctx.drawImage(players[i].image,40,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,40,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
 		}
 		else if(players[i].speedx>0.05 || players[i].speedx<-0.05) // Running
 		{
-			ctx.drawImage(players[i].image,60+20*players[i].currentFrame,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,60+20*players[i].currentFrame,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
 		}
 		else
-			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,Viewport.x+players[i].x,Viewport.y+players[i].y, players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
 
     if(debug===1) {
       players[i].drawHurtZone(ctx);
