@@ -21,6 +21,8 @@ class Player {
 
   currentFrame : number;
   animationCounter : number;
+  idleAnimationCounter : number;
+  idleCurrentFrame : number;
   goingLeft : number;
   speedx : number;
   speedy : number;
@@ -54,6 +56,8 @@ class Player {
 
   	this.currentFrame = 0;
     this.animationCounter = 0;
+    this.idleAnimationCounter = Math.round(5*Math.random());
+    this.idleCurrentFrame = 0;
   	this.goingLeft = 0;
   	this.speedx = 0;
   	this.speedy = 0;

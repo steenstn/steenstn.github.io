@@ -220,21 +220,26 @@ var render = function(){
   		players[i].animationCounter=0;
   		players[i].currentFrame=1-players[i].currentFrame;
   	}
+    if(players[i].idleAnimationCounter > animationSpeed*3) {
+      players[i].idleAnimationCounter = 0;
+      players[i].idleCurrentFrame = 1 - players[i].idleCurrentFrame;
+    }
 		if(players[i].speedy<-0.5) // JUmping up
-		{
-			ctx.drawImage(players[i].image,20,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
-		}
-		else if(players[i].speedy>0.5) // Jumping down
 		{
 			ctx.drawImage(players[i].image,40,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
 		}
+		else if(players[i].speedy>0.5) // Jumping down
+		{
+			ctx.drawImage(players[i].image,60,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
+		}
 		else if(players[i].speedx>0.05 || players[i].speedx<-0.05) // Running
 		{
-			ctx.drawImage(players[i].image,60+20*players[i].currentFrame,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
+			ctx.drawImage(players[i].image,80+20*players[i].currentFrame,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
 		}
 		else
-			ctx.drawImage(players[i].image,0,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
-
+    {
+			ctx.drawImage(players[i].image,0+20*players[i].idleCurrentFrame,30*players[i].goingLeft, 20,30,Math.round(Viewport.x+players[i].x),Math.round(Viewport.y+players[i].y), players[i].width, players[i].height);
+    }
     if(debug===1) {
       players[i].drawHurtZone(ctx);
       players[i].drawKillZone(ctx);
@@ -503,6 +508,7 @@ var checkKeys = function (modifier) {
 			players[i].speedx/=friction; // Decelerate
       if(Math.abs(players[i].speedx) < 0.05) {
         players[i].x = Math.round(players[i].x);
+        players[i].idleAnimationCounter++;
       }
 		}
 
@@ -778,7 +784,7 @@ var IntroScreen = function() {
     ctx.textAlign = 'center';
     ctx.fillText  ("Press SPACE to play", 320,200);
 
-    ctx.fillText  ("Omar: Arrow keys         Cedric: WASD", 320,260);
+    ctx.fillText  ("Player 1(Omar): Arrow keys         Player 2(Cedric): WASD", 320,260);
 
     ctx.drawImage(players[0].image,0,0,20,30,240,220, players[0].width, players[0].height);
     ctx.drawImage(players[1].image,0,0,20,30,380,220, players[1].width, players[1].height);
