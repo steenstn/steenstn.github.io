@@ -649,7 +649,9 @@ var drawLevel = function() {
 	}
 
   for(var i = 0; i < particles.length; i++) {
-    particles[i].render(ctx);
+    if(!particles[i].shouldBeDeleted) {
+      particles[i].render(ctx);
+    }
   }
 }
 
