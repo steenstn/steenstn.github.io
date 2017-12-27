@@ -758,12 +758,6 @@ for(var i = 0; i < 300; i++) {
 var IntroScreen = function() {
     clearBlack();
     ctx.drawImage(logoImage,220,40);
-    ctx.fillStyle    = '#F00';
-    ctx.font         = '10px Verdana';
-    ctx.textAlign = 'center';
-    ctx.fillText  ("Press SPACE to play", 320,200);
-
-    ctx.fillText  ("Player 1: WASD         Player 2: Arrow keys", 320,280);
 
     ctx.fillStyle    = '#FFF';
     for(var i = 0; i < stars.length; i++) {
@@ -779,6 +773,15 @@ var IntroScreen = function() {
       }
       ctx.fillRect(Math.round(stars[i].x),Math.round(stars[i].y), 2, 2 );
     }
+    ctx.fillStyle    = '#F00';
+    ctx.font         = '10px Verdana';
+    ctx.textAlign = 'center';
+    ctx.fillText  ("Press SPACE to play", 320,200);
+
+    ctx.fillText  ("Omar: Arrow keys         Cedric: WASD", 320,260);
+
+    ctx.drawImage(players[0].image,0,0,20,30,240,220, players[0].width, players[0].height);
+    ctx.drawImage(players[1].image,0,0,20,30,380,220, players[1].width, players[1].height);
 
     if(32 in keysDown) {
       stars = null;
