@@ -4,7 +4,7 @@ var TimedParticleFactory = (function () {
         this.particleImage = image;
     }
     TimedParticleFactory.prototype.createParticle = function (x, y, lifetime) {
-        return new TimedParticle(x, y + 25, 10 * Math.random(), -10 * Math.random(), this.particleImage, this.particleLifetime);
+        return new TimedParticle(x, y + 25, -9 + 20 * Math.random(), -10 * Math.random(), this.particleImage, this.particleLifetime);
     };
     return TimedParticleFactory;
 }());

@@ -8,6 +8,6 @@ class TimedParticleFactory {
   }
 
   createParticle(x: number, y: number, lifetime: number) {
-    return new TimedParticle(x, y+25, 10*Math.random(), -10*Math.random(), this.particleImage, this.particleLifetime)
+    return new TimedParticle(x, y+25, -9 + 20*Math.random(), -10*Math.random(), this.particleImage, this.particleLifetime)
   }
 }
