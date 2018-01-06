@@ -17,6 +17,15 @@ var Jukebox = (function () {
         }
     };
     Jukebox.prototype.playCurrentSong = function () {
+        if (typeof this.currentSong.loop == 'boolean') {
+            this.currentSong.loop = true;
+        }
+        else {
+            this.currentSong.addEventListener('ended', function () {
+                this.currentTime = 0;
+                this.play();
+            }, false);
+        }
         this.currentSong.play();
     };
     return Jukebox;

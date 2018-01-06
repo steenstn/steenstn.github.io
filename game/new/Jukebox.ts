@@ -21,6 +21,17 @@ class Jukebox {
   }
 
   playCurrentSong() {
+      if (typeof this.currentSong.loop == 'boolean')
+      {
+          this.currentSong.loop = true;
+      }
+      else
+      {
+          this.currentSong.addEventListener('ended', function() {
+              this.currentTime = 0;
+              this.play();
+          }, false);
+      }
     this.currentSong.play();
   }
 }
