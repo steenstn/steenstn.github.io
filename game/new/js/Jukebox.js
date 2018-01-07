@@ -1,8 +1,10 @@
 var Jukebox = (function () {
     function Jukebox(songs) {
         this.levelSongs = songs;
+        this.songReadyToPlay = false;
     }
     Jukebox.prototype.selectSong = function (songNumber) {
+        this.songReadyToPlay = false;
         var songIsPlaying = this.currentSong && (!this.currentSong.paused || this.currentSong.currentTime);
         if (songIsPlaying) {
             this.currentSong.pause();
@@ -27,6 +29,13 @@ var Jukebox = (function () {
             }, false);
         }
         this.currentSong.play();
+        var _self = this;
+        this.currentSong.oncanplay = function () {
+            _self.songReadyToPlay = true;
+        };
+    };
+    Jukebox.prototype.isSongReady = function () {
+        return this.songReadyToPlay;
     };
     return Jukebox;
 }());

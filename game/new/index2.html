@@ -122,6 +122,11 @@ var skurkImage = new Image();
 skurkImage.src = "skurkerister.png";
 skurkImage.width = 120;
 skurkImage.height = 30;
+/*
+var skullImage = new Image();
+skullImage.src = "skull.png";
+skullImage.width = 120;
+skullImage.height = 40;*/
 
 var animationSpeed = 3; // Number of ticks before changing frame
 
@@ -255,7 +260,8 @@ var renderEnemies = function()
 		switch(enemies[i].type)
 		{
 			case "skurkerist":
-				ctx.drawImage(skurkImage,5,0,18,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 18, 30);
+        ctx.drawImage(skurkImage,5,0,18,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 18, 30);
+				//ctx.drawImage(skullImage,0,0,40,50,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 40, 50);
 				break;
 			case "jumper":
 				ctx.drawImage(skurkImage,36,0,17,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 17, 30);
@@ -294,6 +300,7 @@ var updatePlayer = function(index) {
     playerIsOutOfBounds = true;
   }
 	players[index].x += players[index].speedx;
+
 
 
 
@@ -395,8 +402,10 @@ var updateEnemies = function() {
     var enemyIsDead = false;
     for(var playerIndex = 0; playerIndex < players.length; playerIndex++) {
 
-      var enemyInHurtZone = overlap(enemies[i].x,enemies[i].y,20,20,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
-      var enemyInKillZone = overlap(enemies[i].x,enemies[i].y,20,20,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
+      var enemyWidth = typeof enemies[i].width == 'number' ? enemies[i].width : 20;
+      var enemyHeight = typeof enemies[i].height == 'number' ? enemies[i].height : 20;
+      var enemyInHurtZone = overlap(enemies[i].x,enemies[i].y,enemyWidth,enemyHeight,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
+      var enemyInKillZone = overlap(enemies[i].x,enemies[i].y,enemyWidth,enemyHeight,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
 
   		if(enemyInHurtZone) { // 1 = right
         if(enemies[i].speedx>0) {
@@ -763,46 +772,55 @@ for(var i = 0; i < 300; i++) {
 
 var IntroScreen = function() {
     clearBlack();
-    ctx.drawImage(logoImage,220,40);
+    if(!jukeBox.isSongReady()) {
 
-    ctx.fillStyle    = '#FFF';
-    for(var i = 0; i < stars.length; i++) {
-      stars[i].x+=stars[i].xSpeed;
-      stars[i].y+=stars[i].ySpeed;
-      var starIsOutsideOfScreen = stars[i].x < 0
-      || stars[i].y < 0
-      || stars[i].x > Viewport.width
-      || stars[i].y > Viewport.height;
-      if(starIsOutsideOfScreen) {
-        stars[i].x = 320;
-        stars[i].y = 100;
+        ctx.fillStyle    = '#F00';
+        ctx.font         = '10px Verdana';
+        ctx.textAlign = 'center';
+        ctx.fillText  ("Loading...", 320,200);
+    }
+    else {
+
+      ctx.drawImage(logoImage,220,40);
+
+      ctx.fillStyle    = '#FFF';
+      for(var i = 0; i < stars.length; i++) {
+        stars[i].x+=stars[i].xSpeed;
+        stars[i].y+=stars[i].ySpeed;
+        var starIsOutsideOfScreen = stars[i].x < 0
+        || stars[i].y < 0
+        || stars[i].x > Viewport.width
+        || stars[i].y > Viewport.height;
+        if(starIsOutsideOfScreen) {
+          stars[i].x = 320;
+          stars[i].y = 100;
+        }
+        ctx.fillRect(Math.round(stars[i].x),Math.round(stars[i].y), 2, 2 );
       }
-      ctx.fillRect(Math.round(stars[i].x),Math.round(stars[i].y), 2, 2 );
+      ctx.fillStyle    = '#F00';
+      ctx.font         = '10px Verdana';
+      ctx.textAlign = 'center';
+      ctx.fillText  ("Press SPACE to play", 320,200);
+
+      ctx.fillText  ("Player 1(Omar): Arrow keys         Player 2(Cedric): WASD", 320,260);
+
+      ctx.drawImage(players[0].image,0,0,20,30,240,220, players[0].width, players[0].height);
+      ctx.drawImage(players[1].image,0,0,20,30,380,220, players[1].width, players[1].height);
+
+      if(32 in keysDown) {
+        stars = null;
+        loadLevel(levelNow);
+        GameLoop();
+      }
+
     }
-    ctx.fillStyle    = '#F00';
-    ctx.font         = '10px Verdana';
-    ctx.textAlign = 'center';
-    ctx.fillText  ("Press SPACE to play", 320,200);
-
-    ctx.fillText  ("Player 1(Omar): Arrow keys         Player 2(Cedric): WASD", 320,260);
-
-    ctx.drawImage(players[0].image,0,0,20,30,240,220, players[0].width, players[0].height);
-    ctx.drawImage(players[1].image,0,0,20,30,380,220, players[1].width, players[1].height);
-
-    if(32 in keysDown) {
-      stars = null;
-      loadLevel(levelNow);
-      GameLoop();
-    } else {
-      gLoop = setTimeout(IntroScreen, 1000 / 50);
-    }
-
-
+    gLoop = setTimeout(IntroScreen, 1000 / 50);
 }
 
 init();
 jukeBox.selectSong(0);
 jukeBox.playCurrentSong();
+
 IntroScreen();
 
 
