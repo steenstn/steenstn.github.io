@@ -70,7 +70,7 @@ class Player {
 
  updateHurtZone() {
    this.hurtZonex = this.x + 3;
-   this.hurtZoney = this.y;
+   this.hurtZoney = this.y + 5;
  }
 
  updateKillZone() {

@@ -32,7 +32,7 @@ var Player = (function () {
     }
     Player.prototype.updateHurtZone = function () {
         this.hurtZonex = this.x + 3;
-        this.hurtZoney = this.y;
+        this.hurtZoney = this.y + 5;
     };
     Player.prototype.updateKillZone = function () {
         this.killZonex = this.x;

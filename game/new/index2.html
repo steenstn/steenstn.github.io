@@ -122,11 +122,11 @@ var skurkImage = new Image();
 skurkImage.src = "skurkerister.png";
 skurkImage.width = 120;
 skurkImage.height = 30;
-/*
+
 var skullImage = new Image();
 skullImage.src = "skull.png";
-skullImage.width = 120;
-skullImage.height = 40;*/
+skullImage.width = 40;
+skullImage.height = 50;
 
 var animationSpeed = 3; // Number of ticks before changing frame
 
@@ -257,6 +257,15 @@ var renderEnemies = function()
 {
 	for(i=0;i<enemies.length;i++)
 	{
+    var enemyWidth = typeof enemies[i].width == 'number' ? enemies[i].width : 20;
+    var enemyHeight = typeof enemies[i].height == 'number' ? enemies[i].height : 20;
+    if(debug == 1) {
+      ctx.fillStyle = '#FF0a00';
+      ctx.beginPath();
+      ctx.rect(enemies[i].x + Viewport.x, enemies[i].y + Viewport.y,enemyWidth, enemyHeight);
+      ctx.closePath();
+      ctx.fill();
+    }
 		switch(enemies[i].type)
 		{
 			case "skurkerist":
@@ -268,6 +277,11 @@ var renderEnemies = function()
 				break;
 			case "bouncer":
 				ctx.drawImage(skurkImage,67,0,17,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 17, 30);
+				break;
+      case "skull":
+
+          ctx.drawImage(skullImage,0,0,40,50,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 40, 50);
+
 				break;
 			default:
 			// Non-implemented enemy, if the enemy does nto have a type, a grey rectangle will be drawn
@@ -404,6 +418,7 @@ var updateEnemies = function() {
 
       var enemyWidth = typeof enemies[i].width == 'number' ? enemies[i].width : 20;
       var enemyHeight = typeof enemies[i].height == 'number' ? enemies[i].height : 20;
+
       var enemyInHurtZone = overlap(enemies[i].x,enemies[i].y,enemyWidth,enemyHeight,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
       var enemyInKillZone = overlap(enemies[i].x,enemies[i].y,enemyWidth,enemyHeight,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
 
@@ -534,6 +549,7 @@ var loadContent = function(levelName) {
 	enemies = JSON.parse(jsonTexto);
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
+      case "skull":
       case "skurkerist": // Flies back and forth, no gravity
           enemies[i].strategy = new GlidingStrategy(enemies[i], Level.currentLevel)
           enemies[i].speedx = 2;
@@ -545,6 +561,7 @@ var loadContent = function(levelName) {
       case "bouncer": // Flies around and bounces on the walls
         enemies[i].strategy = new FlyingStrategy(enemies[i], Level.currentLevel);
         break;
+
     }
 
   }
@@ -773,11 +790,10 @@ for(var i = 0; i < 300; i++) {
 var IntroScreen = function() {
     clearBlack();
     if(!jukeBox.isSongReady()) {
-
         ctx.fillStyle    = '#F00';
         ctx.font         = '10px Verdana';
         ctx.textAlign = 'center';
-        ctx.fillText  ("Loading...", 320,200);
+        ctx.fillText  ("Loading...", 320,100);
     }
     else {
 

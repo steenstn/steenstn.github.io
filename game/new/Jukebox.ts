@@ -1,15 +1,15 @@
 class Jukebox {
   private currentSong : any;
   private levelSongs : Array<string>;
-  private songReadyToPlay : boolean;
+  private canPlay : boolean;
 
   constructor(songs: string[]) {
     this.levelSongs = songs;
-    this.songReadyToPlay = false;
   }
 
   selectSong(songNumber : number) {
-    this.songReadyToPlay = false;
+    this.canPlay = false;
+
     let songIsPlaying = this.currentSong && (!this.currentSong.paused || this.currentSong.currentTime);
     if(songIsPlaying) {
       this.currentSong.pause();
@@ -22,6 +22,11 @@ class Jukebox {
     } else {
       this.currentSong = new Audio(this.levelSongs[0]);
     }
+
+    var _self = this;
+    this.currentSong.oncanplay = function() {
+      _self.canPlay = true;
+    };
   }
 
   playCurrentSong() {
@@ -37,13 +42,10 @@ class Jukebox {
           }, false);
       }
     this.currentSong.play();
-    var _self = this;
-    this.currentSong.oncanplay = function() {
-      _self.songReadyToPlay = true;
-    };
+
   }
 
   isSongReady() {
-    return this.songReadyToPlay;
+    return this.canPlay;
   }
 }
