@@ -128,6 +128,11 @@ skullImage.src = "skull.png";
 skullImage.width = 40;
 skullImage.height = 50;
 
+var mutantImage = new Image();
+mutantImage.src = "mutant.png";
+mutantImage.width = 88;
+mutantImage.height = 36;
+
 var animationSpeed = 3; // Number of ticks before changing frame
 
 for(var i=0;i<Level.currentLevel.length;i++)
@@ -269,8 +274,8 @@ var renderEnemies = function()
 		switch(enemies[i].type)
 		{
 			case "skurkerist":
-        ctx.drawImage(skurkImage,5,0,18,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 18, 30);
-				//ctx.drawImage(skullImage,0,0,40,50,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 40, 50);
+        //ctx.drawImage(skurkImage,5,0,18,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 18, 30);
+				ctx.drawImage(skullImage,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y);
 				break;
 			case "jumper":
 				ctx.drawImage(skurkImage,36,0,17,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 17, 30);
@@ -279,7 +284,7 @@ var renderEnemies = function()
 				ctx.drawImage(skurkImage,67,0,17,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 17, 30);
 				break;
       case "skull":
-
+        //ctx.drawImage(skullImage, 0, 0, 88, 36,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 88, 36);
           ctx.drawImage(skullImage,0,0,40,50,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 40, 50);
 
 				break;
@@ -439,7 +444,7 @@ var updateEnemies = function() {
   			players[0].hp-=2;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
-        for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount/4; bloodIndex++) {
+        for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
           particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, 1));
           particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, -1));
         }
