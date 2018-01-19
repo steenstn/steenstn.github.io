@@ -101,7 +101,7 @@ image2.height = 120;
 var players = [new Player(2*Level.tileSize, 2*Level.tileSize, image), new Player(2*Level.tileSize,2*Level.tileSize,image2)];
 
 var playerIsOutOfBounds = false;
-
+var outOfBoundsTimer = 0;
 // A - 65
 // D 68
 // W 87
@@ -309,14 +309,17 @@ var updatePlayer = function(index) {
   if(players[index].x + Viewport.x < -1*players[index].width+5) {
     players[index].speedx = WorldConstants.kickbackForce;
     playerIsOutOfBounds = true;
+    outOfBoundsTimer = 100;
   }
   if(players[index].x + Viewport.x > Viewport.width -5) {
     players[index].speedx = -1*WorldConstants.kickbackForce;
     playerIsOutOfBounds = true;
+    outOfBoundsTimer = 100;
   }
   if(players[index].y + Viewport.y > Viewport.height - players[index].height+10) {
     players[index].speedy = -1*WorldConstants.kickbackForce;
     playerIsOutOfBounds = true;
+    outOfBoundsTimer = 100;
   }
 	players[index].x += players[index].speedx;
 
@@ -706,13 +709,15 @@ var drawAllText = function() {
     ctx.textAlign = 'left';
     ctx.fillText  ("Score: " + score, 4,20);
 
-    if(playerIsOutOfBounds) {
-      ctx.fillStyle    = '#F00';
+    if(outOfBoundsTimer >= 3) {
+      var fadeOutFactor = outOfBoundsTimer/100;
+      console.log(fadeOutFactor);
+      ctx.fillStyle    = 'rgba(255,0,0,' + fadeOutFactor + ')';
       ctx.font         = '40px Verdana';
       ctx.textBaseline = 'Top';
       ctx.textAlign = 'center';
       ctx.fillText  ("Please get back together.", 320,100);
-
+      outOfBoundsTimer-=2;
     }
 
     if(debug===1) {
