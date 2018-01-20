@@ -124,6 +124,14 @@ skurkImage.src = "skurkerister.png";
 skurkImage.width = 120;
 skurkImage.height = 30;
 
+var backgroundGradient=ctx.createLinearGradient(0,Viewport.height,0,0);
+backgroundGradient.addColorStop(0,"black");
+backgroundGradient.addColorStop(0.23,"#1b2d3b");
+backgroundGradient.addColorStop(0.235,"#df2121");
+backgroundGradient.addColorStop(0.45,"#da732e");
+backgroundGradient.addColorStop(0.60,"#3b8996");
+backgroundGradient.addColorStop(0.9,"#1b2d3b");
+
 var skullImage = new Image();
 skullImage.src = "skull.png";
 skullImage.width = 40;
@@ -189,13 +197,10 @@ var canvas = document.getElementById('c');
 
 
 var clear = function(){
-  ctx.fillStyle = '#74a6cd';
-  ctx.clearRect(0, 0, Viewport.width, Viewport.height);
-  ctx.beginPath();
-  ctx.rect(0, 0, Viewport.width, Viewport.height);
-  ctx.closePath();
-  ctx.fill();
+  ctx.fillStyle=backgroundGradient;
+  ctx.fillRect(0,0,Viewport.width,Viewport.height);
 }
+
 var clearBlack = function() {
   ctx.fillStyle = '#000';
   ctx.clearRect(0, 0, Viewport.width, Viewport.height);
