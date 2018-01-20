@@ -47,7 +47,7 @@ class Player {
   	this.dead = 0;
 
     this.updateKillZone();
-  	this.killZoneWidth = this.width;
+  	this.killZoneWidth = this.width - 10;
   	this.killZoneHeight = 5;
 
   	this.updateHurtZone();
@@ -74,7 +74,7 @@ class Player {
  }
 
  updateKillZone() {
-   this.killZonex = this.x;
+   this.killZonex = this.x+5;
    this.killZoney = this.y + this.height - 5;
  }
   drawHurtZone(context) {

@@ -13,7 +13,7 @@ var Player = (function () {
         this.hp = 100;
         this.dead = 0;
         this.updateKillZone();
-        this.killZoneWidth = this.width;
+        this.killZoneWidth = this.width - 10;
         this.killZoneHeight = 5;
         this.updateHurtZone();
         this.hurtZoneWidth = this.width - 6;
@@ -35,7 +35,7 @@ var Player = (function () {
         this.hurtZoney = this.y + 5;
     };
     Player.prototype.updateKillZone = function () {
-        this.killZonex = this.x;
+        this.killZonex = this.x + 5;
         this.killZoney = this.y + this.height - 5;
     };
     Player.prototype.drawHurtZone = function (context) {
