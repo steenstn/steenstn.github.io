@@ -199,6 +199,32 @@ var canvas = document.getElementById('c');
 var clear = function(){
   ctx.fillStyle=backgroundGradient;
   ctx.fillRect(0,0,Viewport.width,Viewport.height);
+  ctx.strokeStyle='rgba(255, 255, 255, 0.3)';
+
+  // Left
+  ctx.beginPath();
+  ctx.arc(Viewport.width/8+Viewport.x/8,110,120,0,2*Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(Viewport.width/8+Viewport.x/8,110,90,0,2*Math.PI);
+  ctx.stroke();
+  // Middle
+  ctx.beginPath();
+  ctx.arc(Viewport.width/2+Viewport.x/10,90,100,0,2*Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(Viewport.width/2+Viewport.x/10,90,70,0,2*Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(Viewport.width/2+Viewport.x/10,90,50,0,2*Math.PI);
+  ctx.stroke();
+  // Right
+  ctx.beginPath();
+  ctx.arc(Viewport.width-Viewport.width/8+Viewport.x/8,110,120,0,2*Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(Viewport.width-Viewport.width/8+Viewport.x/8,110,90,0,2*Math.PI);
+  ctx.stroke();
 }
 
 var clearBlack = function() {
@@ -724,7 +750,7 @@ var drawAllText = function() {
     if(outOfBoundsTimer >= 3) {
       var fadeOutFactor = outOfBoundsTimer/100;
       console.log(fadeOutFactor);
-      ctx.fillStyle    = 'rgba(255,0,0,' + fadeOutFactor + ')';
+      ctx.fillStyle    = 'rgba(255,255,255,' + fadeOutFactor + ')';
       ctx.font         = '40px Verdana';
       ctx.textBaseline = 'Top';
       ctx.textAlign = 'center';
