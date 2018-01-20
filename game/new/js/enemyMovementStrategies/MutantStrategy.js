@@ -4,7 +4,7 @@ var MutantStrategy = (function () {
         this.currentLevel = currentLevel;
         this.mutantWidth = 88;
         this.mutantHeight = 36;
-        this.idleTimer = 50;
+        this.idleTimer = 60;
         this.idle = false;
     }
     MutantStrategy.prototype.move = function () {
@@ -38,8 +38,8 @@ var MutantStrategy = (function () {
         if (this.currentLevel[arrayPos].blocking == 0) {
             this.enemy.direction = 1 - this.enemy.direction;
         }
-        if (!this.idle && Math.random() > 0.99) {
-            this.idleTimer = 50 + Math.random() * 20;
+        if (!this.idle && Math.random() > 0.995) {
+            this.idleTimer = 60 + Math.random() * 20;
             this.idle = true;
         }
     };

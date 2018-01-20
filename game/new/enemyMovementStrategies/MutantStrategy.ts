@@ -1,7 +1,7 @@
 class MutantStrategy {
   private mutantWidth = 88;
   private mutantHeight = 36;
-  private idleTimer = 50;
+  private idleTimer = 60;
   private idle = false;
   constructor(public enemy, public currentLevel) {
 
@@ -42,8 +42,8 @@ class MutantStrategy {
     if(this.currentLevel[arrayPos].blocking==0) {
       this.enemy.direction=1-this.enemy.direction;
     }
-    if(!this.idle && Math.random() > 0.99) {
-      this.idleTimer = 50 + Math.random()*20;
+    if(!this.idle && Math.random() > 0.995) {
+      this.idleTimer = 60 + Math.random()*20;
       this.idle = true;
     }
 	}
