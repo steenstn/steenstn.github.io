@@ -49,6 +49,7 @@
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/FlyingStrategy.js" language="javascript" type="text/javascript"></script>
+<script src="js/enemyMovementStrategies/MutantStrategy.js" language="javascript" type="text/javascript"></script>
 
 <canvas id='c'></canvas>
 <script>
@@ -286,6 +287,8 @@ var renderEnemies = function()
       case "skull":
         //ctx.drawImage(skullImage, 0, 0, 88, 36,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 88, 36);
           ctx.drawImage(skullImage,0,0,40,50,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 40, 50);
+      case "mutant":
+            ctx.drawImage(mutantImage, 0, 0, 88, 36,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 88, 36);
 
 				break;
 			default:
@@ -562,6 +565,10 @@ var loadContent = function(levelName) {
           enemies[i].strategy = new GlidingStrategy(enemies[i], Level.currentLevel)
           enemies[i].speedx = 2;
         break;
+      case "mutant":
+          enemies[i].strategy = new MutantStrategy(enemies[i], Level.currentLevel)
+          enemies[i].speedx = 3;
+        break;
       case "jumper": // Runs around, jumps when it discovers an edge
         enemies[i].strategy = new JumpingStrategy(enemies[i], Level.currentLevel, WorldConstants.maxSpeedy, WorldConstants.gravity);
         enemies[i].speedx = 3.5;
@@ -728,7 +735,7 @@ var drawAllText = function() {
       ctx.fillText  ("particles: " + particles.length, 4,60);
       ctx.fillText  ("particlesThatShouldBeDeleted: " + particlesThatShouldBeDeleted, 4,75);
       ctx.fillText  ("numFramesSinceStart: " + numFramesSinceStart, 4,90);
-
+      ctx.fillText  ("Player 1 coordinates: " + players[0].x + " - " + players[0].y, 4,110);
     }
 	ctx.strokeStyle = "black";
 	ctx.strokeRect(Viewport.width/2-51,15,102,10);
