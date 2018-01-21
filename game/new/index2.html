@@ -344,6 +344,30 @@ var renderEnemies = function()
 
 
 var updatePlayer = function(index) {
+
+  if(index === 0) {
+    var distX = players[0].x+players[0].width/2 - (players[1].x+players[1].width/2);
+    var distY = players[0].y+players[0].height/2 - (players[1].y+players[1].height/2);
+
+    var squareDist = distX*distX + distY*distY;
+    if(squareDist <= (players[0].width/2 + players[1].width/2) * (players[0].width/2 + players[1].width/2)){
+      players[0].x = players[0].oldx;
+      players[0].y = players[0].oldy;
+
+      players[1].x = players[1].oldx;
+      players[1].y = players[1].oldy;
+
+      var xSpeed = players[0].speedx;
+      var ySpeed = players[0].speedy;
+      players[0].speedx = players[1].speedx;
+      players[0].speedy = players[1].speedy != 0 ? players[1].speedy : -players[0].speedy;
+
+      players[1].speedx = xSpeed;
+      players[1].speedy = ySpeed != 0 ? ySpeed : -players[1].speedy;
+
+    }
+  }
+
 	players[index].oldx = players[index].x;
 	players[index].oldy = players[index].y;
 
@@ -371,7 +395,7 @@ var updatePlayer = function(index) {
 	// Check to the left if going left and stop the player if he collides with a blocking tile
 	if(players[index].speedx < 0) {
 		var arrayPos=Math.floor((players[index].x)/Level.tileSize)+Math.floor((players[index].y+players[index].height-2)/Level.tileSize)*Level.width; // The position in the level array(Middle of the player at the moment)
-		//showRect(arrayPos);
+
 		if(Level.currentLevel[arrayPos].blocking==1) {
 			players[index].x = players[index].oldx;
 			players[index].speedx = 0;
@@ -455,7 +479,6 @@ var updatePlayer = function(index) {
 	}
 
 }
-
 
 var updateEnemies = function() {
 
@@ -696,10 +719,11 @@ var setUpContent = function() {
 	for(var i = 0; i < content.length; i++) {
 		switch(content[i].type) {
 			case "startPos":
-        var offset = 10;
-				players[0].x = content[i].x - offset;
-        players[1].x = content[i].x + offset;
-				players[0].y = players[1].y = content[i].y;
+        var offset = 15;
+				players[0].x = players[0].oldx = content[i].x - offset;
+        players[1].x = players[1].oldx = content[i].x + offset;
+				players[0].y = players[1].y = players[0].oldy = players[1].oldy = content[i].y;
+
 			break;
 		}
 	}
@@ -879,7 +903,6 @@ var IntroScreen = function() {
       ctx.textAlign = 'center';
       if(Math.abs(Math.sin(numFramesSinceStart/35))<0.9) {
         ctx.fillText  ("Press SPACE to play", 320,200);
-
       }
 
       ctx.fillText  ("Player 1(Omar): Arrow keys         Player 2(Cedric): WASD", 320,260);
