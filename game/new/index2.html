@@ -254,9 +254,6 @@ var overlap = function(x,y,width,height,x2,y2,width2,height2) {
 
 
 var render = function(){
-
-
-
 	for(var i = 0; i < players.length; i++) {
     if(players[i].animationCounter>animationSpeed) {
   		players[i].animationCounter=0;
@@ -319,7 +316,7 @@ var renderEnemies = function()
         //ctx.drawImage(skullImage, 0, 0, 88, 36,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 88, 36);
           ctx.drawImage(skullImage,0,0,40,50,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 40, 50);
       case "mutant":
-            ctx.drawImage(mutantImage, 0, 0, 88, 36,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 88, 36);
+            ctx.drawImage(mutantImage, 88*enemies[i].idleCurrentFrame, 0, 88, 36,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 88, 36);
 
 				break;
 			default:
@@ -632,6 +629,8 @@ var loadContent = function(levelName) {
           enemies[i].speedx = 3;
           enemies[i].width = mutantSpecs.width;
           enemies[i].height = mutantSpecs.height;
+          enemies[i].idleAnimationCounter = 0;
+          enemies[i].idleCurrentFrame = 0;
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
         enemies[i].strategy = new JumpingStrategy(enemies[i], Level.currentLevel, WorldConstants.maxSpeedy, WorldConstants.gravity);

@@ -15,11 +15,21 @@ var MutantStrategy = (function () {
             else {
                 this.enemy.x -= this.enemy.speedx;
             }
+            this.enemy.idleAnimationCounter++;
+            if (this.enemy.idleAnimationCounter > 4) {
+                this.enemy.idleCurrentFrame = 1 - this.enemy.idleCurrentFrame;
+                this.enemy.idleAnimationCounter = 0;
+            }
         }
         else {
             this.idleTimer--;
             if (this.idleTimer < 0) {
                 this.idle = false;
+            }
+            this.enemy.idleAnimationCounter++;
+            if (this.enemy.idleAnimationCounter > 10) {
+                this.enemy.idleCurrentFrame = 1 - this.enemy.idleCurrentFrame;
+                this.enemy.idleAnimationCounter = 0;
             }
         }
         var enemyWidth = typeof this.enemy.width == 'number' ? this.enemy.width : this.mutantWidth;
