@@ -69,8 +69,6 @@ c.height = Viewport.height;
 var levelNow = 1; // Number of current level
 var score = 0;
 var dead=0;
-var pickedArtefacts=0; // How many phadderists are collected?
-
 var bloodImage = new Image();
 bloodImage.src = "particles/bloodpixel.png";
 bloodImage.width=1;
@@ -145,6 +143,8 @@ mutantImage.src = "mutant.png";
 mutantImage.width = 88;
 mutantImage.height = 36;
 
+var mutantSpecs;
+
 var animationSpeed = 3; // Number of ticks before changing frame
 
 for(var i=0;i<Level.currentLevel.length;i++)
@@ -163,12 +163,6 @@ tileset.height=Level.tileSize;
 var init = function() {
   numFramesSinceStart = 0;
 
-	screenx = 1;
-	screeny = 1;
-
-	var oldscreenx = screenx;
-	var oldscreeny = screeny;
-
 	particles = [];
 
   for(var i = 0; i < players.length; i++) {
@@ -179,8 +173,6 @@ var init = function() {
   	players[i].hp=100;
 
   }
-
-	pickedArtefacts=0;
 }
 
 
@@ -473,7 +465,6 @@ var updatePlayer = function(index) {
 	}
 	if(Level.currentLevel[arrayPos].type=="l" || Level.currentLevel[arrayPos].type=="m" || Level.currentLevel[arrayPos].type=="n" || Level.currentLevel[arrayPos].type=="o") // Phadderist
 	{
-		pickedArtefacts++;
 		score+=50;
 		Level.currentLevel[arrayPos].type=".";
 	}
@@ -639,6 +630,8 @@ var loadContent = function(levelName) {
       case "mutant":
           enemies[i].strategy = new MutantStrategy(enemies[i], Level.currentLevel)
           enemies[i].speedx = 3;
+          enemies[i].width = mutantSpecs.width;
+          enemies[i].height = mutantSpecs.height;
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
         enemies[i].strategy = new JumpingStrategy(enemies[i], Level.currentLevel, WorldConstants.maxSpeedy, WorldConstants.gravity);
@@ -703,6 +696,8 @@ txtFile.onreadystatechange = function() {
 }
 txtFile.send(null);
 
+drawText("Loading enemies...", 10, 40);
+mutantSpecs = loadJsonFile('enemies/mutant.json');
 loadContent(levelName);
 setUpContent();
 
