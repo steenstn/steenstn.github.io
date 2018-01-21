@@ -1,4 +1,4 @@
-class FlyingStrategy {
+class FlyingStrategy{
   constructor(public enemy, public currentLevel){
 
   }

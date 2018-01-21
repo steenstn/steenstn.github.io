@@ -46,6 +46,8 @@
 
 <script src="js/particles/ParticleCleaner.js" type="text/javascript"></script>
 
+<script src="js/enemies/Enemy.js" type="text/javascript"></script>
+<script src="js/enemies/Mutant.js" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/FlyingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -514,7 +516,12 @@ var updateEnemies = function() {
   		}
     }
     if(!enemyIsDead && !enemyIsInteracting) {
-      enemies[i].strategy.move();
+      if(enemies[i].strategy != null) {
+          enemies[i].strategy.move();
+      } else {
+        enemies[i].move();
+      }
+
     }
 	}
 }
@@ -625,12 +632,14 @@ var loadContent = function(levelName) {
           enemies[i].speedx = 2;
         break;
       case "mutant":
+        enemies[i] = new Mutant(enemies[i], Level.currentLevel);
+        /*
           enemies[i].strategy = new MutantStrategy(enemies[i], Level.currentLevel)
           enemies[i].speedx = 3;
           enemies[i].width = mutantSpecs.width;
           enemies[i].height = mutantSpecs.height;
           enemies[i].idleAnimationCounter = 0;
-          enemies[i].idleCurrentFrame = 0;
+          enemies[i].idleCurrentFrame = 0;*/
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
         enemies[i].strategy = new JumpingStrategy(enemies[i], Level.currentLevel, WorldConstants.maxSpeedy, WorldConstants.gravity);

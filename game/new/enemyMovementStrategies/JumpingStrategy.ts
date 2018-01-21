@@ -1,4 +1,4 @@
-class JumpingStrategy {
+class JumpingStrategy  {
   constructor(public enemy, public currentLevel, public maxSpeedy, public gravity) {
 
   }
