@@ -616,15 +616,19 @@ var checkKeys = function (modifier) {
 
 }
 
+
+var loadJsonFile = function(path) {
+  var xobj = new XMLHttpRequest();
+  xobj.overrideMimeType("application/json");
+  xobj.open('GET', path, false);
+  xobj.send(null);
+  var jsonTexto = xobj.responseText;
+  return JSON.parse(jsonTexto);
+}
+
 var loadContent = function(levelName) {
 
-	var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', "levels/" + levelName+'enemies.json', false);
-
-	xobj.send(null);
-	var jsonTexto = xobj.responseText;
-	enemies = JSON.parse(jsonTexto);
+	enemies = loadJsonFile("levels/" + levelName+'enemies.json');
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
       case "skull":
@@ -643,18 +647,9 @@ var loadContent = function(levelName) {
       case "bouncer": // Flies around and bounces on the walls
         enemies[i].strategy = new FlyingStrategy(enemies[i], Level.currentLevel);
         break;
-
     }
-
   }
-
-	xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', "levels/" + levelName+'content.json', false);
-
-	xobj.send(null);
-	jsonTexto = xobj.responseText;
-	content = JSON.parse(jsonTexto);
+	content = loadJsonFile("levels/" + levelName+'content.json');//JSON.parse(jsonTexto);
 }
 
 var loadLevel = function(levelNumber) {
