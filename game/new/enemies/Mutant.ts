@@ -1,16 +1,12 @@
 class Mutant extends Enemy {
+  static image = new Image();
   speedx = 3;
   width = 88;
   height = 36;
   idleAnimationCounter = 0;
   idleCurrentFrame = 0;
-  x : number;
-  y: number;
-  oldx : number;
-  oldy : number;
   direction : number;
-  public type = "mutant";
-  
+
   constructor(enemy, currentLevel) {
     super(new MutantStrategy(enemy, currentLevel));
     this.x = enemy.x;
@@ -19,4 +15,9 @@ class Mutant extends Enemy {
     this.oldy = enemy.oldy;
     this.direction = enemy.direction;
   }
+
+  draw(context) {
+    context.drawImage(Mutant.image, 88*this.idleCurrentFrame, 0, 88, 36,Viewport.x+this.x,Viewport.y+this.y, 88, 36);
+  }
+
 }

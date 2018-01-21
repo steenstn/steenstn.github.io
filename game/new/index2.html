@@ -48,6 +48,10 @@
 
 <script src="js/enemies/Enemy.js" type="text/javascript"></script>
 <script src="js/enemies/Mutant.js" type="text/javascript"></script>
+<script src="js/enemies/Bouncer.js" type="text/javascript"></script>
+<script src="js/enemies/Skull.js" type="text/javascript"></script>
+<script src="js/enemies/Jumper.js" type="text/javascript"></script>
+
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/FlyingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -125,6 +129,9 @@ skurkImage.src = "skurkerister.png";
 skurkImage.width = 120;
 skurkImage.height = 30;
 
+Bouncer.image = skurkImage;
+Jumper.image = skurkImage;
+
 var backgroundImage = new Image();
 backgroundImage.src = "background.png";
 var backgroundGradient=ctx.createLinearGradient(0,Viewport.height,0,0);
@@ -135,15 +142,15 @@ backgroundGradient.addColorStop(0.45,"#da732e");
 backgroundGradient.addColorStop(0.60,"#3b8996");
 backgroundGradient.addColorStop(0.9,"#1b2d3b");
 
-var skullImage = new Image();
-skullImage.src = "skull.png";
-skullImage.width = 40;
-skullImage.height = 50;
 
-var mutantImage = new Image();
-mutantImage.src = "mutant.png";
-mutantImage.width = 88;
-mutantImage.height = 36;
+Skull.image.src = "skull.png";
+Skull.image.width = 40;
+Skull.image.height = 50;
+
+//var mutantImage = new Image();
+Mutant.image.src = "mutant.png";
+Mutant.image.width = 88;
+Mutant.image.height = 36;
 
 var mutantSpecs;
 
@@ -302,34 +309,7 @@ var renderEnemies = function()
       ctx.closePath();
       ctx.fill();
     }
-		switch(enemies[i].type)
-		{
-			case "skurkerist":
-        //ctx.drawImage(skurkImage,5,0,18,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 18, 30);
-				ctx.drawImage(skullImage,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y);
-				break;
-			case "jumper":
-				ctx.drawImage(skurkImage,36,0,17,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 17, 30);
-				break;
-			case "bouncer":
-				ctx.drawImage(skurkImage,67,0,17,30,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 17, 30);
-				break;
-      case "skull":
-        //ctx.drawImage(skullImage, 0, 0, 88, 36,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 88, 36);
-          ctx.drawImage(skullImage,0,0,40,50,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 40, 50);
-      case "mutant":
-            ctx.drawImage(mutantImage, 88*enemies[i].idleCurrentFrame, 0, 88, 36,Viewport.x+enemies[i].x,Viewport.y+enemies[i].y, 88, 36);
-
-				break;
-			default:
-			// Non-implemented enemy, if the enemy does nto have a type, a grey rectangle will be drawn
-				ctx.fillStyle = '#111111';
-				ctx.beginPath();
-				ctx.rect(Viewport.x+enemies[i].x,Viewport.y+enemies[i].y,10,10);
-				ctx.closePath();
-				ctx.fill();
-		}
-
+    enemies[i].draw(ctx);
 	}
 }
 
@@ -516,12 +496,7 @@ var updateEnemies = function() {
   		}
     }
     if(!enemyIsDead && !enemyIsInteracting) {
-      if(enemies[i].strategy != null) {
-          enemies[i].strategy.move();
-      } else {
         enemies[i].move();
-      }
-
     }
 	}
 }
@@ -628,25 +603,16 @@ var loadContent = function(levelName) {
     switch(enemies[i].type) {
       case "skull":
       case "skurkerist": // Flies back and forth, no gravity
-          enemies[i].strategy = new GlidingStrategy(enemies[i], Level.currentLevel)
-          enemies[i].speedx = 2;
+          enemies[i]= new Skull(enemies[i], Level.currentLevel)
         break;
       case "mutant":
         enemies[i] = new Mutant(enemies[i], Level.currentLevel);
-        /*
-          enemies[i].strategy = new MutantStrategy(enemies[i], Level.currentLevel)
-          enemies[i].speedx = 3;
-          enemies[i].width = mutantSpecs.width;
-          enemies[i].height = mutantSpecs.height;
-          enemies[i].idleAnimationCounter = 0;
-          enemies[i].idleCurrentFrame = 0;*/
         break;
       case "jumper": // Runs around, jumps when it discovers an edge
-        enemies[i].strategy = new JumpingStrategy(enemies[i], Level.currentLevel, WorldConstants.maxSpeedy, WorldConstants.gravity);
-        enemies[i].speedx = 3.5;
+        enemies[i] = new Jumper(enemies[i], Level.currentLevel);
         break;
       case "bouncer": // Flies around and bounces on the walls
-        enemies[i].strategy = new FlyingStrategy(enemies[i], Level.currentLevel);
+        enemies[i] = new Bouncer(enemies[i], Level.currentLevel);
         break;
     }
   }

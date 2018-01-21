@@ -8,15 +8,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var Mutant = (function (_super) {
-    __extends(Mutant, _super);
-    function Mutant(enemy, currentLevel) {
-        var _this = _super.call(this, new MutantStrategy(enemy, currentLevel)) || this;
-        _this.speedx = 3;
-        _this.width = 88;
-        _this.height = 36;
-        _this.idleAnimationCounter = 0;
-        _this.idleCurrentFrame = 0;
+var Skull = (function (_super) {
+    __extends(Skull, _super);
+    function Skull(enemy, currentLevel) {
+        var _this = _super.call(this, new GlidingStrategy(enemy, currentLevel)) || this;
+        _this.speedx = 2;
         _this.x = enemy.x;
         _this.y = enemy.y;
         _this.oldx = enemy.oldx;
@@ -24,9 +20,9 @@ var Mutant = (function (_super) {
         _this.direction = enemy.direction;
         return _this;
     }
-    Mutant.prototype.draw = function (context) {
-        context.drawImage(Mutant.image, 88 * this.idleCurrentFrame, 0, 88, 36, Viewport.x + this.x, Viewport.y + this.y, 88, 36);
+    Skull.prototype.draw = function (context) {
+        context.drawImage(Skull.image, Viewport.x + this.x, Viewport.y + this.y);
     };
-    return Mutant;
+    return Skull;
 }(Enemy));
-Mutant.image = new Image();
+Skull.image = new Image();

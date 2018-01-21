@@ -8,15 +8,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var Mutant = (function (_super) {
-    __extends(Mutant, _super);
-    function Mutant(enemy, currentLevel) {
-        var _this = _super.call(this, new MutantStrategy(enemy, currentLevel)) || this;
-        _this.speedx = 3;
-        _this.width = 88;
-        _this.height = 36;
-        _this.idleAnimationCounter = 0;
-        _this.idleCurrentFrame = 0;
+var Jumper = (function (_super) {
+    __extends(Jumper, _super);
+    function Jumper(enemy, currentLevel) {
+        var _this = _super.call(this, new JumpingStrategy(enemy, currentLevel)) || this;
+        _this.speedx = 3.5;
+        _this.speedy = 0;
+        _this.jumping = 1;
         _this.x = enemy.x;
         _this.y = enemy.y;
         _this.oldx = enemy.oldx;
@@ -24,9 +22,9 @@ var Mutant = (function (_super) {
         _this.direction = enemy.direction;
         return _this;
     }
-    Mutant.prototype.draw = function (context) {
-        context.drawImage(Mutant.image, 88 * this.idleCurrentFrame, 0, 88, 36, Viewport.x + this.x, Viewport.y + this.y, 88, 36);
+    Jumper.prototype.draw = function (context) {
+        context.drawImage(Jumper.image, 36, 0, 17, 30, Viewport.x + this.x, Viewport.y + this.y, 17, 30);
     };
-    return Mutant;
+    return Jumper;
 }(Enemy));
-Mutant.image = new Image();
+Jumper.image = new Image();
