@@ -316,7 +316,7 @@ var renderEnemies = function()
 
 var updatePlayer = function(index) {
 
-  if(index === 0) {
+  if(index === 0) { // Collision between players
     var distX = players[0].x+players[0].width/2 - (players[1].x+players[1].width/2);
     var distY = players[0].y+players[0].height/2 - (players[1].y+players[1].height/2);
 
@@ -403,7 +403,7 @@ var updatePlayer = function(index) {
 		if(Level.currentLevel[arrayPos].blocking==1) {
 			players[index].jumping = 0;
 
-			while(Level.currentLevel[Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/Level.tileSize)*Level.width].blocking==1) {
+			while(Level.getBlockAt(players[index].x+players[index].width/2, players[index].y+players[index].height).blocking==1) {
 				players[index].y-=0.2;
 			}
 			players[index].speedy=0;
@@ -504,35 +504,37 @@ var updateEnemies = function() {
 var updateParticles = function() {
   for(var i = 0; i < particles.length; i++) {
     if(!particles[i].shouldBeDeleted) {
-      var arrayPos = Math.floor((particles[i].x)/Level.tileSize)+Math.floor((particles[i].y)/Level.tileSize)*Level.width;
-      var downRight = Math.floor((particles[i].x+1)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
-      var downLeft = Math.floor((particles[i].x-1)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
-      var down = Math.floor((particles[i].x)/Level.tileSize)+Math.floor((particles[i].y+1)/Level.tileSize)*Level.width;
+      var p = particles[i];
+      var arrayPos = Level.getBlockAt(p.x, p.y);
+      var downRight = Level.getBlockAt(p.x+1,p.y+1);
+      var downLeft = Level.getBlockAt(p.x-1,p.y+1);
+      var down = Level.getBlockAt(p.x,p.y+1); 
 
 
-      var arrayPosOutsideLevel = typeof Level.currentLevel[arrayPos]==='undefined';
-      var downRightOutsideLevel = typeof Level.currentLevel[downRight]==='undefined';
-      var downLeftOutsideLevel = typeof Level.currentLevel[downLeft]==='undefined';
-      var downOutsideLevel = typeof Level.currentLevel[down]==='undefined';
+
+      var arrayPosOutsideLevel = typeof arrayPos==='undefined';
+      var downRightOutsideLevel = typeof downRight==='undefined';
+      var downLeftOutsideLevel = typeof downLeft==='undefined';
+      var downOutsideLevel = typeof down==='undefined';
 
       var anyCheckingPointOutsideOfLevel = arrayPosOutsideLevel || downRightOutsideLevel || downLeftOutsideLevel || downOutsideLevel;
 
       if(anyCheckingPointOutsideOfLevel) {
-        particles[i].shouldBeDeleted = true;
+        p.shouldBeDeleted = true;
       } else {
-        var isDownLeftBlocked = Level.currentLevel[downLeft].blocking==1;
-        var isDownRightBlocked = Level.currentLevel[downRight].blocking==1;
-        var isDownBlocked = Level.currentLevel[down].blocking==1;
+        var isDownLeftBlocked = downLeft.blocking==1;
+        var isDownRightBlocked = downRight.blocking==1;
+        var isDownBlocked = down.blocking==1;
 
         if(isDownBlocked && isDownRightBlocked && isDownLeftBlocked) {
-          particles[i].state = 0;
+          p.state = 0;
         } else if(isDownBlocked && (!isDownRightBlocked || !isDownLeftBlocked)) {
-          particles[i].state = 2;
+          p.state = 2;
         } else {
-          particles[i].state = 1;
+          p.state = 1;
         }
 
-        particles[i].move();
+        p.move();
       }
     }
   }
