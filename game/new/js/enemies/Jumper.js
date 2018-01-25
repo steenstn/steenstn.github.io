@@ -15,6 +15,8 @@ var Jumper = (function (_super) {
         _this.speedx = 3.5;
         _this.speedy = 0;
         _this.jumping = 1;
+        _this.animationCounter = 0;
+        _this.currentFrame = 0;
         _this.x = enemy.x;
         _this.y = enemy.y;
         _this.oldx = enemy.oldx;
@@ -23,7 +25,7 @@ var Jumper = (function (_super) {
         return _this;
     }
     Jumper.prototype.draw = function (context) {
-        context.drawImage(Jumper.image, 36, 0, 17, 30, Viewport.x + this.x, Viewport.y + this.y, 17, 30);
+        context.drawImage(Jumper.image, 16 * this.currentFrame, 30 - 30 * this.direction, 16, 30, Viewport.x + this.x, Viewport.y + this.y, 16, 30);
     };
     return Jumper;
 }(Enemy));

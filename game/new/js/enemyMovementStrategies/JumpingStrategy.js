@@ -4,6 +4,11 @@ var JumpingStrategy = (function () {
         this.currentLevel = currentLevel;
     }
     JumpingStrategy.prototype.move = function (enemy) {
+        enemy.animationCounter++;
+        if (enemy.animationCounter > 3) {
+            enemy.currentFrame = 1 - enemy.currentFrame;
+            enemy.animationCounter = 0;
+        }
         if (enemy.direction == 1)
             enemy.x += enemy.speedx;
         else
@@ -16,7 +21,7 @@ var JumpingStrategy = (function () {
                 arrayPos = Math.floor((enemy.x + 15) / Level.tileSize) + Math.floor((enemy.y + 15) / Level.tileSize) * Level.width;
             else
                 arrayPos = Math.floor((enemy.x - 15) / Level.tileSize) + Math.floor((enemy.y + 15) / Level.tileSize) * Level.width;
-            var shouldJump = this.currentLevel[arrayPos].blocking == 0 || Math.random() > 0.98;
+            var shouldJump = (this.currentLevel[arrayPos].blocking == 0 && Math.random() > 0.8) || Math.random() > 0.98;
             if (shouldJump) {
                 enemy.jumping = 1;
                 enemy.speedy = -5;
@@ -26,7 +31,7 @@ var JumpingStrategy = (function () {
         if (enemy.speedy < WorldConstants.maxSpeedy)
             enemy.speedy += WorldConstants.gravity;
         enemy.y += enemy.speedy;
-        arrayPos = Math.floor((enemy.x + 5) / Level.tileSize) + Math.floor((enemy.y + 5) / Level.tileSize) * Level.width;
+        arrayPos = Math.floor((enemy.x + 15) / Level.tileSize) + Math.floor((enemy.y + 30) / Level.tileSize) * Level.width;
         if (this.currentLevel[arrayPos].blocking == 1) {
             enemy.y = enemy.oldy;
             if (enemy.speedy < 0) {

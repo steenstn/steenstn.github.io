@@ -1,9 +1,15 @@
 class JumpingStrategy  {
+
   constructor(public enemy, public currentLevel) {
 
   }
 
   move(enemy : Jumper) {
+    enemy.animationCounter++;
+    if(enemy.animationCounter > 3) {
+      enemy.currentFrame = 1 - enemy.currentFrame;
+      enemy.animationCounter = 0;
+    }
 		if(enemy.direction==1)
 			enemy.x+=enemy.speedx;
 		else
@@ -23,7 +29,7 @@ class JumpingStrategy  {
 			else
 				arrayPos=Math.floor((enemy.x-15)/Level.tileSize)+Math.floor((enemy.y+15)/Level.tileSize)*Level.width;
 
-      let shouldJump = this.currentLevel[arrayPos].blocking==0 || Math.random()>0.98;
+      let shouldJump = (this.currentLevel[arrayPos].blocking==0 && Math.random()>0.8) || Math.random()>0.98;
 			if(shouldJump)
 			{
 				enemy.jumping=1;
@@ -36,10 +42,11 @@ class JumpingStrategy  {
 			enemy.speedy+=WorldConstants.gravity;
 
 		enemy.y+=enemy.speedy;
-		arrayPos=Math.floor((enemy.x+5)/Level.tileSize)+Math.floor((enemy.y+5)/Level.tileSize)*Level.width;
+		arrayPos=Math.floor((enemy.x+15)/Level.tileSize)+Math.floor((enemy.y+30)/Level.tileSize)*Level.width;
 
 		if(this.currentLevel[arrayPos].blocking==1) {
 			enemy.y=enemy.oldy;
+      
       if(enemy.speedy < 0) {
         enemy.speedy = 0;
       } else {

@@ -5,6 +5,8 @@ class Jumper extends Enemy {
   speedy = 0;
   jumping = 1;
   direction : number;
+  animationCounter = 0;
+  currentFrame = 0;
 
   constructor(enemy, currentLevel) {
     super(new JumpingStrategy(enemy, currentLevel));
@@ -16,6 +18,6 @@ class Jumper extends Enemy {
   }
 
   draw(context) {
-    context.drawImage(Jumper.image,36,0,17,30,Viewport.x+this.x,Viewport.y+this.y, 17, 30);
+    context.drawImage(Jumper.image,16*this.currentFrame,30-30*this.direction,16,30,Viewport.x+this.x,Viewport.y+this.y, 16, 30);
     }
 }

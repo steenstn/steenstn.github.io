@@ -130,7 +130,6 @@ skurkImage.width = 120;
 skurkImage.height = 30;
 
 Bouncer.image = skurkImage;
-Jumper.image = skurkImage;
 
 var backgroundImage = new Image();
 backgroundImage.src = "background.png";
@@ -151,6 +150,10 @@ Skull.image.height = 50;
 Mutant.image.src = "mutant.png";
 Mutant.image.width = 88;
 Mutant.image.height = 36;
+
+Jumper.image.src = "frances.png";
+Jumper.image.width = 32;
+Jumper.image.height = 60;
 
 var mutantSpecs;
 
@@ -508,7 +511,7 @@ var updateParticles = function() {
       var arrayPos = Level.getBlockAt(p.x, p.y);
       var downRight = Level.getBlockAt(p.x+1,p.y+1);
       var downLeft = Level.getBlockAt(p.x-1,p.y+1);
-      var down = Level.getBlockAt(p.x,p.y+1); 
+      var down = Level.getBlockAt(p.x,p.y+1);
 
 
 
