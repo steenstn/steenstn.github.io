@@ -10,12 +10,16 @@ class JumpingStrategy  {
       enemy.currentFrame = 1 - enemy.currentFrame;
       enemy.animationCounter = 0;
     }
-		if(enemy.direction==1)
-			enemy.x+=enemy.speedx;
-		else
-			enemy.x-=enemy.speedx;
+    var arrayPos;
+		if(enemy.direction==1) {
+      enemy.x+=enemy.speedx;
+      arrayPos=Math.floor((enemy.x+20)/Level.tileSize)+Math.floor((enemy.y+15)/Level.tileSize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
 
-		var arrayPos=Math.floor((enemy.x+5)/Level.tileSize)+Math.floor((enemy.y+5)/Level.tileSize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
+    }	else{
+			enemy.x-=enemy.speedx;
+      arrayPos=Math.floor((enemy.x-5)/Level.tileSize)+Math.floor((enemy.y+15)/Level.tileSize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
+
+    }
 
 		if(this.currentLevel[arrayPos].blocking==1 || this.currentLevel[arrayPos].type=="h")
 			enemy.direction=1-enemy.direction;
@@ -46,7 +50,7 @@ class JumpingStrategy  {
 
 		if(this.currentLevel[arrayPos].blocking==1) {
 			enemy.y=enemy.oldy;
-      
+
       if(enemy.speedy < 0) {
         enemy.speedy = 0;
       } else {

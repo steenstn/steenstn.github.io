@@ -9,11 +9,15 @@ var JumpingStrategy = (function () {
             enemy.currentFrame = 1 - enemy.currentFrame;
             enemy.animationCounter = 0;
         }
-        if (enemy.direction == 1)
+        var arrayPos;
+        if (enemy.direction == 1) {
             enemy.x += enemy.speedx;
-        else
+            arrayPos = Math.floor((enemy.x + 20) / Level.tileSize) + Math.floor((enemy.y + 15) / Level.tileSize) * Level.width;
+        }
+        else {
             enemy.x -= enemy.speedx;
-        var arrayPos = Math.floor((enemy.x + 5) / Level.tileSize) + Math.floor((enemy.y + 5) / Level.tileSize) * Level.width;
+            arrayPos = Math.floor((enemy.x - 5) / Level.tileSize) + Math.floor((enemy.y + 15) / Level.tileSize) * Level.width;
+        }
         if (this.currentLevel[arrayPos].blocking == 1 || this.currentLevel[arrayPos].type == "h")
             enemy.direction = 1 - enemy.direction;
         if (enemy.jumping == 0) {
