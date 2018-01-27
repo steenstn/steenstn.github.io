@@ -17,7 +17,7 @@ class Mutant extends Enemy {
   }
 
   draw(context) {
-    context.drawImage(Mutant.image, 88*this.idleCurrentFrame, 0, 88, 36,Viewport.x+this.x,Viewport.y+this.y, 88, 36);
+    context.drawImage(Mutant.image, 88*this.idleCurrentFrame, 0, 88, 36,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), 88, 36);
   }
 
 }
