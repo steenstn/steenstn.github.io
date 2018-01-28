@@ -816,10 +816,11 @@ var GameLoop = function(){
     }
   }
 
-	arrayPos=Math.floor((players[0].x+players[0].width/2)/Level.tileSize)+Math.floor((players[0].y+players[0].height)/Level.tileSize)*Level.width;
-  var arrayPos2 = Math.floor((players[1].x+players[1].width/2)/Level.tileSize)+Math.floor((players[1].y+players[1].height)/Level.tileSize)*Level.width;
+//	arrayPos=Math.floor((players[0].x+players[0].width/2)/Level.tileSize)+Math.floor((players[0].y+players[0].height)/Level.tileSize)*Level.width;
+  var arrayPos1 = Level.getBlockAt(players[0].x + players[0].width/2, players[0].y + players[0].height/2);
+  var arrayPos2 = Level.getBlockAt(players[1].x + players[1].width/2, players[1].y + players[1].height/2);
 
-	if(Level.currentLevel[arrayPos].type=="k" || Level.currentLevel[arrayPos2].type=="k") {
+	if(arrayPos1.type=="k" || arrayPos2.type=="k") {
 			levelNow++;
 			lastScore=score;
 			loadLevel(levelNow);
