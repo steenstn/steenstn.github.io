@@ -12,31 +12,31 @@ var JumpingStrategy = (function () {
         var arrayPos;
         if (enemy.direction == 1) {
             enemy.x += enemy.speedx;
-            arrayPos = Math.floor((enemy.x + 20) / Level.tileSize) + Math.floor((enemy.y + 15) / Level.tileSize) * Level.width;
+            arrayPos = Level.getBlockAt(enemy.x + 20, enemy.y + 15);
         }
         else {
             enemy.x -= enemy.speedx;
-            arrayPos = Math.floor((enemy.x - 5) / Level.tileSize) + Math.floor((enemy.y + 15) / Level.tileSize) * Level.width;
+            arrayPos = Level.getBlockAt(enemy.x - 5, enemy.y + 15);
         }
-        if (this.currentLevel[arrayPos].blocking == 1 || this.currentLevel[arrayPos].type == "h")
+        if (arrayPos.blocking == 1 || arrayPos.type == "h")
             enemy.direction = 1 - enemy.direction;
         if (enemy.jumping == 0) {
             if (enemy.direction == 1)
-                arrayPos = Math.floor((enemy.x + 15) / Level.tileSize) + Math.floor((enemy.y + 15) / Level.tileSize) * Level.width;
+                arrayPos = Level.getBlockAt(enemy.x + 15, enemy.y + 15);
             else
-                arrayPos = Math.floor((enemy.x - 15) / Level.tileSize) + Math.floor((enemy.y + 15) / Level.tileSize) * Level.width;
-            var shouldJump = (this.currentLevel[arrayPos].blocking == 0 && Math.random() > 0.8) || Math.random() > 0.98;
+                arrayPos = Level.getBlockAt(enemy.x - 15, enemy.y + 15);
+            var shouldJump = (arrayPos.blocking == 0 && Math.random() > 0.8) || Math.random() > 0.98;
             if (shouldJump) {
                 enemy.jumping = 1;
                 enemy.speedy = -5;
             }
         }
-        arrayPos = Math.floor((enemy.x + 5) / Level.tileSize) + Math.floor((enemy.y) / Level.tileSize) * Level.width;
+        arrayPos = Level.getBlockAt(enemy.x + 5, enemy.y);
         if (enemy.speedy < WorldConstants.maxSpeedy)
             enemy.speedy += WorldConstants.gravity;
         enemy.y += enemy.speedy;
-        arrayPos = Math.floor((enemy.x + 15) / Level.tileSize) + Math.floor((enemy.y + 30) / Level.tileSize) * Level.width;
-        if (this.currentLevel[arrayPos].blocking == 1) {
+        arrayPos = Level.getBlockAt(enemy.x + 15, enemy.y + 30);
+        if (arrayPos.blocking == 1) {
             enemy.y = enemy.oldy;
             if (enemy.speedy < 0) {
                 enemy.speedy = 0;

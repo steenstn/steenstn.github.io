@@ -12,8 +12,8 @@ var FlyingStrategy = (function () {
         else if (enemy.speedx < 0) {
             xOffset = 0;
         }
-        var arrayPos = Math.floor((enemy.x + xOffset) / Level.tileSize) + Math.floor((enemy.y + yOffset) / Level.tileSize) * Level.width;
-        if (this.currentLevel[arrayPos].blocking == 1 || this.currentLevel[arrayPos].type == "h") {
+        var arrayPos = Level.getBlockAt(enemy.x + xOffset, enemy.y + yOffset);
+        if (arrayPos.blocking == 1 || arrayPos.type == "h") {
             enemy.speedx *= -1;
         }
         xOffset = 10;
@@ -23,8 +23,8 @@ var FlyingStrategy = (function () {
         else if (enemy.speedy > 0) {
             yOffset = 31;
         }
-        arrayPos = Math.floor((enemy.x + xOffset) / Level.tileSize) + Math.floor((enemy.y + yOffset) / Level.tileSize) * Level.width;
-        if (this.currentLevel[arrayPos].blocking == 1 || this.currentLevel[arrayPos].type == "h") {
+        arrayPos = Level.getBlockAt(enemy.x + xOffset, enemy.y + yOffset);
+        if (arrayPos.blocking == 1 || arrayPos.type == "h") {
             enemy.speedy *= -1;
         }
         enemy.x += enemy.speedx;

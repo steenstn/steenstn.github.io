@@ -14,8 +14,8 @@ class FlyingStrategy{
 			xOffset = 0;
 		}
 
-    var arrayPos=Math.floor((enemy.x+xOffset)/Level.tileSize)+Math.floor((enemy.y+yOffset)/Level.tileSize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
-    if(this.currentLevel[arrayPos].blocking==1 || this.currentLevel[arrayPos].type=="h" )
+    var arrayPos=Level.getBlockAt(enemy.x + xOffset, enemy.y + yOffset);
+    if(arrayPos.blocking==1 || arrayPos.type=="h" )
     {
       enemy.speedx*=-1;
     }
@@ -31,9 +31,9 @@ class FlyingStrategy{
 			yOffset = 31;
 		}
 
-    arrayPos=Math.floor((enemy.x+xOffset)/Level.tileSize)+Math.floor((enemy.y+yOffset)/Level.tileSize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
+    arrayPos=Level.getBlockAt(enemy.x + xOffset, enemy.y + yOffset);
 
-		if(this.currentLevel[arrayPos].blocking==1 || this.currentLevel[arrayPos].type=="h" )
+		if(arrayPos.blocking==1 || arrayPos.type=="h" )
 		{
 			enemy.speedy*=-1;
 		}
