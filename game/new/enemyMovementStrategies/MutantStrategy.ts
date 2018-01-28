@@ -34,23 +34,23 @@ class MutantStrategy implements IEnemyMovementStrategy {
     let enemyWidth = typeof enemy.width == 'number' ? enemy.width : this.mutantWidth;
     let enemyHeight = typeof enemy.height == 'number' ? enemy.height : this.mutantHeight;
 
-		var arrayPos=Math.floor((enemy.x+5)/Level.tileSize)+Math.floor((enemy.y+5)/Level.tileSize)*Level.width; // The position in the level array(Middle of the enemy at the moment)
-    var bottomArrayPos = Math.floor((enemy.x+enemyWidth/2)/Level.tileSize)+Math.floor((enemy.y+enemyHeight)/Level.tileSize)*Level.width;
+		var arrayPos=Level.getBlockAt(enemy.x + 5, enemy.y + 5);
+    var bottomArrayPos = Level.getBlockAt(enemy.x + enemyWidth / 2, enemy.y + enemyHeight);
 
-    if(this.currentLevel[bottomArrayPos].type==".") {
+    if(bottomArrayPos.type==".") {
       enemy.y++;
     }
-		if(this.currentLevel[arrayPos].blocking==1 || this.currentLevel[arrayPos].type=="h")
+		if(arrayPos.blocking==1 || arrayPos.type=="h")
 			enemy.direction=1-enemy.direction;
 
 
 		// Check one tile ahead and below, if it's empty, turn around
 		if(enemy.direction==1) // Going right
-			arrayPos=Math.floor((enemy.x+enemyWidth+5)/Level.tileSize)+Math.floor((enemy.y+enemyHeight+15)/Level.tileSize)*Level.width;
+			arrayPos=Level.getBlockAt(enemy.x + enemyWidth + 5, enemy.y + enemyHeight + 15);
 		else
-			arrayPos=Math.floor((enemy.x-5)/Level.tileSize)+Math.floor((enemy.y+enemyHeight+15)/Level.tileSize)*Level.width;
+			arrayPos=Level.getBlockAt(enemy.x - 5, enemy.y + enemyHeight + 15);
 
-    if(this.currentLevel[arrayPos].blocking==0) {
+    if(arrayPos.blocking==0) {
       enemy.direction=1-enemy.direction;
     }
     if(!this.idle && Math.random() > 0.995) {

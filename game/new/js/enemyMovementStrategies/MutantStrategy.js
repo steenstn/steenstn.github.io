@@ -34,18 +34,18 @@ var MutantStrategy = (function () {
         }
         var enemyWidth = typeof enemy.width == 'number' ? enemy.width : this.mutantWidth;
         var enemyHeight = typeof enemy.height == 'number' ? enemy.height : this.mutantHeight;
-        var arrayPos = Math.floor((enemy.x + 5) / Level.tileSize) + Math.floor((enemy.y + 5) / Level.tileSize) * Level.width;
-        var bottomArrayPos = Math.floor((enemy.x + enemyWidth / 2) / Level.tileSize) + Math.floor((enemy.y + enemyHeight) / Level.tileSize) * Level.width;
-        if (this.currentLevel[bottomArrayPos].type == ".") {
+        var arrayPos = Level.getBlockAt(enemy.x + 5, enemy.y + 5);
+        var bottomArrayPos = Level.getBlockAt(enemy.x + enemyWidth / 2, enemy.y + enemyHeight);
+        if (bottomArrayPos.type == ".") {
             enemy.y++;
         }
-        if (this.currentLevel[arrayPos].blocking == 1 || this.currentLevel[arrayPos].type == "h")
+        if (arrayPos.blocking == 1 || arrayPos.type == "h")
             enemy.direction = 1 - enemy.direction;
         if (enemy.direction == 1)
-            arrayPos = Math.floor((enemy.x + enemyWidth + 5) / Level.tileSize) + Math.floor((enemy.y + enemyHeight + 15) / Level.tileSize) * Level.width;
+            arrayPos = Level.getBlockAt(enemy.x + enemyWidth + 5, enemy.y + enemyHeight + 15);
         else
-            arrayPos = Math.floor((enemy.x - 5) / Level.tileSize) + Math.floor((enemy.y + enemyHeight + 15) / Level.tileSize) * Level.width;
-        if (this.currentLevel[arrayPos].blocking == 0) {
+            arrayPos = Level.getBlockAt(enemy.x - 5, enemy.y + enemyHeight + 15);
+        if (arrayPos.blocking == 0) {
             enemy.direction = 1 - enemy.direction;
         }
         if (!this.idle && Math.random() > 0.995) {

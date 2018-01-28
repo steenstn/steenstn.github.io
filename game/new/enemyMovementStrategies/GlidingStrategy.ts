@@ -5,15 +5,15 @@ class GlidingStrategy{
   move(enemy : Skull) {
 
     if(enemy.direction == 1) {
-      var arrayPos=Math.floor((enemy.x+38)/Level.tileSize)+Math.floor((enemy.y+20)/Level.tileSize)*Level.width; 
-      if(this.currentLevel[arrayPos].blocking==1) {
+      var blockInFrontOfFace=Level.getBlockAt(enemy.x + 38, enemy.y + 20);
+      if(blockInFrontOfFace.blocking==1) {
         enemy.acceleration = -0.2;
           enemy.direction=0;
       }
     }
     if(enemy.direction == 0) {
-      var arrayPos=Math.floor((enemy.x-5)/Level.tileSize)+Math.floor((enemy.y+20)/Level.tileSize)*Level.width;
-      if(this.currentLevel[arrayPos].blocking==1) {
+      var blockInFrontOfFace= Level.getBlockAt(enemy.x - 5, enemy.y + 20);
+      if(blockInFrontOfFace.blocking==1) {
         enemy.acceleration =0.2;
           enemy.direction=1;
       }
