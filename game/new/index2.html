@@ -85,6 +85,15 @@ coinParticleImage.src = "particles/coinpixel.png";
 coinParticleImage.width=2;
 coinParticleImage.height=2;
 
+var whiteParticleImage = new Image();
+whiteParticleImage.src = "particles/whitepixel.png";
+
+var blackParticleImage = new Image();
+blackParticleImage.src = "particles/blackpixel.png";
+
+var blackParticleFactory = new TimedParticleFactory(blackParticleImage);
+var whiteParticleFactory = new TimedParticleFactory(whiteParticleImage);
+
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
 
 var logoImage = new Image();
@@ -146,7 +155,6 @@ Skull.image.src = "skull.png";
 Skull.image.width = 40;
 Skull.image.height = 50;
 
-//var mutantImage = new Image();
 Mutant.image.src = "mutant.png";
 Mutant.image.width = 88;
 Mutant.image.height = 36;
@@ -436,6 +444,10 @@ var updatePlayer = function(index) {
 		if(players[0].hp>100)
 			players[0].hp=100;
 		Level.currentLevel[arrayPos].type=".";
+    for(let i = 0; i < 20; i++) {
+      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y,50)); // antemasque
+      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y,50)); // antemasque
+    }
 	}
 	if(Level.currentLevel[arrayPos].type=="s") // Coins
 	{
@@ -512,8 +524,6 @@ var updateParticles = function() {
       var downRight = Level.getBlockAt(p.x+1,p.y+1);
       var downLeft = Level.getBlockAt(p.x-1,p.y+1);
       var down = Level.getBlockAt(p.x,p.y+1);
-
-
 
       var arrayPosOutsideLevel = typeof arrayPos==='undefined';
       var downRightOutsideLevel = typeof downRight==='undefined';
