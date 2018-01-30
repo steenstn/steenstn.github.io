@@ -407,7 +407,7 @@ var updatePlayer = function(index) {
 	// If going up, check for blocking tiles
 	if(players[index].speedy < 0) {
 		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+5)/Level.tileSize)*Level.width;
-		if(Level.currentLevel[arrayPos].blocking==1) {
+		if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1) {
 			players[index].y = players[index].oldy;
 			players[index].speedy = 0;
 		}
@@ -415,7 +415,7 @@ var updatePlayer = function(index) {
 		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/(Level.tileSize))*Level.width;
 		// If the player lands on a blocking tile, iteratively move him upwards until he is free from the
 		// tile. This will remove bouncing when landing in high speed
-		if(Level.currentLevel[arrayPos].blocking==1) {
+		if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1) {
 			players[index].jumping = 0;
 
 			while(Level.getBlockAt(players[index].x+players[index].width/2, players[index].y+players[index].height).blocking==1) {
@@ -424,11 +424,11 @@ var updatePlayer = function(index) {
 			players[index].speedy=0;
 		}
 	}
-	if(Level.currentLevel[arrayPos].blocking==0) { // Disable jumping when in mid-air
+	if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==0) { // Disable jumping when in mid-air
 		players[index].jumping++;
 	}
 
-	if(Level.currentLevel[arrayPos].type=="g") // Ice block
+	if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].type=="g") // Ice block
 		friction=1; // No friction
 	else
 		friction=WorldConstants.normalFriction;
@@ -443,11 +443,7 @@ var updatePlayer = function(index) {
 
 	if(Level.currentLevel[arrayPos].type=="p" || Level.currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
 	{
-    /*
-		if(players[0].hp<100)
-			players[0].hp+=10;
-		if(players[0].hp>100)
-			players[0].hp=100;*/
+    
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 30; i++) {
       particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y,players[1-index]));
