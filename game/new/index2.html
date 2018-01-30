@@ -222,7 +222,7 @@ var clear = function(){
   } else {
     ctx.fillStyle=backgroundGradient;
     ctx.fillRect(0,0,Viewport.width,Viewport.height);
-  }
+
   ctx.strokeStyle='rgba(255, 255, 255, 0.3)';
 
   // Left
@@ -249,6 +249,31 @@ var clear = function(){
   ctx.beginPath();
   ctx.arc(Viewport.width-Viewport.width/8+Viewport.x/8,110,90,0,2*Math.PI);
   ctx.stroke();
+  // Bottom
+  ctx.beginPath();
+  ctx.arc(Viewport.width/2+Viewport.x/12,Viewport.height,80,0,2*Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(Viewport.width/2+Viewport.x/12,Viewport.height,60,0,2*Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(Viewport.width/2+Viewport.x/12,Viewport.height,40,0,2*Math.PI);
+  ctx.stroke();
+
+  // Four bottom
+  ctx.beginPath();
+  ctx.arc(Viewport.width*0.42+Viewport.x/12,Viewport.height*0.67,30,0,2*Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(Viewport.width*0.35+Viewport.x/12,Viewport.height*0.82,30,0,2*Math.PI);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(Viewport.width*0.58+Viewport.x/12,Viewport.height*0.67,30,0,2*Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(Viewport.width*0.65+Viewport.x/12,Viewport.height*0.82,30,0,2*Math.PI);
+  ctx.stroke();}
 }
 
 var clearBlack = function() {
@@ -443,7 +468,7 @@ var updatePlayer = function(index) {
 
 	if(Level.currentLevel[arrayPos].type=="p" || Level.currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
 	{
-    
+
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 30; i++) {
       particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y,players[1-index]));
