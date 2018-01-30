@@ -17,6 +17,7 @@ var HealthParticle = (function (_super) {
         _this.movingState = 0;
         _this.lifetime = 20;
         _this.target = target;
+        _this.xFriction = 1.085;
         return _this;
     }
     HealthParticle.prototype.move = function () {

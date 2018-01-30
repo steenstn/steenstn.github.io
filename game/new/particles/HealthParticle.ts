@@ -7,6 +7,7 @@ class HealthParticle extends Particle {
   constructor(x: number, y:number, xSpeed: number, ySpeed: number, image: any, target: any) {
     super(x, y, xSpeed, ySpeed, image);
     this.target = target;
+    this.xFriction = 1.085;
   }
 
   move() {
