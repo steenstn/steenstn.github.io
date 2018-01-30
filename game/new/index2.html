@@ -41,8 +41,12 @@
 <script src="js/particles/Particle.js" type="text/javascript"></script>
 <script src="js/particles/BloodParticle.js" type="text/javascript"></script>
 <script src="js/particles/TimedParticle.js" type="text/javascript"></script>
+<script src="js/particles/HealthParticle.js" type="text/javascript"></script>
 <script src="js/particles/BloodFactory.js" type="text/javascript"></script>
 <script src="js/particles/TimedParticleFactory.js" type="text/javascript"></script>
+<script src="js/particles/HealthParticleFactory.js" type="text/javascript"></script>
+
+<script src="js/Helper.js" type="text/javascript"></script>
 
 <script src="js/particles/ParticleCleaner.js" type="text/javascript"></script>
 
@@ -91,8 +95,8 @@ whiteParticleImage.src = "particles/whitepixel.png";
 var blackParticleImage = new Image();
 blackParticleImage.src = "particles/blackpixel.png";
 
-var blackParticleFactory = new TimedParticleFactory(blackParticleImage);
-var whiteParticleFactory = new TimedParticleFactory(whiteParticleImage);
+var blackParticleFactory = new HealthParticleFactory(blackParticleImage);
+var whiteParticleFactory = new HealthParticleFactory(whiteParticleImage);
 
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
 
@@ -439,14 +443,17 @@ var updatePlayer = function(index) {
 
 	if(Level.currentLevel[arrayPos].type=="p" || Level.currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
 	{
+    /*
 		if(players[0].hp<100)
 			players[0].hp+=10;
 		if(players[0].hp>100)
-			players[0].hp=100;
+			players[0].hp=100;*/
 		Level.currentLevel[arrayPos].type=".";
-    for(let i = 0; i < 20; i++) {
-      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y,50)); // antemasque
-      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y,50)); // antemasque
+    for(let i = 0; i < 30; i++) {
+      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y,players[1-index]));
+      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y,players[1-index]));
+      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y,players[index]));
+      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y,players[index]));
     }
 	}
 	if(Level.currentLevel[arrayPos].type=="s") // Coins
@@ -787,7 +794,8 @@ var drawAllText = function() {
 	ctx.strokeRect(Viewport.width/2-51,15,102,10);
 	if(players[0].dead==0) {
 		ctx.fillStyle = "rgb(50,129,28)";
-		ctx.fillRect (Viewport.width/2-50,16,players[0].hp,8);
+    var totalHealth = (players[0].hp + players[1].hp) / 2;
+		ctx.fillRect (Viewport.width/2-50,16,Math.round(totalHealth),8);
 	}
 
 }
@@ -795,8 +803,10 @@ var drawAllText = function() {
 var GameLoop = function(){
   numFramesSinceStart++;
 	clear();
-	if(players[0].hp<1) {
+  var totalHealth = (players[0].hp + players[1].hp) / 2;
+	if(totalHealth<1) {
 		players[0].hp=0;
+    players[1].hp=0;
 		score=lastScore;
 		loadLevel(levelNow);
 
