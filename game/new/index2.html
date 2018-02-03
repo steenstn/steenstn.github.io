@@ -522,7 +522,7 @@ var updateEnemies = function() {
            }
         }
         players[playerIndex].speedy=-0.25*WorldConstants.kickbackForce;
-  			players[0].hp-=4;
+  			players[0].hp-=2;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
         for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
@@ -825,6 +825,7 @@ var GameLoop = function(){
   numFramesSinceStart++;
 	clear();
   var totalHealth = (players[0].hp + players[1].hp) / 2;
+  players[0].hp = players[1].hp = totalHealth;
 	if(totalHealth<1) {
 		players[0].hp=0;
     players[1].hp=0;
