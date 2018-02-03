@@ -31,6 +31,7 @@ class Player {
   keyLeft : number;
   keyRight : number;
 
+  private animationSpeed = 3;
 
 
 
@@ -77,19 +78,47 @@ class Player {
    this.killZonex = this.x+5;
    this.killZoney = this.y + this.height - 5;
  }
-  drawHurtZone(context) {
-    context.fillStyle = '#FF0a00';
-    context.beginPath();
-    context.rect(this.hurtZonex + Viewport.x, this.hurtZoney + Viewport.y,this.hurtZoneWidth, this.hurtZoneHeight);
-    context.closePath();
-    context.fill();
-  }
 
-  drawKillZone(context) {
-    context.fillStyle = '#0aDD00';
-	  context.beginPath();
-	  context.rect(this.killZonex + Viewport.x, this.killZoney + Viewport.y,this.killZoneWidth, this.killZoneHeight);
-	  context.closePath();
-	  context.fill();
-  }
+ draw(context) {
+   if(this.animationCounter>this.animationSpeed) {
+     this.animationCounter=0;
+     this.currentFrame=1-this.currentFrame;
+   }
+   if(this.idleAnimationCounter > this.animationSpeed*3) {
+     this.idleAnimationCounter = 0;
+     this.idleCurrentFrame = 1 - this.idleCurrentFrame;
+   }
+   if(this.speedy<-0.5) // JUmping up
+   {
+     context.drawImage(this.image,40,30*this.goingLeft, 20,30,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), this.width, this.height);
+   }
+   else if(this.speedy>0.5) // Jumping down
+   {
+     context.drawImage(this.image,60,30*this.goingLeft, 20,30,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), this.width, this.height);
+   }
+   else if(this.speedx>0.05 || this.speedx<-0.05) // Running
+   {
+     context.drawImage(this.image,80+20*this.currentFrame,30*this.goingLeft, 20,30,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), this.width, this.height);
+   }
+   else
+   {
+     context.drawImage(this.image,0+20*this.idleCurrentFrame,30*this.goingLeft, 20,30,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), this.width, this.height);
+   }
+ }
+
+drawHurtZone(context) {
+  context.fillStyle = '#FF0a00';
+  context.beginPath();
+  context.rect(this.hurtZonex + Viewport.x, this.hurtZoney + Viewport.y,this.hurtZoneWidth, this.hurtZoneHeight);
+  context.closePath();
+  context.fill();
+}
+
+drawKillZone(context) {
+  context.fillStyle = '#0aDD00';
+  context.beginPath();
+  context.rect(this.killZonex + Viewport.x, this.killZoney + Viewport.y,this.killZoneWidth, this.killZoneHeight);
+  context.closePath();
+  context.fill();
+}
 }

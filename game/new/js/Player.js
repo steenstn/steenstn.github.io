@@ -3,6 +3,7 @@ var Player = (function () {
         this.x = x;
         this.y = y;
         this.image = image;
+        this.animationSpeed = 3;
         this.x = x;
         this.y = y;
         this.image = image;
@@ -37,6 +38,28 @@ var Player = (function () {
     Player.prototype.updateKillZone = function () {
         this.killZonex = this.x + 5;
         this.killZoney = this.y + this.height - 5;
+    };
+    Player.prototype.draw = function (context) {
+        if (this.animationCounter > this.animationSpeed) {
+            this.animationCounter = 0;
+            this.currentFrame = 1 - this.currentFrame;
+        }
+        if (this.idleAnimationCounter > this.animationSpeed * 3) {
+            this.idleAnimationCounter = 0;
+            this.idleCurrentFrame = 1 - this.idleCurrentFrame;
+        }
+        if (this.speedy < -0.5) {
+            context.drawImage(this.image, 40, 30 * this.goingLeft, 20, 30, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), this.width, this.height);
+        }
+        else if (this.speedy > 0.5) {
+            context.drawImage(this.image, 60, 30 * this.goingLeft, 20, 30, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), this.width, this.height);
+        }
+        else if (this.speedx > 0.05 || this.speedx < -0.05) {
+            context.drawImage(this.image, 80 + 20 * this.currentFrame, 30 * this.goingLeft, 20, 30, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), this.width, this.height);
+        }
+        else {
+            context.drawImage(this.image, 0 + 20 * this.idleCurrentFrame, 30 * this.goingLeft, 20, 30, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), this.width, this.height);
+        }
     };
     Player.prototype.drawHurtZone = function (context) {
         context.fillStyle = '#FF0a00';
