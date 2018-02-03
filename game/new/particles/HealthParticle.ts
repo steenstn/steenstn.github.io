@@ -12,10 +12,7 @@ class HealthParticle extends Particle {
 
   move() {
     super.move();
-    if(this.shouldBeDeleted) {
-      return;
-    }
-
+    
     if(this.movingState===0) {
       this.xSpeed/=this.xFriction;
       this.ySpeed/=this.xFriction;

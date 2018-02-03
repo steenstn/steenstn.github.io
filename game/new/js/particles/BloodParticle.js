@@ -22,7 +22,7 @@ var BloodParticle = (function (_super) {
             this.xSpeed /= this.xFriction;
         }
         else if (this.state === BloodParticle.DRIPPING) {
-            this.ySpeed = 0.02;
+            this.ySpeed = 0.015;
             this.xSpeed = 0;
             this.y += this.ySpeed;
         }
