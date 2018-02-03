@@ -8,6 +8,7 @@ class TimedParticle extends Particle {
     }
 
     move() {
+      super.move();
       this.lifetime--;
 
       if(this.lifetime <= 0) {

@@ -21,9 +21,7 @@ var HealthParticle = (function (_super) {
         return _this;
     }
     HealthParticle.prototype.move = function () {
-        if (this.shouldBeDeleted) {
-            return;
-        }
+        _super.prototype.move.call(this);
         if (this.movingState === 0) {
             this.xSpeed /= this.xFriction;
             this.ySpeed /= this.xFriction;

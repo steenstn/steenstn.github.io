@@ -488,39 +488,8 @@ var updateEnemies = function() {
 
 var updateParticles = function() {
   for(var i = 0; i < particles.length; i++) {
-    if(!particles[i].shouldBeDeleted) {
-      var p = particles[i];
-      var arrayPos = Level.getBlockAt(p.x, p.y);
-      var downRight = Level.getBlockAt(p.x+1,p.y+1);
-      var downLeft = Level.getBlockAt(p.x-1,p.y+1);
-      var down = Level.getBlockAt(p.x,p.y+1);
-
-      var arrayPosOutsideLevel = typeof arrayPos==='undefined';
-      var downRightOutsideLevel = typeof downRight==='undefined';
-      var downLeftOutsideLevel = typeof downLeft==='undefined';
-      var downOutsideLevel = typeof down==='undefined';
-
-      var anyCheckingPointOutsideOfLevel = arrayPosOutsideLevel || downRightOutsideLevel || downLeftOutsideLevel || downOutsideLevel;
-
-      if(anyCheckingPointOutsideOfLevel) {
-        p.shouldBeDeleted = true;
-      } else {
-        var isDownLeftBlocked = downLeft.blocking==1;
-        var isDownRightBlocked = downRight.blocking==1;
-        var isDownBlocked = down.blocking==1;
-
-        if(isDownBlocked && isDownRightBlocked && isDownLeftBlocked) {
-          p.state = 0;
-        } else if(isDownBlocked && (!isDownRightBlocked || !isDownLeftBlocked)) {
-          p.state = 2;
-        } else {
-          p.state = 1;
-        }
-
-        p.move();
-      }
-    }
-  }
+    particles[i].move();
+  }  
 }
 
 var checkKeys = function (modifier) {

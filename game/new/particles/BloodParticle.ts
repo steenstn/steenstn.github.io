@@ -5,6 +5,7 @@ class BloodParticle extends Particle{
   static readonly DRIPPING = 2;
 
   move() {
+    super.move();
     if(this.state === BloodParticle.ACTIVE) {
       this.x+=this.xSpeed;
       this.y+=this.ySpeed;

@@ -16,6 +16,7 @@ var TimedParticle = (function (_super) {
         return _this;
     }
     TimedParticle.prototype.move = function () {
+        _super.prototype.move.call(this);
         this.lifetime--;
         if (this.lifetime <= 0) {
             this.shouldBeDeleted = true;

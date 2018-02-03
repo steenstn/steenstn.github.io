@@ -11,6 +11,7 @@ class HealthParticle extends Particle {
   }
 
   move() {
+    super.move();
     if(this.shouldBeDeleted) {
       return;
     }
