@@ -40,7 +40,7 @@ var Particle = (function () {
         }
     };
     Particle.prototype.render = function (context) {
-        context.drawImage(this.image, this.x + Viewport.x, this.y + Viewport.y);
+        context.drawImage(this.image, Math.round(this.x + Viewport.x), Math.round(this.y + Viewport.y));
     };
     return Particle;
 }());
