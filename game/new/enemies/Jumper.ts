@@ -18,6 +18,6 @@ class Jumper extends Enemy {
   }
 
   draw(context) {
-    context.drawImage(Jumper.image,16*this.currentFrame,30-30*this.direction,16,30,Viewport.x+this.x,Viewport.y+this.y, 16, 30);
+    context.drawImage(Jumper.image,16*this.currentFrame,30-30*this.direction,16,30,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), 16, 30);
     }
 }
