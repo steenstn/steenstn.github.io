@@ -1,7 +1,7 @@
 class Skull extends Enemy {
   static image = new Image();
   speedx = 0;
-  acceleration = 0.5;
+  acceleration;
   direction : number;
   constructor(enemy, currentLevel) {
     super(new GlidingStrategy(enemy, currentLevel));
@@ -10,6 +10,7 @@ class Skull extends Enemy {
     this.oldx = enemy.oldx;
     this.oldy = enemy.oldy;
     this.direction = enemy.direction;
+    this.acceleration = this.direction > 0 ? 0.5 : -0.5;
   }
 
   draw(context) {
