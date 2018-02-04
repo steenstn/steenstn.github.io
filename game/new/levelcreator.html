@@ -591,6 +591,7 @@ var drawText = function()
     ctx.fillText  ("Current tool: " + tool, 4,20);
 	ctx.fillText  ("MouseX: " + parseFloat(mousex-screenx), 4,40);
 	ctx.fillText  ("MouseY: " + parseFloat(mousey-screeny), 4,60);
+
 	for(i=0;i<enemies.length;i++)
 	{
 		ctx.fillText("x: "+parseInt(enemies[i].x),enemies[i].x+15+screenx,enemies[i].y+screeny)
@@ -689,6 +690,7 @@ var overlap = function(x,y,width,height,x2,y2,width2,height2) {
 var GameLoop = function(){
 	clear();
 	checkKeys(1);
+
 	if(mouseIsDown)
 	{
 
