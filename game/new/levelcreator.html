@@ -65,6 +65,9 @@ skullImage.src = "skull.png";
 skullImage.width = 40;
 skullImage.height = 50;
 
+var rock1Image = new Image();
+rock1Image.src = "rock1.png";
+
 var goalx;
 var goaly;
 var nextLevel;
@@ -200,6 +203,7 @@ var updatePlayer = function()
 }
 
 var checkKeys = function (modifier) {
+  //console.log(keysDown);
 	if (38 in keysDown) { // Player holding up
 		if(playerSpeedy>-maxSpeedy)
 			playerSpeedy -= playerAcc * modifier;
@@ -220,8 +224,10 @@ var checkKeys = function (modifier) {
 		tool="skull";
 	if(53 in keysDown) // 5
 		tool="jumper";
-	if(54 in keysDown) // 5
+	if(54 in keysDown) // 6
 		tool="bouncer";
+  if(55 in keysDown) // 7
+    tool="rock1";
 
 	if(78 in keysDown) // n
 		tool="k";
@@ -389,6 +395,16 @@ var renderEnemies = function()
 				ctx.fill();
 		}
 	}
+}
+
+var renderContent = function() {
+  for(var i=0;i<content.length;i++) {
+    switch(content[i].type) {
+      case "rock1":
+        ctx.drawImage(rock1Image, screenx+content[i].x, screeny+content[i].y);
+        break;
+    }
+  }
 }
 
 var drawLevel = function(){
@@ -720,7 +736,12 @@ var GameLoop = function(){
 				playerStartx = parseInt(-screenx+mousex)-5;
 				playerStarty = parseInt(-screeny+mousey)-7;
 
-			} else if(tool=="r") { // Sudda content
+			} else if(tool=="rock1") {
+        if(mouseClick==1) {
+          content.push({type:"rock1", x:-screenx+mousex, y:-screeny+mousey});  
+        }
+
+      } else if(tool=="r") { // Sudda content
 
 				for(i=0;i<enemies.length;i++) {
 					if(overlap(mousex,mousey,1,1,enemies[i].x+screenx,enemies[i].y+screeny,10,10)==true) {
@@ -741,6 +762,7 @@ var GameLoop = function(){
 	drawLevel();
 	renderEnemies();
 	ctx.drawImage(playerImage,30,20,30,20,screenx+playerStartx, screeny+playerStarty,30,20);
+  renderContent();
 	drawText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);
 }
