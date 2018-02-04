@@ -8,14 +8,12 @@ class Particle {
   xFriction : number;
   shouldBeDeleted : boolean;
 
-
   constructor(x, y, xSpeed, ySpeed, image) {
     this.x = x;
     this.y = y;
     this.xSpeed = xSpeed;
     this.ySpeed = ySpeed;
     this.image = image;
-
 
     this.xFriction = 1.1;
     this.shouldBeDeleted = false;

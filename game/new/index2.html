@@ -436,7 +436,8 @@ var updateEnemies = function() {
   			players[0].hp-=2;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
-        for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
+        var bloodAmount = typeof enemies[i].width == 'number' ? (enemies[i].width + enemies[i].height)*2 : WorldConstants.bloodAmount;
+        for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
           particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, 1));
           particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, -1));
         }
@@ -563,7 +564,6 @@ txtFile.onreadystatechange = function() {
     if (txtFile.status === 200 || txtFile.status == 0) {  // Makes sure it's found the file.
       allText = txtFile.responseText;
 	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
-     // lines = txtFile.responseText.split("\n"); // Will separate each line into an array
      drawText("Parsing level...", 10,30);
 
     var loadingBarMaxWidth = 600;
