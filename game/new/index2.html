@@ -238,12 +238,6 @@ var showRect = function(pos){
   ctx.fill();
 }
 
-// Function for checking for overlap between two rectangles
-var overlap = function(x,y,width,height,x2,y2,width2,height2) {
-	return (x < x2+width2 && x+width > x2 && y < y2+height2 && y+height > y2);
-}
-
-
 var render = function(){
 	for(var i = 0; i < players.length; i++) {
     players[i].draw(ctx);
@@ -424,8 +418,8 @@ var updateEnemies = function() {
       var enemyWidth = typeof enemies[i].width == 'number' ? enemies[i].width : 20;
       var enemyHeight = typeof enemies[i].height == 'number' ? enemies[i].height : 20;
 
-      var enemyInHurtZone = overlap(enemies[i].x,enemies[i].y,enemyWidth,enemyHeight,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
-      var enemyInKillZone = overlap(enemies[i].x,enemies[i].y,enemyWidth,enemyHeight,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
+      var enemyInHurtZone = Helper.overlap(enemies[i].x,enemies[i].y,enemyWidth,enemyHeight,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
+      var enemyInKillZone = Helper.overlap(enemies[i].x,enemies[i].y,enemyWidth,enemyHeight,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
 
   		if(enemyInHurtZone) { // 1 = right
         if(enemies[i].speedx>0) {
