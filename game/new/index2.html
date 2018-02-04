@@ -96,6 +96,9 @@ whiteParticleImage.src = "particles/whitepixel.png";
 var blackParticleImage = new Image();
 blackParticleImage.src = "particles/blackpixel.png";
 
+var rock1Image = new Image();
+rock1Image.src = "rock1.png";
+
 var blackParticleFactory = new HealthParticleFactory(blackParticleImage);
 var whiteParticleFactory = new HealthParticleFactory(whiteParticleImage);
 
@@ -264,6 +267,15 @@ var renderEnemies = function()
 	}
 }
 
+var renderContent = function() {
+  for(var i = 0; i < content.length; i++) {
+    switch(content[i].type) {
+      case "rock1":
+        ctx.drawImage(rock1Image, content[i].x + Viewport.x, content[i].y + Viewport.y);
+        break;
+    }
+  }
+}
 
 var updatePlayer = function(index) {
 
@@ -610,7 +622,6 @@ var setUpContent = function() {
 				players[0].x = players[0].oldx = content[i].x - offset;
         players[1].x = players[1].oldx = content[i].x + offset;
 				players[0].y = players[1].y = players[0].oldy = players[1].oldy = content[i].y;
-
 			break;
 		}
 	}
@@ -722,6 +733,7 @@ var GameLoop = function(){
   updateParticles();
   renderEnemies();
 	drawLevel();
+  renderContent();
   if(numFramesSinceStart%200 === 0) {
     particleCleaner.cleanupBlood(particles);
   } else if(numFramesSinceStart%100 === 0) {

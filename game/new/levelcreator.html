@@ -738,7 +738,7 @@ var GameLoop = function(){
 
 			} else if(tool=="rock1") {
         if(mouseClick==1) {
-          content.push({type:"rock1", x:-screenx+mousex, y:-screeny+mousey});  
+          content.push({type:"rock1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey)});
         }
 
       } else if(tool=="r") { // Sudda content
@@ -746,6 +746,12 @@ var GameLoop = function(){
 				for(i=0;i<enemies.length;i++) {
 					if(overlap(mousex,mousey,1,1,enemies[i].x+screenx,enemies[i].y+screeny,10,10)==true) {
 						enemies.splice(i,1);
+						break;
+					}
+				}
+        for(var i=0;i<content.length;i++) {
+					if(content[i].type!="startPos" && overlap(mousex,mousey,1,1,content[i].x+screenx,content[i].y+screeny,10,10)==true) {
+						content.splice(i,1);
 						break;
 					}
 				}
@@ -798,10 +804,11 @@ if($name!="." && $name!=".." && substr($name,-4)==".txt")
 <li>3: Tree (blocks enemies)</li>
 <li>4: Floater (flies back and forth)</li>
 <li>5: Jumber (runs around and jumps)</li>
-<li>6: Bouncer(Bounces around</li>
+<li>6: Bouncer(Bounces around)</li>
+<li>7: Rock</li>
 <li>s: Save</li>
 <li>e: Eraser ground tiles</li>
-<li>r: Eraser for enemies</li>
+<li>r: Eraser for enemies and content</li>
 <li>n: Goal</li>
 <li>z: Legionenm�rke</li>
 <li>x: Familjenm�rke</li>
