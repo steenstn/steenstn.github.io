@@ -134,8 +134,6 @@ players[1].keyLeft = 65
 players[1].keyRight = 68
 players[1].keyUp = 87
 
-var friction=WorldConstants.normalFriction;
-
 var lastScore = 0;
 
 var skurkImage = new Image();
@@ -367,9 +365,9 @@ var updatePlayer = function(index) {
 	}
 
 	if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].type=="g") // Ice block
-		friction=1; // No friction
+		players[index].friction=1; // No friction
 	else
-		friction=WorldConstants.normalFriction;
+		players[index].friction=WorldConstants.normalFriction;
 
   Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 
@@ -502,7 +500,7 @@ var checkKeys = function (modifier) {
 				players[i].speedx += WorldConstants.playerAcc * modifier;
 		}
 		else
-			players[i].speedx/=friction; // Decelerate
+			players[i].speedx/=players[i].friction; // Decelerate
       if(Math.abs(players[i].speedx) < 0.05) {
         players[i].x = Math.round(players[i].x);
         players[i].idleAnimationCounter++;
@@ -629,8 +627,6 @@ var drawLevel = function() {
 		starty=0;
 	var endx=startx+Viewport.width/Level.tileSize+2;
 	var endy=starty+Viewport.height/Level.tileSize+2;
-
-
 
 	if(endx>Level.width)
 		endx=Level.width;

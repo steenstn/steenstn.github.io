@@ -3,6 +3,7 @@ var Player = (function () {
         this.x = x;
         this.y = y;
         this.image = image;
+        this.friction = WorldConstants.normalFriction;
         this.animationSpeed = 3;
         this.x = x;
         this.y = y;
