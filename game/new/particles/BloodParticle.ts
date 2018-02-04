@@ -6,6 +6,9 @@ class BloodParticle extends Particle{
 
   move() {
     super.move();
+    if(this.shouldBeDeleted) {
+      return;
+    }
     if(this.state === BloodParticle.ACTIVE) {
       this.x+=this.xSpeed;
       this.y+=this.ySpeed;

@@ -15,6 +15,9 @@ var BloodParticle = (function (_super) {
     }
     BloodParticle.prototype.move = function () {
         _super.prototype.move.call(this);
+        if (this.shouldBeDeleted) {
+            return;
+        }
         if (this.state === BloodParticle.ACTIVE) {
             this.x += this.xSpeed;
             this.y += this.ySpeed;

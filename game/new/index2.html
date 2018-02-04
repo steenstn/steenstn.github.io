@@ -382,10 +382,10 @@ var updatePlayer = function(index) {
 
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 30; i++) {
-      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y,players[1-index]));
-      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y,players[1-index]));
-      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y,players[index]));
-      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y,players[index]));
+      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
+      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
+      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y, players[index], players[0]));
+      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y, players[index], players[0]));
     }
 	}
 	if(Level.currentLevel[arrayPos].type=="s") // Coins
@@ -693,8 +693,7 @@ var drawAllText = function() {
 	ctx.strokeRect(Viewport.width/2-51,15,102,10);
 	if(players[0].dead==0) {
 		ctx.fillStyle = "rgb(50,129,28)";
-    var totalHealth = (players[0].hp + players[1].hp) / 2;
-		ctx.fillRect (Viewport.width/2-50,16,Math.round(totalHealth),8);
+		ctx.fillRect (Viewport.width/2-50,16,Math.round(players[0].hp),8);
 	}
 
 }
@@ -702,9 +701,7 @@ var drawAllText = function() {
 var GameLoop = function(){
   numFramesSinceStart++;
 	clear();
-  var totalHealth = (players[0].hp + players[1].hp) / 2;
-  players[0].hp = players[1].hp = totalHealth;
-	if(totalHealth<1) {
+	if(players[0].hp<1) {
 		players[0].hp=0;
     players[1].hp=0;
 		score=lastScore;
