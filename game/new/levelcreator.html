@@ -25,9 +25,9 @@
 <div align="center">
 <canvas id='c'></canvas><br />
 <p>level - enemies - content</p>
-<textarea id='levelTextarea' cols='50' rows='10'></textarea>
-<textarea id='enemiesTextarea' cols='50' rows='10'></textarea>
-<textarea id='contentTextarea' cols='50' rows='10'></textarea>
+<textarea id='levelTextarea' cols='50' rows='5'></textarea>
+<textarea id='enemiesTextarea' cols='50' rows='5'></textarea>
+<textarea id='contentTextarea' cols='50' rows='5'></textarea>
 </div>
 <script>
 var width = 800,
@@ -42,7 +42,7 @@ c.height = height;
 var screenx = width/2.5;
 var screeny = height/2.5;
 
-var levelToLoad = "level1";
+var levelToLoad = "level0";
 var oldscreenx = screenx;
 var oldscreeny = screeny;
 var tilesize=32;
@@ -93,16 +93,13 @@ var playerx=2*tilesize,playery=2*tilesize;
 var oldplayerx = playerx;
 var oldplayery = playery;
 var playerAcc=0.8;
-var gravity=0.5;
 var maxSpeedx=12;
 var maxSpeedy=12;
 var friction=1.4;
 
 var playerSpeedx=0;
 var playerSpeedy=0;
-var jumping=0;
-var jumpStrength=9;
-var jumpAcc=1;
+
 var currentLevel = new Array(levelWidth*levelHeight);
 for(var i=0;i<levelWidth*levelHeight;i++)
 	currentLevel[i]="1";
@@ -251,7 +248,7 @@ var checkKeys = function (modifier) {
 
 	if(83 in keysDown) // S
 	{
-		saveLevel("lol");
+		saveLevel();
 	}
 	if(76 in keysDown) // L
 	{
@@ -355,7 +352,7 @@ var setUpContent = function() {
 	}
 }
 
-var saveLevel = function(levelname) {
+var saveLevel = function() {
 	var levelString = "";
 	for(var i = 0; i < currentLevel.length; i++) {
 		levelString = levelString + (""+currentLevel[i]);
