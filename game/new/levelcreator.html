@@ -19,6 +19,9 @@
   </style>
 </head>
 <body>
+  <script src="js/Helper.js" type="text/javascript"></script>
+
+
 <div align="center">
 <canvas id='c'></canvas><br />
 <p>level - enemies - content</p>
@@ -40,7 +43,6 @@ var screenx = width/2.5;
 var screeny = height/2.5;
 
 var levelToLoad = "level1";
-var saving=0; // Is the level saved?
 var oldscreenx = screenx;
 var oldscreeny = screeny;
 var tilesize=32;
@@ -179,17 +181,6 @@ var clear = function(){
   ctx.closePath();
   ctx.fill();
 }
-
-
-// Draw player
-var render = function(){
-   /* ctx.fillStyle = '#ddaaef';
-    ctx.beginPath();
-    ctx.rect(screenx+playerx,screeny+playery,10,10);
-    ctx.closePath();
-    ctx.fill();*/
-};
-
 
 var updatePlayer = function()
 {
@@ -597,12 +588,6 @@ var drawLevel = function(){
 				tilesize,posx,posy, tilesize, tilesize);
 			}
 
-			/*
-			ctx.fillStyle    = '#00F';
-			ctx.font         = '12px Sans-Serif';
-			ctx.textBaseline = 'Top';
-			ctx.fillText  (currentLevel[x+y*levelWidth], posx+tilesize/2,posy+tilesize/2);
-				*/
 		}
 
 
@@ -708,9 +693,6 @@ var checkNeighbours = function(x,y)
 		}
 
 }
-var overlap = function(x,y,width,height,x2,y2,width2,height2) {
-	return (x < x2+width2 && x+width > x2 && y < y2+height2 && y+height > y2);
-}
 
 var GameLoop = function(){
 	clear();
@@ -776,13 +758,13 @@ var GameLoop = function(){
       } else if(tool=="r") { // Sudda content
 
 				for(i=0;i<enemies.length;i++) {
-					if(overlap(mousex,mousey,1,1,enemies[i].x+screenx,enemies[i].y+screeny,10,10)==true) {
+					if(Helper.overlap(mousex,mousey,1,1,enemies[i].x+screenx,enemies[i].y+screeny,10,10)==true) {
 						enemies.splice(i,1);
 						break;
 					}
 				}
         for(var i=0;i<content.length;i++) {
-					if(content[i].type!="startPos" && overlap(mousex,mousey,1,1,content[i].x+screenx,content[i].y+screeny,10,10)==true) {
+					if(content[i].type!="startPos" && Helper.overlap(mousex,mousey,1,1,content[i].x+screenx,content[i].y+screeny,10,10)==true) {
 						content.splice(i,1);
 						break;
 					}
@@ -796,7 +778,6 @@ var GameLoop = function(){
 
 	updatePlayer();
   renderContent(0);
-	render();
 	drawLevel();
 	renderEnemies();
 	ctx.drawImage(playerImage,30,20,30,20,screenx+playerStartx, screeny+playerStarty,30,20);
@@ -806,29 +787,12 @@ var GameLoop = function(){
 }
 
 init();
-//loadLevel("level1");
-
-
-
 GameLoop();
 
 </script>
 
 <div style="font-family:verdana; font-size:10px; position:absolute; border:1px solid #000; top:0; left:0; width:200px;">
-<form>
-<select id="savelevelname">
-<?php $dir='levels';
-$files=scandir($dir);
-echo $files;
-foreach($files as $name)
-{
-if($name!="." && $name!=".." && substr($name,-4)==".txt")
-	echo '<option onClick="documentSelectById("savelevelname").blur();" value="' . substr($name,0,strlen($name)-4) . '">' . substr($name,0,strlen($name)-4) . '</option>'; // Ta bort .txt
 
-}
-?>
-</select>
-</form>
 <p>V�lj bana i dropdown-menyn, se till att den inte �r markerad efter och tryck L f�r att ladda eller S f�r att spara.</p>
 <ul>
 <li>1: Ground</li>
