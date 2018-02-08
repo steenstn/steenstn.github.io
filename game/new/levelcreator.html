@@ -49,6 +49,8 @@ var levelHeight=100;
 var startx;
 var starty;
 
+var zIndex = 0;
+
 var playerStartx = 64;
 var playerStarty = 64;
 var playerImage = new Image();
@@ -76,6 +78,7 @@ var mousex; // In world coordinates
 var mousey; // In world coordinates
 var mouseIsDown=0;
 var mouseClick=0; // counter to fake mouse clicking
+var keyClick = 0;
 var tool=".";
 
 var editx;
@@ -263,6 +266,15 @@ var checkKeys = function (modifier) {
 	if(82 in keysDown) // r
 		tool="r";
 
+  if(65 in keysDown) {
+    keyClick++;
+
+    if(keyClick == 1) {
+      zIndex = 1 - zIndex;
+    } else {
+      keyClick = 0;
+    }
+  }
 	if (37 in keysDown) { // Player holding left
 		if(playerSpeedx>-maxSpeedx)
 			playerSpeedx -= playerAcc * modifier;
@@ -397,12 +409,14 @@ var renderEnemies = function()
 	}
 }
 
-var renderContent = function() {
+var renderContent = function(zValue) {
   for(var i=0;i<content.length;i++) {
-    switch(content[i].type) {
-      case "rock1":
-        ctx.drawImage(rock1Image, screenx+content[i].x, screeny+content[i].y);
-        break;
+    if(content[i].zIndex === zValue) {
+      switch(content[i].type) {
+        case "rock1":
+          ctx.drawImage(rock1Image, screenx+content[i].x, screeny+content[i].y);
+          break;
+      }
     }
   }
 }
@@ -591,6 +605,7 @@ var drawText = function()
     ctx.fillText  ("Current tool: " + tool, 4,20);
 	ctx.fillText  ("MouseX: " + parseFloat(mousex-screenx), 4,40);
 	ctx.fillText  ("MouseY: " + parseFloat(mousey-screeny), 4,60);
+  ctx.fillText  ("zIndex: " + zIndex, 4,80);
 
 	for(i=0;i<enemies.length;i++)
 	{
@@ -740,7 +755,7 @@ var GameLoop = function(){
 
 			} else if(tool=="rock1") {
         if(mouseClick==1) {
-          content.push({type:"rock1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey)});
+          content.push({type:"rock1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex});
         }
 
       } else if(tool=="r") { // Sudda content
@@ -764,13 +779,13 @@ var GameLoop = function(){
 
 	}
 
-
+  renderContent(0);
 	updatePlayer();
 	render();
 	drawLevel();
 	renderEnemies();
 	ctx.drawImage(playerImage,30,20,30,20,screenx+playerStartx, screeny+playerStarty,30,20);
-  renderContent();
+  renderContent(1);
 	drawText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);
 }
