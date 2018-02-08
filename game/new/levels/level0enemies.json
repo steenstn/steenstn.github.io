@@ -1,0 +1,1 @@
+[{"type":"bouncer","x":596,"y":395,"oldx":0,"oldy":0,"speedx":2.426015322854644,"speedy":1.6267558537393088},{"type":"jumper","x":395,"y":386,"oldx":0,"oldy":0,"speedy":0,"jumping":1,"direction":1},{"type":"mutant","x":492,"y":336,"width":40,"height":50,"oldx":0,"oldy":0,"direction":0},{"type":"skull","x":327,"y":397,"width":40,"height":50,"oldx":0,"oldy":0,"direction":0}]

@@ -843,6 +843,11 @@ var IntroScreen = function() {
         stars = null;
         loadLevel(levelNow);
         GameLoop();
+      } else if(80 in keysDown) {
+        stars = null;
+        levelNow = 0;
+        loadLevel(levelNow);
+        GameLoop();
       }
 
     }
