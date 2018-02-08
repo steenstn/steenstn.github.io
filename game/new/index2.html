@@ -99,6 +99,9 @@ blackParticleImage.src = "particles/blackpixel.png";
 var rock1Image = new Image();
 rock1Image.src = "rock1.png";
 
+var tree1Image = new Image();
+tree1Image.src = "tree1.png";
+
 var blackParticleFactory = new HealthParticleFactory(blackParticleImage);
 var whiteParticleFactory = new HealthParticleFactory(whiteParticleImage);
 
@@ -285,6 +288,9 @@ var renderContent = function(content) {
     switch(content.type) {
       case "rock1":
         ctx.drawImage(rock1Image, content.x + Viewport.x, content.y + Viewport.y);
+        break;
+      case "tree1":
+          ctx.drawImage(tree1Image, content.x + Viewport.x, content.y + Viewport.y);
         break;
     }
 

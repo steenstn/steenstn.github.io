@@ -70,6 +70,9 @@ skullImage.height = 50;
 var rock1Image = new Image();
 rock1Image.src = "rock1.png";
 
+var tree1Image = new Image();
+tree1Image.src = "tree1.png";
+
 var goalx;
 var goaly;
 var nextLevel;
@@ -231,6 +234,10 @@ var checkKeys = function (modifier) {
 		tool="bouncer";
   if(55 in keysDown) // 7
     tool="rock1";
+  if(56 in keysDown) // 8
+    tool = "tree1";
+
+
 
 	if(78 in keysDown) // n
 		tool="k";
@@ -415,6 +422,9 @@ var renderContent = function(zValue) {
       switch(content[i].type) {
         case "rock1":
           ctx.drawImage(rock1Image, screenx+content[i].x, screeny+content[i].y);
+          break;
+        case "tree1":
+          ctx.drawImage(tree1Image, screenx+content[i].x, screeny+content[i].y);
           break;
       }
     }
@@ -756,6 +766,11 @@ var GameLoop = function(){
 			} else if(tool=="rock1") {
         if(mouseClick==1) {
           content.push({type:"rock1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex});
+        }
+
+      } else if(tool=="tree1") {
+        if(mouseClick==1) {
+          content.push({type:"tree1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex});
         }
 
       } else if(tool=="r") { // Sudda content
