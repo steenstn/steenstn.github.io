@@ -11,6 +11,10 @@ class Skull extends Enemy {
     this.oldy = enemy.oldy;
     this.direction = enemy.direction;
     this.acceleration = this.direction > 0 ? 0.5 : -0.5;
+
+    Skull.image.src = "skull.png";
+    Skull.image.width = 40;
+    Skull.image.height = 50;
   }
 
   draw(context) {

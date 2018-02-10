@@ -153,18 +153,6 @@ var backgroundImage = new Image();
 backgroundImage.src = "background.png";
 
 var background = new Background(ctx);
-Skull.image.src = "skull.png";
-Skull.image.width = 40;
-Skull.image.height = 50;
-
-Mutant.image.src = "mutant.png";
-Mutant.image.width = 88;
-Mutant.image.height = 36;
-
-Jumper.image.src = "frances.png";
-Jumper.image.width = 32;
-Jumper.image.height = 60;
-
 var mutantSpecs;
 
 var animationSpeed = 3; // Number of ticks before changing frame
@@ -341,9 +329,6 @@ var updatePlayer = function(index) {
     outOfBoundsTimer = 100;
   }
 	players[index].x += players[index].speedx;
-
-
-
 
 	// Check to the left if going left and stop the player if he collides with a blocking tile
 	if(players[index].speedx < 0) {
@@ -830,7 +815,7 @@ var IntroScreen = function() {
       ctx.fillStyle    = '#F00';
       ctx.font         = '10px Verdana';
       ctx.textAlign = 'center';
-      if(Math.abs(Math.sin(numFramesSinceStart/35))<0.9) {
+      if(numFramesSinceStart%100>50) {
         ctx.fillText  ("Press SPACE to play", 320,200);
       }
 
