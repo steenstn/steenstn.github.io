@@ -275,10 +275,10 @@ var renderForegroundContent = function() {
 var renderContent = function(content) {
     switch(content.type) {
       case "rock1":
-        ctx.drawImage(rock1Image, content.x + Viewport.x, content.y + Viewport.y);
+        ctx.drawImage(rock1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
         break;
       case "tree1":
-          ctx.drawImage(tree1Image, content.x + Viewport.x, content.y + Viewport.y);
+          ctx.drawImage(tree1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
         break;
     }
 
@@ -385,8 +385,8 @@ var updatePlayer = function(index) {
 	else
 		players[index].friction=WorldConstants.normalFriction;
 
-  Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 
+  Viewport.moveTowardsCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 
 	players[index].updateKillZone();
 	players[index].updateHurtZone();
@@ -733,6 +733,7 @@ var GameLoop = function(){
 		loadLevel(levelNow);
 
 		init();
+    Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 	}
 	if(players[0].dead==0) {
 		checkKeys(1);
@@ -828,10 +829,14 @@ var IntroScreen = function() {
         stars = null;
         loadLevel(levelNow);
         GameLoop();
+
+        Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
       } else if(80 in keysDown) {
         stars = null;
         levelNow = 0;
         loadLevel(levelNow);
+
+        Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
         GameLoop();
       }
 
