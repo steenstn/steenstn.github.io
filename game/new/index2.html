@@ -190,8 +190,8 @@ var init = function() {
 	particles = [];
 
   for(var i = 0; i < players.length; i++) {
-    players[i].oldx = players[i].x;
-  	players[i].oldy = players[i].y;
+    players[i].x = players[i].oldx;
+  	players[i].y = players[i].oldy;
 
   	score=0;
   	players[i].hp=100;
@@ -854,7 +854,7 @@ var IntroScreen = function() {
     gLoop = setTimeout(IntroScreen, 1000 / 50);
 }
 
-init();
+
 jukeBox.selectSong(0);
 jukeBox.playCurrentSong();
 
