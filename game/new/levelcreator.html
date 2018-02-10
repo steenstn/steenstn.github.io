@@ -119,6 +119,12 @@ tileset.height=tilesize;
  var enemies= []; // An array containing objects of all enemies
  var content = [];
 
+ var toolMap = {};
+ toolMap["rock1"] = rock1Image;
+ toolMap["tree1"] = tree1Image;
+ toolMap["skull"] = skullImage;
+ toolMap["jumper"] = francesImage;
+ toolMap["mutant"] = mutantImage;
 
 var init = function()
 {
@@ -331,7 +337,6 @@ txtFile.onreadystatechange = function() {
 			{
 				var arrayPos = x+y*levelWidth;
 				currentLevel[arrayPos]=allText[arrayPos]; // What kind of block is it?
-
 			}
 		}
 
@@ -425,6 +430,13 @@ var renderContent = function(zValue) {
           break;
       }
     }
+  }
+}
+
+var drawTool = function() {
+  var toolToDraw = toolMap[tool];
+  if(typeof toolToDraw!== "undefined") {
+    ctx.drawImage(toolToDraw, mousex, mousey);
   }
 }
 
@@ -788,6 +800,7 @@ var GameLoop = function(){
 	renderEnemies();
 	ctx.drawImage(playerImage,30,20,30,20,screenx+playerStartx, screeny+playerStarty,30,20);
   renderContent(1);
+  drawTool();
 	drawText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);
 }
