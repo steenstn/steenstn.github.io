@@ -64,6 +64,12 @@ skurkImage.src = "skurkerister.png"; // The tileset for the enemies
 skurkImage.width = 120;
 skurkImage.height = 30;
 
+var mutantImage = new Image();
+mutantImage.src = "mutant.png";
+
+var francesImage = new Image();
+francesImage.src = "frances.png";
+
 var skullImage = new Image();
 skullImage.src = "skull.png";
 skullImage.width = 40;
@@ -385,13 +391,16 @@ var renderEnemies = function()
 				ctx.drawImage(skurkImage,5,0,18,30,screenx+enemies[i].x,screeny+enemies[i].y, 18, 30);
 				break;
 			case "jumper":
-				ctx.drawImage(skurkImage,36,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
+				ctx.drawImage(francesImage,0,0,16,30,screenx+enemies[i].x,screeny+enemies[i].y, 16, 30);
 				break;
 			case "bouncer":
 				ctx.drawImage(skurkImage,67,0,17,30,screenx+enemies[i].x,screeny+enemies[i].y, 17, 30);
 				break;
       case "skull":
   		  ctx.drawImage(skullImage,0,0,40,50,screenx+enemies[i].x,screeny+enemies[i].y, 40, 50);
+		    break;
+      case "mutant":
+  		  ctx.drawImage(mutantImage,0,0,88,50,screenx+enemies[i].x,screeny+enemies[i].y, 88, 50);
 		    break;
 			default: // Not implemented enemy type
 				ctx.fillStyle = '#111111';
