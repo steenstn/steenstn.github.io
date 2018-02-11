@@ -77,6 +77,7 @@ ctx = c.getContext('2d');
 c.width = Viewport.width;
 c.height = Viewport.height;
 
+var animating = 0;
 var levelNow = 1; // Number of current level
 var score = 0;
 var dead=0;
@@ -141,7 +142,7 @@ players[1].keyRight = 68
 players[1].keyUp = 87
 
 var lastScore = 0;
-
+var startPos = {};
 var skurkImage = new Image();
 skurkImage.src = "skurkerister.png";
 skurkImage.width = 120;
@@ -180,11 +181,13 @@ var init = function() {
   for(var i = 0; i < players.length; i++) {
     players[i].x = players[i].oldx;
   	players[i].y = players[i].oldy;
-
+    players[i].speedx = 0;
+    players[i].speedy = 0;
   	score=0;
   	players[i].hp=100;
 
   }
+
 }
 
 
@@ -385,8 +388,6 @@ var updatePlayer = function(index) {
 	else
 		players[index].friction=WorldConstants.normalFriction;
 
-
-  Viewport.moveTowardsCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 
 	players[index].updateKillZone();
 	players[index].updateHurtZone();
@@ -636,6 +637,8 @@ var setUpContent = function() {
 				players[0].x = players[0].oldx = content[i].x - offset;
         players[1].x = players[1].oldx = content[i].x + offset;
 				players[0].y = players[1].y = players[0].oldy = players[1].oldy = content[i].y;
+        startPos.x = content[i].x;
+        startPos.y = content[i].y;
 			break;
 		}
 	}
@@ -733,20 +736,50 @@ var GameLoop = function(){
 		loadLevel(levelNow);
 
 		init();
-    Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+    animating = 1;
 	}
-	if(players[0].dead==0) {
+  if(animating===1) {
+    Viewport.moveTowardsCenter(startPos.x,startPos.y,startPos.x,startPos.y);
+    if(players[0].x + Viewport.x > -1*players[0].width+5 &&
+       players[0].x + Viewport.x < Viewport.width -5 &&
+       players[0].y + Viewport.y < Viewport.height - players[0].height+10) {
+         animating = 0;
+      /*
+      if(players[index].x + Viewport.x < -1*players[index].width+5) {
+        players[index].speedx = WorldConstants.kickbackForce;
+        playerIsOutOfBounds = true;
+        outOfBoundsTimer = 100;
+      }
+      if(players[index].x + Viewport.x > Viewport.width -5) {
+        players[index].speedx = -1*WorldConstants.kickbackForce;
+        playerIsOutOfBounds = true;
+        outOfBoundsTimer = 100;
+      }
+      if(players[index].y + Viewport.y > Viewport.height - players[index].height+10) {
+        players[index].speedy = -1*WorldConstants.kickbackForce;
+        playerIsOutOfBounds = true;
+        outOfBoundsTimer = 100;
+      }
+      */
+    }
+  }
+
+	if(animating===0) {
 		checkKeys(1);
 
     playerIsOutOfBounds = false;
 		updatePlayer(0);
 		updatePlayer(1);
-    renderBackgroundContent();
-		render();
-	}
+    Viewport.moveTowardsCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 
-	updateEnemies();
-  updateParticles();
+	}
+  renderBackgroundContent();
+  render();
+  if(animating === 0) {
+    updateEnemies();
+    updateParticles();
+  }
+
   renderEnemies();
 	drawLevel();
   renderForegroundContent();
@@ -771,6 +804,7 @@ var GameLoop = function(){
 			loadLevel(levelNow);
 
 			init();
+      Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 	}
 	drawAllText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);

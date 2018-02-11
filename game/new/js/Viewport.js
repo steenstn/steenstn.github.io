@@ -34,8 +34,8 @@ var Viewport = (function () {
         var normalizedYDist = Helper.clamp(yDist / 100, 0, 1);
         var xSpeed = Math.pow(normalizedXDist, 5) * 10;
         var ySpeed = Math.pow(normalizedYDist, 5) * 10;
-        xSpeed = Helper.clamp(xSpeed, 0, 10);
-        ySpeed = Helper.clamp(ySpeed, 0, 10);
+        xSpeed = Helper.clamp(xSpeed, 0, 12);
+        ySpeed = Helper.clamp(ySpeed, 0, 12);
         if (xSpeed < 0.08) {
             xSpeed = 0;
         }
