@@ -4,6 +4,8 @@ var Viewport = (function () {
         Viewport.y = 0;
         Viewport.oldx = Viewport.x;
         Viewport.oldy = Viewport.y;
+        Viewport.floatx = Viewport.x;
+        Viewport.floaty = Viewport.y;
     }
     Viewport.moveToCenter = function (x1, y1, x2, y2) {
         Viewport.oldx = Viewport.x;
@@ -12,6 +14,8 @@ var Viewport = (function () {
         var yMidpoint = (y1 + y2) / 2;
         Viewport.x = Math.round(-xMidpoint + (Viewport.numTilesInScreenWidth / 2) * Level.tileSize);
         Viewport.y = Math.round(-yMidpoint + (Viewport.numTilesInScreenHeight / 2) * Level.tileSize);
+        Viewport.floatx = Viewport.x;
+        Viewport.floaty = Viewport.y;
         if (Viewport.x > 0)
             Viewport.x = 0;
         if (Viewport.x < -Level.width * Level.tileSize + Viewport.numTilesInScreenWidth * Level.tileSize)
@@ -22,10 +26,10 @@ var Viewport = (function () {
             Viewport.y = -Level.height * Level.tileSize + Viewport.numTilesInScreenHeight * Level.tileSize;
     };
     Viewport.moveTowardsCenter = function (x1, y1, x2, y2) {
-        Viewport.oldx = Viewport.x;
-        Viewport.oldy = Viewport.y;
+        Viewport.oldx = Viewport.floatx;
+        Viewport.oldy = Viewport.floaty;
         var xMidpoint = (x1 + x2) / 2;
-        var yMidpoint = (y1 + y2) / 2;
+        var yMidpoint = (y1 + y2 + 20) / 2;
         var xTarget = Math.round(-xMidpoint + (Viewport.numTilesInScreenWidth / 2) * Level.tileSize);
         var yTarget = Math.round(-yMidpoint + (Viewport.numTilesInScreenHeight / 2) * Level.tileSize);
         var xDist = Math.abs(xTarget - Viewport.oldx);
@@ -43,8 +47,10 @@ var Viewport = (function () {
         if (ySpeed < 0.08) {
             ySpeed = 0;
         }
-        Viewport.x += xTarget > Viewport.oldx ? xSpeed : -xSpeed;
-        Viewport.y += yTarget > Viewport.oldy ? ySpeed : -ySpeed;
+        Viewport.floatx += xTarget > Viewport.oldx ? xSpeed : -xSpeed;
+        Viewport.floaty += yTarget > Viewport.oldy ? ySpeed : -ySpeed;
+        Viewport.x = Math.round(Viewport.floatx);
+        Viewport.y = Math.round(Viewport.floaty);
         if (Viewport.x > 0)
             Viewport.x = 0;
         if (Viewport.x < -Level.width * Level.tileSize + Viewport.numTilesInScreenWidth * Level.tileSize)

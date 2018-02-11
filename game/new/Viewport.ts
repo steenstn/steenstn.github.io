@@ -7,6 +7,8 @@ class Viewport {
   static height = 300;
   static numTilesInScreenWidth = Math.round(Viewport.width / Level.tileSize);
   static numTilesInScreenHeight = Math.round(Viewport.height / Level.tileSize);
+  private static floatx : number;
+  private static floaty : number;
 
   constructor() {
 
@@ -14,6 +16,8 @@ class Viewport {
     Viewport.y = 0;
     Viewport.oldx = Viewport.x;
     Viewport.oldy = Viewport.y;
+    Viewport.floatx = Viewport.x;
+    Viewport.floaty = Viewport.y;
   }
 
   static moveToCenter(x1, y1, x2, y2) {
@@ -26,6 +30,9 @@ class Viewport {
 
     Viewport.x = Math.round(-xMidpoint+(Viewport.numTilesInScreenWidth / 2)*Level.tileSize);
   	Viewport.y = Math.round(-yMidpoint+(Viewport.numTilesInScreenHeight / 2)*Level.tileSize);
+
+    Viewport.floatx = Viewport.x;
+    Viewport.floaty = Viewport.y;
 
   	// Do not move the screen outside of the level
   	if(Viewport.x>0)
@@ -41,12 +48,12 @@ class Viewport {
   }
 
   static moveTowardsCenter(x1, y1, x2, y2) {
-    Viewport.oldx = Viewport.x;
-    Viewport.oldy = Viewport.y;
+    Viewport.oldx = Viewport.floatx;
+    Viewport.oldy = Viewport.floaty;
 
 
     let xMidpoint = (x1 + x2) / 2;
-    let yMidpoint = (y1 + y2) / 2;
+    let yMidpoint = (y1 + y2+20) / 2;
 
 
     let xTarget = Math.round(-xMidpoint+(Viewport.numTilesInScreenWidth / 2)*Level.tileSize);
@@ -72,8 +79,11 @@ class Viewport {
       ySpeed = 0;
     }
 
-    Viewport.x += xTarget > Viewport.oldx ? xSpeed : -xSpeed
-  	Viewport.y += yTarget > Viewport.oldy ? ySpeed : -ySpeed
+    Viewport.floatx += xTarget > Viewport.oldx ? xSpeed : -xSpeed
+  	Viewport.floaty += yTarget > Viewport.oldy ? ySpeed : -ySpeed
+
+    Viewport.x = Math.round(Viewport.floatx);
+    Viewport.y = Math.round(Viewport.floaty);
 
 
   	// Do not move the screen outside of the level

@@ -31,7 +31,7 @@ class Player {
   keyLeft : number;
   keyRight : number;
   friction = WorldConstants.normalFriction;
-  
+
   private animationSpeed = 3;
 
 

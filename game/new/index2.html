@@ -744,24 +744,8 @@ var GameLoop = function(){
        players[0].x + Viewport.x < Viewport.width -5 &&
        players[0].y + Viewport.y < Viewport.height - players[0].height+10 &&
        players[0].y + Viewport.y > 0) {
+         
          animating = 0;
-      /*
-      if(players[index].x + Viewport.x < -1*players[index].width+5) {
-        players[index].speedx = WorldConstants.kickbackForce;
-        playerIsOutOfBounds = true;
-        outOfBoundsTimer = 100;
-      }
-      if(players[index].x + Viewport.x > Viewport.width -5) {
-        players[index].speedx = -1*WorldConstants.kickbackForce;
-        playerIsOutOfBounds = true;
-        outOfBoundsTimer = 100;
-      }
-      if(players[index].y + Viewport.y > Viewport.height - players[index].height+10) {
-        players[index].speedy = -1*WorldConstants.kickbackForce;
-        playerIsOutOfBounds = true;
-        outOfBoundsTimer = 100;
-      }
-      */
     }
   }
 
