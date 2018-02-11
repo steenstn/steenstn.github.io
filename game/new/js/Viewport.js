@@ -32,10 +32,11 @@ var Viewport = (function () {
         var yDist = Math.abs(yTarget - Viewport.oldy);
         var normalizedXDist = Helper.clamp(xDist / 100, 0, 1);
         var normalizedYDist = Helper.clamp(yDist / 100, 0, 1);
-        var xSpeed = Math.pow(normalizedXDist, 5) * 10;
-        var ySpeed = Math.pow(normalizedYDist, 5) * 10;
-        xSpeed = Helper.clamp(xSpeed, 0, 12);
-        ySpeed = Helper.clamp(ySpeed, 0, 12);
+        var maxSpeed = 14;
+        var xSpeed = Math.pow(normalizedXDist, 5) * maxSpeed;
+        var ySpeed = Math.pow(normalizedYDist, 5) * maxSpeed;
+        xSpeed = Helper.clamp(xSpeed, 0, maxSpeed);
+        ySpeed = Helper.clamp(ySpeed, 0, maxSpeed);
         if (xSpeed < 0.08) {
             xSpeed = 0;
         }

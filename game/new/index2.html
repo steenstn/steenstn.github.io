@@ -742,7 +742,8 @@ var GameLoop = function(){
     Viewport.moveTowardsCenter(startPos.x,startPos.y,startPos.x,startPos.y);
     if(players[0].x + Viewport.x > -1*players[0].width+5 &&
        players[0].x + Viewport.x < Viewport.width -5 &&
-       players[0].y + Viewport.y < Viewport.height - players[0].height+10) {
+       players[0].y + Viewport.y < Viewport.height - players[0].height+10 &&
+       players[0].y + Viewport.y > 0) {
          animating = 0;
       /*
       if(players[index].x + Viewport.x < -1*players[index].width+5) {

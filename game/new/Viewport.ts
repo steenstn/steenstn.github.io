@@ -58,11 +58,12 @@ class Viewport {
     let normalizedXDist = Helper.clamp(xDist/100, 0, 1);
     let normalizedYDist = Helper.clamp(yDist/100, 0, 1);
 
-    let xSpeed = Math.pow(normalizedXDist,5)*10;
-    let ySpeed = Math.pow(normalizedYDist,5)*10;
+    let maxSpeed = 14;
+    let xSpeed = Math.pow(normalizedXDist,5)*maxSpeed;
+    let ySpeed = Math.pow(normalizedYDist,5)*maxSpeed;
 
-    xSpeed = Helper.clamp(xSpeed, 0, 12);
-    ySpeed = Helper.clamp(ySpeed, 0, 12);
+    xSpeed = Helper.clamp(xSpeed, 0, maxSpeed);
+    ySpeed = Helper.clamp(ySpeed, 0, maxSpeed);
 
     if(xSpeed < 0.08) {
       xSpeed = 0;
