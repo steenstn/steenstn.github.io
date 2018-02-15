@@ -720,8 +720,16 @@ var drawAllText = function() {
 	ctx.strokeStyle = "black";
 	ctx.strokeRect(Viewport.width/2-51,15,102,10);
 	if(players[0].dead==0) {
-		ctx.fillStyle = "rgb(50,129,28)";
-		ctx.fillRect (Viewport.width/2-50,16,Math.round(players[0].hp),8);
+    var g = players[0].hp*2 + 29;
+    var r = 250 - players[0].hp*2;
+		ctx.fillStyle = "rgb(" + r + "," + g + ",28)";
+    if(players[0].hp>20) {
+		    ctx.fillRect (Viewport.width/2-50,16,Math.round(players[0].hp),8);
+    } else {
+      if(numFramesSinceStart%40>20) {
+        ctx.fillRect (Viewport.width/2-50,16,Math.round(players[0].hp),8);
+      }
+    }
 	}
 
 }
@@ -744,7 +752,7 @@ var GameLoop = function(){
        players[0].x + Viewport.x < Viewport.width -5 &&
        players[0].y + Viewport.y < Viewport.height - players[0].height+10 &&
        players[0].y + Viewport.y > 0) {
-         
+
          animating = 0;
     }
   }
