@@ -1,5 +1,5 @@
-var Bug = (function () {
-    function Bug(image, x, y, homex, homey) {
+var Fly = (function () {
+    function Fly(image, x, y, homex, homey) {
         this.safePositionSet = false;
         this.homeAttacked = 0;
         this.x = x;
@@ -9,9 +9,9 @@ var Bug = (function () {
         this.homex = homex;
         this.homey = homey;
         this.image = image;
-        this.state = Bug.GOING_HOME;
+        this.state = Fly.GOING_HOME;
     }
-    Bug.prototype.move = function (players) {
+    Fly.prototype.move = function (players) {
         if (Helper.outOfBounds(this.x, this.y)) {
             return;
         }
@@ -29,20 +29,20 @@ var Bug = (function () {
                 this.targety = this.safey;
                 this.safePositionSet = true;
             }
-            this.state = Bug.FLEEING;
+            this.state = Fly.FLEEING;
         }
         else {
             this.homeAttacked = 0;
-            this.state = Bug.GOING_HOME;
+            this.state = Fly.GOING_HOME;
             this.safePositionSet = false;
         }
         var baseTargetx;
         var baseTargety;
-        if (this.state == Bug.GOING_HOME) {
+        if (this.state == Fly.GOING_HOME) {
             baseTargetx = this.homex;
             baseTargety = this.homey;
         }
-        else if (this.state == Bug.FLEEING) {
+        else if (this.state == Fly.FLEEING) {
             baseTargetx = this.safex;
             baseTargety = this.safey;
         }
@@ -62,10 +62,10 @@ var Bug = (function () {
         this.x += xSpeed + sideSpeedX;
         this.y += ySpeed + sideSpeedY;
     };
-    Bug.prototype.render = function (context) {
+    Fly.prototype.render = function (context) {
         context.drawImage(this.image, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
     };
-    return Bug;
+    return Fly;
 }());
-Bug.GOING_HOME = 0;
-Bug.FLEEING = 1;
+Fly.GOING_HOME = 0;
+Fly.FLEEING = 1;

@@ -1,4 +1,4 @@
-class Bug {
+class Fly {
   private x : number;
   private y : number;
   private targetx : number;
@@ -14,7 +14,7 @@ class Bug {
   private static GOING_HOME = 0;
   private static FLEEING = 1;
   private homeAttacked = 0;
-  
+
   constructor(image : any, x: number, y: number, homex : number, homey : number) {
     this.x = x;
     this.y = y;
@@ -23,7 +23,7 @@ class Bug {
     this.homex = homex;
     this.homey = homey;
     this.image = image;
-    this.state = Bug.GOING_HOME;
+    this.state = Fly.GOING_HOME;
   }
 
   move(players : any) {
@@ -45,19 +45,19 @@ class Bug {
         this.safePositionSet = true;
       }
 
-      this.state = Bug.FLEEING;
+      this.state = Fly.FLEEING;
     } else {
       this.homeAttacked = 0;
-      this.state = Bug.GOING_HOME;
+      this.state = Fly.GOING_HOME;
       this.safePositionSet = false;
     }
 
     let baseTargetx;
     let baseTargety;
-    if(this.state == Bug.GOING_HOME) {
+    if(this.state == Fly.GOING_HOME) {
       baseTargetx = this.homex;
       baseTargety = this.homey;
-    } else if(this.state == Bug.FLEEING) {
+    } else if(this.state == Fly.FLEEING) {
       baseTargetx = this.safex;
       baseTargety = this.safey;
     }
