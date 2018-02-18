@@ -57,6 +57,8 @@
 <script src="js/enemies/Skull.js" type="text/javascript"></script>
 <script src="js/enemies/Jumper.js" type="text/javascript"></script>
 
+<script src="js/Bug.js" type="text/javascript"></script>
+
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/FlyingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -159,6 +161,7 @@ backgroundImage.src = "background.png";
 var background = new Background(ctx);
 var mutantSpecs;
 
+
 var animationSpeed = 3; // Number of ticks before changing frame
 
 for(var i=0;i<Level.currentLevel.length;i++)
@@ -170,6 +173,9 @@ var backgroundContent = [];
 var foregroundContent = [];
 var particles = [];
 
+var bugs = [];
+var bugImage = new Image();
+bugImage.src = "bug.png";
 var tileset = new Image();
 tileset.src = "tileset.png"; // Tileset for the level and all powerups
 tileset.width=Level.tileSize;
@@ -562,6 +568,8 @@ var loadContent = function(levelName) {
         enemies[i] = new Bouncer(enemies[i], Level.currentLevel);
         break;
     }
+
+
   }
 	var tempContent = loadJsonFile("levels/" + levelName+'content.json');//JSON.parse(jsonTexto);
 
@@ -648,6 +656,11 @@ var setUpContent = function() {
 			break;
 		}
 	}
+  for(var i = 0; i < 10; i++) {
+    bugs.push(new Bug(bugImage, 1115, 1160,1115, 1160));
+
+  }
+
 }
 
 
@@ -769,6 +782,7 @@ var GameLoop = function(){
     playerIsOutOfBounds = false;
 		updatePlayer(0);
 		updatePlayer(1);
+
     Viewport.moveTowardsCenter(players[0].x, players[0].y, players[1].x, players[1].y);
 
 	}
@@ -777,11 +791,18 @@ var GameLoop = function(){
   if(animating === 0) {
     updateEnemies();
     updateParticles();
+    for(var i = 0; i < bugs.length; i++) {
+      bugs[i].move(players);
+    }
   }
 
   renderEnemies();
 	drawLevel();
   renderForegroundContent();
+  for(var i = 0; i < bugs.length; i++) {
+  bugs[i].render(ctx);
+
+  }
   if(numFramesSinceStart%200 === 0) {
     particleCleaner.cleanupBlood(particles);
   } else if(numFramesSinceStart%100 === 0) {
