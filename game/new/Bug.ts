@@ -14,6 +14,7 @@ class Bug {
   private static GOING_HOME = 0;
   private static FLEEING = 1;
   private homeAttacked = 0;
+  
   constructor(image : any, x: number, y: number, homex : number, homey : number) {
     this.x = x;
     this.y = y;
@@ -26,27 +27,30 @@ class Bug {
   }
 
   move(players : any) {
-      if((Math.abs(this.homex-players[0].x) < 30 && Math.abs(this.homey-players[0].y) < 30) ||
-          Math.abs(this.homex-players[1].x) < 30 && Math.abs(this.homey-players[1].y) < 30) {
-        this.homeAttacked = 1;
-        if(!this.safePositionSet) {
-          let angle = Math.atan2(this.y-this.homey,this.x - this.homex);
-          let xCoefficient = Math.cos(angle);
-          let yCoefficient = Math.sin(angle);
+    if(Helper.outOfBounds(this.x, this.y)) {
+         return;
+    }
+    if((Math.abs(this.homex-players[0].x) < 30 && Math.abs(this.homey-players[0].y) < 30) ||
+        Math.abs(this.homex-players[1].x) < 30 && Math.abs(this.homey-players[1].y) < 30) {
+      this.homeAttacked = 1;
+      if(!this.safePositionSet) {
+        let angle = Math.atan2(this.y-this.homey,this.x - this.homex);
+        let xCoefficient = Math.cos(angle);
+        let yCoefficient = Math.sin(angle);
 
-          this.safex = this.homex + xCoefficient*70+Math.random()*30*xCoefficient;
-          this.safey = this.homey + yCoefficient*70;+Math.random()*30*yCoefficient;
-          this.targetx = this.safex;
-          this.targety = this.safey;
-          this.safePositionSet = true;
-        }
-
-        this.state = Bug.FLEEING;
-      } else {
-        this.homeAttacked = 0;
-        this.state = Bug.GOING_HOME;
-        this.safePositionSet = false;
+        this.safex = this.homex + xCoefficient*70+Math.random()*30*xCoefficient;
+        this.safey = this.homey + yCoefficient*70;+Math.random()*30*yCoefficient;
+        this.targetx = this.safex;
+        this.targety = this.safey;
+        this.safePositionSet = true;
       }
+
+      this.state = Bug.FLEEING;
+    } else {
+      this.homeAttacked = 0;
+      this.state = Bug.GOING_HOME;
+      this.safePositionSet = false;
+    }
 
     let baseTargetx;
     let baseTargety;
@@ -74,7 +78,6 @@ class Bug {
 
     this.x+=xSpeed+sideSpeedX;
     this.y+=ySpeed+sideSpeedY;
-
   }
 
   render(context) {

@@ -9,6 +9,10 @@ var Particle = (function () {
         this.shouldBeDeleted = false;
     }
     Particle.prototype.move = function () {
+        if (Math.abs(this.x + Viewport.x) > Viewport.width * 2 &&
+            Math.abs(this.y + Viewport.y) > Viewport.height * 2) {
+            return;
+        }
         if (this.shouldBeDeleted) {
             return;
         }
@@ -40,6 +44,9 @@ var Particle = (function () {
         }
     };
     Particle.prototype.render = function (context) {
+        if (Helper.outOfBounds(this.x, this.y)) {
+            return;
+        }
         context.drawImage(this.image, Math.round(this.x + Viewport.x), Math.round(this.y + Viewport.y));
     };
     return Particle;

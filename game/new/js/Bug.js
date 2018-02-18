@@ -12,6 +12,9 @@ var Bug = (function () {
         this.state = Bug.GOING_HOME;
     }
     Bug.prototype.move = function (players) {
+        if (Helper.outOfBounds(this.x, this.y)) {
+            return;
+        }
         if ((Math.abs(this.homex - players[0].x) < 30 && Math.abs(this.homey - players[0].y) < 30) ||
             Math.abs(this.homex - players[1].x) < 30 && Math.abs(this.homey - players[1].y) < 30) {
             this.homeAttacked = 1;
