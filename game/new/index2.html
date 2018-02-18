@@ -100,6 +100,9 @@ blackParticleImage.src = "particles/blackpixel.png";
 var rock1Image = new Image();
 rock1Image.src = "rock1.png";
 
+var baguetterockImage = new Image();
+baguetterockImage.src = "baguetterock.png";
+
 var tree1Image = new Image();
 tree1Image.src = "tree1.png";
 
@@ -279,6 +282,9 @@ var renderContent = function(content) {
     switch(content.type) {
       case "rock1":
         ctx.drawImage(rock1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
+        break;
+      case "baguetterock":
+          ctx.drawImage(baguetterockImage, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
         break;
       case "tree1":
           ctx.drawImage(tree1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));

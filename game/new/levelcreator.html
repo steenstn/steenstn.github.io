@@ -78,6 +78,9 @@ skullImage.height = 50;
 var rock1Image = new Image();
 rock1Image.src = "rock1.png";
 
+var baguetterockImage = new Image();
+baguetterockImage.src = "baguetterock.png";
+
 var tree1Image = new Image();
 tree1Image.src = "tree1.png";
 
@@ -121,6 +124,7 @@ tileset.height=tilesize;
 
  var toolMap = {};
  toolMap["rock1"] = rock1Image;
+ toolMap["baguetterock"] = baguetterockImage;
  toolMap["tree1"] = tree1Image;
  toolMap["skull"] = skullImage;
  toolMap["jumper"] = francesImage;
@@ -236,6 +240,8 @@ var checkKeys = function (modifier) {
     tool="rock1";
   if(56 in keysDown) // 8
     tool = "tree1";
+  if(57 in keysDown) // 8
+      tool = "baguetterock";
 
 
 
@@ -387,7 +393,6 @@ var saveLevel = function() {
 
 var renderEnemies = function()
 {
-
 	for(i=0;i<enemies.length;i++)
 	{
 		switch(enemies[i].type)
@@ -427,6 +432,9 @@ var renderContent = function(zValue) {
           break;
         case "tree1":
           ctx.drawImage(tree1Image, screenx+content[i].x, screeny+content[i].y);
+          break;
+        case "baguetterock":
+            ctx.drawImage(baguetterockImage, screenx+content[i].x, screeny+content[i].y);
           break;
       }
     }
@@ -766,6 +774,11 @@ var GameLoop = function(){
 			} else if(tool=="rock1") {
         if(mouseClick==1) {
           content.push({type:"rock1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex});
+        }
+
+      } else if(tool=="baguetterock") {
+        if(mouseClick==1) {
+          content.push({type:"baguetterock", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex});
         }
 
       } else if(tool=="tree1") {
