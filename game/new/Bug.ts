@@ -41,7 +41,6 @@ class Bug {
           this.safePositionSet = true;
         }
 
-
         this.state = Bug.FLEEING;
       } else {
         this.homeAttacked = 0;
@@ -49,57 +48,36 @@ class Bug {
         this.safePositionSet = false;
       }
 
-
-
+    let baseTargetx;
+    let baseTargety;
     if(this.state == Bug.GOING_HOME) {
-      if(Math.abs(this.x-this.targetx) < 10 && Math.abs(this.y-this.targety) < 10) {
-        this.targetx = this.homex + Math.random()*50-25;
-        this.targety = this.homey + Math.random()*50-25;
-      }
-      let angle = Math.atan2(this.targety-this.y,this.targetx-this.x);
-      let xSpeed = Math.cos(angle)*2;
-      let ySpeed = Math.sin(angle)*2;
-
-      let sideMovement = Math.random()*8-4;
-      let sideSpeedX = Math.cos(angle+90)*sideMovement;
-      let sideSpeedY = Math.sin(angle+90)*sideMovement;
-
-      this.x+=xSpeed+sideSpeedX;
-      this.y+=ySpeed+sideSpeedY;
+      baseTargetx = this.homex;
+      baseTargety = this.homey;
     } else if(this.state == Bug.FLEEING) {
-      if(Math.abs(this.x-this.targetx) < 10 && Math.abs(this.y-this.targety) < 10) {
-        this.targetx = this.safex + Math.random()*50-25;
-        this.targety = this.safey + Math.random()*50-25;
-      }
-
-      let angle = Math.atan2(this.targety-this.y,this.targetx-this.x);
-      let xCoefficient = Math.cos(angle);
-      let yCoefficient = Math.sin(angle);
-      let xSpeed = xCoefficient*2;
-      let ySpeed = yCoefficient*2;
-
-
-      let sideMovement = Math.random()*8-4;
-      let sideSpeedX = Math.cos(angle+90)*sideMovement;
-      let sideSpeedY = Math.sin(angle+90)*sideMovement;
-
-      this.x+=xSpeed+sideSpeedX;
-      this.y+=ySpeed+sideSpeedY;
+      baseTargetx = this.safex;
+      baseTargety = this.safey;
     }
+    let arrivedAtTarget = Math.abs(this.x-this.targetx) < 10 && Math.abs(this.y-this.targety) < 10;
+    if(arrivedAtTarget) {
+      this.targetx = baseTargetx + Math.random()*50-25;
+      this.targety = baseTargety + Math.random()*50-25;
+    }
+    let angle = Math.atan2(this.targety-this.y,this.targetx-this.x);
+    let xCoefficient = Math.cos(angle);
+    let yCoefficient = Math.sin(angle);
+    let xSpeed = xCoefficient*2;
+    let ySpeed = yCoefficient*2;
+
+    let sideMovement = Math.random()*8-4;
+    let sideSpeedX = Math.cos(angle+90)*sideMovement;
+    let sideSpeedY = Math.sin(angle+90)*sideMovement;
+
+    this.x+=xSpeed+sideSpeedX;
+    this.y+=ySpeed+sideSpeedY;
 
   }
 
   render(context) {
-
     context.drawImage(this.image, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
-    //context.fillStyle="#FFFFFF";
-    //context.fillRect(Math.round(Viewport.x + this.targetx), Math.round(Viewport.y + this.targety), 2, 2);
-  //  context.fillStyle="#0000FF";
-  //  context.fillRect(Math.round(Viewport.x + this.safex), Math.round(Viewport.y + this.safey), 2, 2);
-
-
-    //context.fillStyle= this.homeAttacked ? "#FF1111" : "#00AF44";
-  //  context.fillRect(Math.round(Viewport.x + this.homex), Math.round(Viewport.y + this.homey), 10, 10);
-
   }
 }

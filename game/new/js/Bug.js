@@ -16,12 +16,12 @@ var Bug = (function () {
             Math.abs(this.homex - players[1].x) < 30 && Math.abs(this.homey - players[1].y) < 30) {
             this.homeAttacked = 1;
             if (!this.safePositionSet) {
-                var angle = Math.atan2(this.y - this.homey, this.x - this.homex);
-                var xCoefficient = Math.cos(angle);
-                var yCoefficient = Math.sin(angle);
-                this.safex = this.homex + xCoefficient * 70 + Math.random() * 30 * xCoefficient;
-                this.safey = this.homey + yCoefficient * 70;
-                +Math.random() * 30 * yCoefficient;
+                var angle_1 = Math.atan2(this.y - this.homey, this.x - this.homex);
+                var xCoefficient_1 = Math.cos(angle_1);
+                var yCoefficient_1 = Math.sin(angle_1);
+                this.safex = this.homex + xCoefficient_1 * 70 + Math.random() * 30 * xCoefficient_1;
+                this.safey = this.homey + yCoefficient_1 * 70;
+                +Math.random() * 30 * yCoefficient_1;
                 this.targetx = this.safex;
                 this.targety = this.safey;
                 this.safePositionSet = true;
@@ -33,36 +33,31 @@ var Bug = (function () {
             this.state = Bug.GOING_HOME;
             this.safePositionSet = false;
         }
+        var baseTargetx;
+        var baseTargety;
         if (this.state == Bug.GOING_HOME) {
-            if (Math.abs(this.x - this.targetx) < 10 && Math.abs(this.y - this.targety) < 10) {
-                this.targetx = this.homex + Math.random() * 50 - 25;
-                this.targety = this.homey + Math.random() * 50 - 25;
-            }
-            var angle = Math.atan2(this.targety - this.y, this.targetx - this.x);
-            var xSpeed = Math.cos(angle) * 2;
-            var ySpeed = Math.sin(angle) * 2;
-            var sideMovement = Math.random() * 8 - 4;
-            var sideSpeedX = Math.cos(angle + 90) * sideMovement;
-            var sideSpeedY = Math.sin(angle + 90) * sideMovement;
-            this.x += xSpeed + sideSpeedX;
-            this.y += ySpeed + sideSpeedY;
+            baseTargetx = this.homex;
+            baseTargety = this.homey;
         }
         else if (this.state == Bug.FLEEING) {
-            if (Math.abs(this.x - this.targetx) < 10 && Math.abs(this.y - this.targety) < 10) {
-                this.targetx = this.safex + Math.random() * 50 - 25;
-                this.targety = this.safey + Math.random() * 50 - 25;
-            }
-            var angle = Math.atan2(this.targety - this.y, this.targetx - this.x);
-            var xCoefficient = Math.cos(angle);
-            var yCoefficient = Math.sin(angle);
-            var xSpeed = xCoefficient * 2;
-            var ySpeed = yCoefficient * 2;
-            var sideMovement = Math.random() * 8 - 4;
-            var sideSpeedX = Math.cos(angle + 90) * sideMovement;
-            var sideSpeedY = Math.sin(angle + 90) * sideMovement;
-            this.x += xSpeed + sideSpeedX;
-            this.y += ySpeed + sideSpeedY;
+            baseTargetx = this.safex;
+            baseTargety = this.safey;
         }
+        var arrivedAtTarget = Math.abs(this.x - this.targetx) < 10 && Math.abs(this.y - this.targety) < 10;
+        if (arrivedAtTarget) {
+            this.targetx = baseTargetx + Math.random() * 50 - 25;
+            this.targety = baseTargety + Math.random() * 50 - 25;
+        }
+        var angle = Math.atan2(this.targety - this.y, this.targetx - this.x);
+        var xCoefficient = Math.cos(angle);
+        var yCoefficient = Math.sin(angle);
+        var xSpeed = xCoefficient * 2;
+        var ySpeed = yCoefficient * 2;
+        var sideMovement = Math.random() * 8 - 4;
+        var sideSpeedX = Math.cos(angle + 90) * sideMovement;
+        var sideSpeedY = Math.sin(angle + 90) * sideMovement;
+        this.x += xSpeed + sideSpeedX;
+        this.y += ySpeed + sideSpeedY;
     };
     Bug.prototype.render = function (context) {
         context.drawImage(this.image, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
