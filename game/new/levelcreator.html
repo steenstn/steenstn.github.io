@@ -240,8 +240,10 @@ var checkKeys = function (modifier) {
     tool="rock1";
   if(56 in keysDown) // 8
     tool = "tree1";
-  if(57 in keysDown) // 8
+  if(57 in keysDown) // 9
       tool = "baguetterock";
+  if(48 in keysDown) // 0
+      tool = "flynest";
 
 
 
@@ -434,8 +436,28 @@ var renderContent = function(zValue) {
           ctx.drawImage(tree1Image, screenx+content[i].x, screeny+content[i].y);
           break;
         case "baguetterock":
-            ctx.drawImage(baguetterockImage, screenx+content[i].x, screeny+content[i].y);
+          ctx.drawImage(baguetterockImage, screenx+content[i].x, screeny+content[i].y);
           break;
+      }
+    }
+  }
+}
+
+var renderOtherContent = function() {
+  for(var i = 0; i < content.length; i++) {
+    if(typeof content[i].zIndex == 'undefined') {
+      switch(content[i].type) {
+      case "flynest":
+        ctx.fillStyle="#AA5555";
+        ctx.fillRect(screenx+content[i].x, screeny + content[i].y, 20, 20);
+        break;
+
+      default:
+      ctx.fillStyle="#FF0000";
+      ctx.font = "15px Verdana";
+      ctx.fillText(content[i].type, screenx + content[i].x, screeny + content[i].y);
+      ctx.fillRect(screenx+content[i].x, screeny + content[i].y, 4, 4);
+
       }
     }
   }
@@ -786,6 +808,11 @@ var GameLoop = function(){
           content.push({type:"tree1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex});
         }
 
+      } else if(tool=="flynest") {
+        if(mouseClick==1) {
+          content.push({type:"flynest", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey)});
+        }
+
       } else if(tool=="r") { // Sudda content
 
 				for(i=0;i<enemies.length;i++) {
@@ -811,8 +838,9 @@ var GameLoop = function(){
   renderContent(0);
 	drawLevel();
 	renderEnemies();
-	ctx.drawImage(playerImage,30,20,30,20,screenx+playerStartx, screeny+playerStarty,30,20);
+
   renderContent(1);
+  renderOtherContent();
   drawTool();
 	drawText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);
@@ -834,6 +862,9 @@ GameLoop();
 <li>5: Jumber (runs around and jumps)</li>
 <li>6: Bouncer(Bounces around)</li>
 <li>7: Rock</li>
+<li>8: Tree</li>
+<li>9: Baguette rock</li>
+<li>0: Fly nest</li>
 <li>s: Save</li>
 <li>e: Eraser ground tiles</li>
 <li>r: Eraser for enemies and content</li>

@@ -1,13 +1,13 @@
 var Fly = (function () {
-    function Fly(image, x, y, homex, homey) {
+    function Fly(image, x, y) {
         this.safePositionSet = false;
         this.homeAttacked = 0;
         this.x = x;
         this.y = y;
-        this.targetx = homex;
-        this.targety = homey;
-        this.homex = homex;
-        this.homey = homey;
+        this.targetx = x;
+        this.targety = y;
+        this.homex = x;
+        this.homey = y;
         this.image = image;
         this.state = Fly.GOING_HOME;
     }

@@ -653,12 +653,15 @@ var setUpContent = function() {
 				players[0].y = players[1].y = players[0].oldy = players[1].oldy = content[i].y;
         startPos.x = content[i].x;
         startPos.y = content[i].y;
-			break;
+	      break;
+      case "flynest":
+        for(var j = 0; j < 10; j++) {
+          flies.push(new Fly(flyImage, content[i].x, content[i].y));
+        }
+        break;
 		}
 	}
-  for(var i = 0; i < 10; i++) {
-    flies.push(new Fly(flyImage, 1115, 1160,1115, 1160));
-  }
+
 
 }
 

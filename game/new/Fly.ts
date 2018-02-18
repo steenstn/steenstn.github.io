@@ -15,13 +15,13 @@ class Fly {
   private static FLEEING = 1;
   private homeAttacked = 0;
 
-  constructor(image : any, x: number, y: number, homex : number, homey : number) {
+  constructor(image : any, x: number, y: number) {
     this.x = x;
     this.y = y;
-    this.targetx = homex;
-    this.targety = homey;
-    this.homex = homex;
-    this.homey = homey;
+    this.targetx = x;
+    this.targety = y;
+    this.homex = x;
+    this.homey = y;
     this.image = image;
     this.state = Fly.GOING_HOME;
   }
