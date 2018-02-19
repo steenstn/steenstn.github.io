@@ -54,12 +54,15 @@ class Fly {
 
     let baseTargetx;
     let baseTargety;
+    let speed;
     if(this.state == Fly.GOING_HOME) {
       baseTargetx = this.homex;
       baseTargety = this.homey;
+      speed = 1;
     } else if(this.state == Fly.FLEEING) {
       baseTargetx = this.safex;
       baseTargety = this.safey;
+      speed = 2;
     }
     let arrivedAtTarget = Math.abs(this.x-this.targetx) < 10 && Math.abs(this.y-this.targety) < 10;
     if(arrivedAtTarget) {
@@ -69,10 +72,10 @@ class Fly {
     let angle = Math.atan2(this.targety-this.y,this.targetx-this.x);
     let xCoefficient = Math.cos(angle);
     let yCoefficient = Math.sin(angle);
-    let xSpeed = xCoefficient*2;
-    let ySpeed = yCoefficient*2;
+    let xSpeed = xCoefficient*speed;
+    let ySpeed = yCoefficient*speed;
 
-    let sideMovement = Math.random()*8-4;
+    let sideMovement = Math.random()*4*speed-2*speed;
     let sideSpeedX = Math.cos(angle+90)*sideMovement;
     let sideSpeedY = Math.sin(angle+90)*sideMovement;
 

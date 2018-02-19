@@ -38,13 +38,16 @@ var Fly = (function () {
         }
         var baseTargetx;
         var baseTargety;
+        var speed;
         if (this.state == Fly.GOING_HOME) {
             baseTargetx = this.homex;
             baseTargety = this.homey;
+            speed = 1;
         }
         else if (this.state == Fly.FLEEING) {
             baseTargetx = this.safex;
             baseTargety = this.safey;
+            speed = 2;
         }
         var arrivedAtTarget = Math.abs(this.x - this.targetx) < 10 && Math.abs(this.y - this.targety) < 10;
         if (arrivedAtTarget) {
@@ -54,9 +57,9 @@ var Fly = (function () {
         var angle = Math.atan2(this.targety - this.y, this.targetx - this.x);
         var xCoefficient = Math.cos(angle);
         var yCoefficient = Math.sin(angle);
-        var xSpeed = xCoefficient * 2;
-        var ySpeed = yCoefficient * 2;
-        var sideMovement = Math.random() * 8 - 4;
+        var xSpeed = xCoefficient * speed;
+        var ySpeed = yCoefficient * speed;
+        var sideMovement = Math.random() * 4 * speed - 2 * speed;
         var sideSpeedX = Math.cos(angle + 90) * sideMovement;
         var sideSpeedY = Math.sin(angle + 90) * sideMovement;
         this.x += xSpeed + sideSpeedX;
