@@ -7,12 +7,18 @@ class Fly {
   private homey : number;
   private image : any;
   private state : number;
+  private oldState : number;
   private safex : number;
   private safey : number;
   private safePositionSet = false;
+  private nectarCollected : number;
+  private inDanger : boolean;
 
   private static GOING_HOME = 0;
   private static FLEEING = 1;
+  private static SEARCHING = 2;
+  private static GATHERING = 3;
+
   private homeAttacked = 0;
 
   constructor(image : any, x: number, y: number) {
@@ -23,52 +29,96 @@ class Fly {
     this.homex = x;
     this.homey = y;
     this.image = image;
-    this.state = Fly.GOING_HOME;
+    this.state = Fly.SEARCHING;
+    this.inDanger = false;
+    this.nectarCollected = 0;
   }
 
-  move(players : any) {
+  move(players : any, flowers : any) {
     if(Helper.outOfBounds(this.x, this.y)) {
          return;
     }
-    if((Math.abs(this.homex-players[0].x) < 30 && Math.abs(this.homey-players[0].y) < 30) ||
-        Math.abs(this.homex-players[1].x) < 30 && Math.abs(this.homey-players[1].y) < 30) {
-      this.homeAttacked = 1;
-      if(!this.safePositionSet) {
-        let angle = Math.atan2(this.y-this.homey,this.x - this.homex);
-        let xCoefficient = Math.cos(angle);
-        let yCoefficient = Math.sin(angle);
-
-        this.safex = this.homex + xCoefficient*70+Math.random()*30*xCoefficient;
-        this.safey = this.homey + yCoefficient*70;+Math.random()*30*yCoefficient;
-        this.targetx = this.safex;
-        this.targety = this.safey;
-        this.safePositionSet = true;
+    this.inDanger = false;
+    let dangerx = 0;
+    let dangery = 0;
+    for(let i = 0; i < players.length; i++) {
+      if((Math.abs(this.x-players[i].x) < 50 && Math.abs(this.y-players[i].y) < 50)) {
+        this.state = Fly.FLEEING
+        dangerx = players[i].x;
+        dangery = players[i].y;
+        this.inDanger = true;
       }
-
-      this.state = Fly.FLEEING;
-    } else {
-      this.homeAttacked = 0;
-      this.state = Fly.GOING_HOME;
-      this.safePositionSet = false;
     }
 
-    let baseTargetx;
-    let baseTargety;
-    let speed;
+
+
+    if(this.state == Fly.FLEEING) {
+      let angle = Math.atan2(this.y-dangery,this.x - dangerx);
+      let xCoefficient = Math.cos(angle);
+      let yCoefficient = Math.sin(angle);
+
+      this.safex = dangerx + xCoefficient*90+Math.random()*30*xCoefficient;
+      this.safey = dangery + yCoefficient*90;+Math.random()*30*yCoefficient;
+      this.targetx = this.safex;
+      this.targety = this.safey;
+      if(!this.inDanger) {
+        this.state = Fly.SEARCHING;
+        this.targetx = this.x;
+        this.targety = this.y;
+      }
+    }
+
+    let baseTargetx=this.homex;
+    let baseTargety=this.homey;
+    let speed=1;
     if(this.state == Fly.GOING_HOME) {
-      baseTargetx = this.homex;
-      baseTargety = this.homey;
-      speed = 1;
+      let arrivedAtTarget = Math.abs(this.x-this.targetx) < 10 && Math.abs(this.y-this.targety) < 10;
+      if(arrivedAtTarget) {
+        baseTargetx = this.homex;
+        baseTargety = this.homey;
+        speed = 1;
+        this.targetx = baseTargetx + Math.random()*50-25;
+        this.targety = baseTargety + Math.random()*50-25;
+        this.nectarCollected-=Math.random()*10;
+        if(this.nectarCollected<=0) {
+          this.state = Fly.SEARCHING;
+        }
+      }
     } else if(this.state == Fly.FLEEING) {
       baseTargetx = this.safex;
       baseTargety = this.safey;
       speed = 2;
+      let arrivedAtTarget = Math.abs(this.x-this.targetx) < 10 && Math.abs(this.y-this.targety) < 10;
+      if(arrivedAtTarget) {
+        this.targetx = baseTargetx + Math.random()*50-25;
+        this.targety = baseTargety + Math.random()*50-25;
+      }
+
+    }else if(this.state == Fly.SEARCHING) {
+      baseTargetx = this.homex;
+      baseTargety = this.homey;
+      speed = 1;
+      let arrivedAtTarget = Math.abs(this.x-this.targetx) < 10 && Math.abs(this.y-this.targety) < 10;
+      if(arrivedAtTarget) {
+        this.targetx = baseTargetx + Math.random()*500-250;
+        this.targety = baseTargety + Math.random()*100-50;
+      }
+        for(let i = 0; i < flowers.length; i++) {
+          if((Math.abs(this.x-flowers[i].x) < 30 && Math.abs(this.y-flowers[i].y) < 30)) {
+            this.targetx = flowers[i].x;
+            this.targety = flowers[i].y;
+            this.nectarCollected++;
+            if(this.nectarCollected>250) {
+        //      this.targetx = this.homex;
+        //      this.targety = this.homey;
+              this.state = Fly.GOING_HOME;
+
+            }
+          }
+        }
+
     }
-    let arrivedAtTarget = Math.abs(this.x-this.targetx) < 10 && Math.abs(this.y-this.targety) < 10;
-    if(arrivedAtTarget) {
-      this.targetx = baseTargetx + Math.random()*50-25;
-      this.targety = baseTargety + Math.random()*50-25;
-    }
+
     let angle = Math.atan2(this.targety-this.y,this.targetx-this.x);
     let xCoefficient = Math.cos(angle);
     let yCoefficient = Math.sin(angle);
@@ -84,6 +134,9 @@ class Fly {
   }
 
   render(context) {
+    //context.fillStyle = "#FFFFFF";
+    //context.fillRect(Math.round(Viewport.x + this.targetx), Math.round(Viewport.y + this.targety), 2, 2);
     context.drawImage(this.image, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
+    //context.fillText(index, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
   }
 }

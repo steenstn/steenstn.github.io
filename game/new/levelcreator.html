@@ -84,6 +84,9 @@ baguetterockImage.src = "baguetterock.png";
 var tree1Image = new Image();
 tree1Image.src = "tree1.png";
 
+var flower1Image = new Image();
+flower1Image.src = "flower1.png";
+
 var goalx;
 var goaly;
 var nextLevel;
@@ -129,6 +132,7 @@ tileset.height=tilesize;
  toolMap["skull"] = skullImage;
  toolMap["jumper"] = francesImage;
  toolMap["mutant"] = mutantImage;
+ toolMap["flower1"] = flower1Image;
 
 var init = function()
 {
@@ -265,6 +269,8 @@ var checkKeys = function (modifier) {
 		tool="s";
 	if(74 in keysDown) // j
 		tool="startPos";
+  if(80 in keysDown) // j
+  		tool="flower1";
 
 	if(83 in keysDown) // S
 	{
@@ -437,6 +443,9 @@ var renderContent = function(zValue) {
           break;
         case "baguetterock":
           ctx.drawImage(baguetterockImage, screenx+content[i].x, screeny+content[i].y);
+          break;
+        case "flower1":
+          ctx.drawImage(flower1Image, screenx+content[i].x, screeny+content[i].y);
           break;
       }
     }
@@ -811,6 +820,11 @@ var GameLoop = function(){
       } else if(tool=="flynest") {
         if(mouseClick==1) {
           content.push({type:"flynest", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey)});
+        }
+
+      } else if(tool=="flower1") {
+        if(mouseClick==1) {
+          content.push({type:"flower1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex, flower: true});
         }
 
       } else if(tool=="r") { // Sudda content

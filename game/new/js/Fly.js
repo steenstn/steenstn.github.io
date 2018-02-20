@@ -9,50 +9,86 @@ var Fly = (function () {
         this.homex = x;
         this.homey = y;
         this.image = image;
-        this.state = Fly.GOING_HOME;
+        this.state = Fly.SEARCHING;
+        this.inDanger = false;
+        this.nectarCollected = 0;
     }
-    Fly.prototype.move = function (players) {
+    Fly.prototype.move = function (players, flowers) {
         if (Helper.outOfBounds(this.x, this.y)) {
             return;
         }
-        if ((Math.abs(this.homex - players[0].x) < 30 && Math.abs(this.homey - players[0].y) < 30) ||
-            Math.abs(this.homex - players[1].x) < 30 && Math.abs(this.homey - players[1].y) < 30) {
-            this.homeAttacked = 1;
-            if (!this.safePositionSet) {
-                var angle_1 = Math.atan2(this.y - this.homey, this.x - this.homex);
-                var xCoefficient_1 = Math.cos(angle_1);
-                var yCoefficient_1 = Math.sin(angle_1);
-                this.safex = this.homex + xCoefficient_1 * 70 + Math.random() * 30 * xCoefficient_1;
-                this.safey = this.homey + yCoefficient_1 * 70;
-                +Math.random() * 30 * yCoefficient_1;
-                this.targetx = this.safex;
-                this.targety = this.safey;
-                this.safePositionSet = true;
+        this.inDanger = false;
+        var dangerx = 0;
+        var dangery = 0;
+        for (var i = 0; i < players.length; i++) {
+            if ((Math.abs(this.x - players[i].x) < 50 && Math.abs(this.y - players[i].y) < 50)) {
+                this.state = Fly.FLEEING;
+                dangerx = players[i].x;
+                dangery = players[i].y;
+                this.inDanger = true;
             }
-            this.state = Fly.FLEEING;
         }
-        else {
-            this.homeAttacked = 0;
-            this.state = Fly.GOING_HOME;
-            this.safePositionSet = false;
+        if (this.state == Fly.FLEEING) {
+            var angle_1 = Math.atan2(this.y - dangery, this.x - dangerx);
+            var xCoefficient_1 = Math.cos(angle_1);
+            var yCoefficient_1 = Math.sin(angle_1);
+            this.safex = dangerx + xCoefficient_1 * 90 + Math.random() * 30 * xCoefficient_1;
+            this.safey = dangery + yCoefficient_1 * 90;
+            +Math.random() * 30 * yCoefficient_1;
+            this.targetx = this.safex;
+            this.targety = this.safey;
+            if (!this.inDanger) {
+                this.state = Fly.SEARCHING;
+                this.targetx = this.x;
+                this.targety = this.y;
+            }
         }
-        var baseTargetx;
-        var baseTargety;
-        var speed;
+        var baseTargetx = this.homex;
+        var baseTargety = this.homey;
+        var speed = 1;
         if (this.state == Fly.GOING_HOME) {
-            baseTargetx = this.homex;
-            baseTargety = this.homey;
-            speed = 1;
+            var arrivedAtTarget = Math.abs(this.x - this.targetx) < 10 && Math.abs(this.y - this.targety) < 10;
+            if (arrivedAtTarget) {
+                baseTargetx = this.homex;
+                baseTargety = this.homey;
+                speed = 1;
+                this.targetx = baseTargetx + Math.random() * 50 - 25;
+                this.targety = baseTargety + Math.random() * 50 - 25;
+                this.nectarCollected -= Math.random() * 10;
+                if (this.nectarCollected <= 0) {
+                    this.state = Fly.SEARCHING;
+                }
+            }
         }
         else if (this.state == Fly.FLEEING) {
             baseTargetx = this.safex;
             baseTargety = this.safey;
             speed = 2;
+            var arrivedAtTarget = Math.abs(this.x - this.targetx) < 10 && Math.abs(this.y - this.targety) < 10;
+            if (arrivedAtTarget) {
+                this.targetx = baseTargetx + Math.random() * 50 - 25;
+                this.targety = baseTargety + Math.random() * 50 - 25;
+            }
         }
-        var arrivedAtTarget = Math.abs(this.x - this.targetx) < 10 && Math.abs(this.y - this.targety) < 10;
-        if (arrivedAtTarget) {
-            this.targetx = baseTargetx + Math.random() * 50 - 25;
-            this.targety = baseTargety + Math.random() * 50 - 25;
+        else if (this.state == Fly.SEARCHING) {
+            baseTargetx = this.homex;
+            baseTargety = this.homey;
+            speed = 1;
+            var arrivedAtTarget = Math.abs(this.x - this.targetx) < 10 && Math.abs(this.y - this.targety) < 10;
+            if (arrivedAtTarget) {
+                this.targetx = baseTargetx + Math.random() * 500 - 250;
+                this.targety = baseTargety + Math.random() * 100 - 50;
+            }
+            for (var i = 0; i < flowers.length; i++) {
+                if ((Math.abs(this.x - flowers[i].x) < 30 && Math.abs(this.y - flowers[i].y) < 30)) {
+                    this.targetx = flowers[i].x;
+                    this.targety = flowers[i].y;
+                    this.nectarCollected++;
+                    if (this.nectarCollected > 250) {
+                        this.state = Fly.GOING_HOME;
+                    }
+                }
+            }
         }
         var angle = Math.atan2(this.targety - this.y, this.targetx - this.x);
         var xCoefficient = Math.cos(angle);
@@ -72,3 +108,5 @@ var Fly = (function () {
 }());
 Fly.GOING_HOME = 0;
 Fly.FLEEING = 1;
+Fly.SEARCHING = 2;
+Fly.GATHERING = 3;

@@ -108,6 +108,9 @@ baguetterockImage.src = "baguetterock.png";
 var tree1Image = new Image();
 tree1Image.src = "tree1.png";
 
+var flower1Image = new Image();
+flower1Image.src = "flower1.png";
+
 var blackParticleFactory = new HealthParticleFactory(blackParticleImage);
 var whiteParticleFactory = new HealthParticleFactory(whiteParticleImage);
 
@@ -121,6 +124,7 @@ var bloodFactory = new BloodFactory(bloodImage);
 
 var particleCleaner = new ParticleCleaner();
 
+var flowers = [];
 var image = new Image();
 image.src = "playersprite.png";
 image.width = 180;
@@ -176,6 +180,7 @@ var particles = [];
 var flies = [];
 var flyImage = new Image();
 flyImage.src = "fly.png";
+
 var tileset = new Image();
 tileset.src = "tileset.png"; // Tileset for the level and all powerups
 tileset.width=Level.tileSize;
@@ -290,10 +295,13 @@ var renderContent = function(content) {
         ctx.drawImage(rock1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
         break;
       case "baguetterock":
-          ctx.drawImage(baguetterockImage, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
+        ctx.drawImage(baguetterockImage, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
         break;
       case "tree1":
-          ctx.drawImage(tree1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
+        ctx.drawImage(tree1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
+        break;
+      case "flower1":
+        ctx.drawImage(flower1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
         break;
     }
 
@@ -574,7 +582,9 @@ var loadContent = function(levelName) {
 	var tempContent = loadJsonFile("levels/" + levelName+'content.json');//JSON.parse(jsonTexto);
 
   for(var i = 0; i < tempContent.length; i++) {
-    if(typeof tempContent[i].zIndex !== 'undefined' && tempContent[i].zIndex === 0) {
+    if(typeof tempContent[i].flower !== 'undefined' && tempContent[i].flower === true) {
+      content.push(tempContent[i]);
+    } if(typeof tempContent[i].zIndex !== 'undefined' && tempContent[i].zIndex === 0) {
       backgroundContent.push(tempContent[i]);
     } else if(typeof tempContent[i].zIndex !== 'undefined' && tempContent[i].zIndex === 1){
       foregroundContent.push(tempContent[i]);
@@ -658,6 +668,9 @@ var setUpContent = function() {
         for(var j = 0; j < 10; j++) {
           flies.push(new Fly(flyImage, content[i].x, content[i].y));
         }
+        break;
+      case "flower1":
+        flowers.push(content[i]);
         break;
 		}
 	}
@@ -794,7 +807,7 @@ var GameLoop = function(){
     updateEnemies();
     updateParticles();
     for(var i = 0; i < flies.length; i++) {
-      flies[i].move(players);
+      flies[i].move(players, flowers);
     }
   }
 
