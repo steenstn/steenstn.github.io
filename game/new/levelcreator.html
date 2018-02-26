@@ -42,7 +42,7 @@ c.height = height;
 var screenx = width/2.5;
 var screeny = height/2.5;
 
-var levelToLoad = "level0";
+var levelToLoad = "level1";
 var oldscreenx = screenx;
 var oldscreeny = screeny;
 var tilesize=32;
@@ -248,7 +248,8 @@ var checkKeys = function (modifier) {
       tool = "baguetterock";
   if(48 in keysDown) // 0
       tool = "flynest";
-
+  if(81 in keysDown) // q
+      tool = "mutant";
 
 
 	if(78 in keysDown) // n
@@ -783,12 +784,13 @@ var GameLoop = function(){
 				currentLevel[editx+(edity-1)*levelWidth]=checkNeighbours(editx,edity-1);
 				currentLevel[editx+1+edity*levelWidth]=checkNeighbours(editx+1,edity);
 				currentLevel[editx+(edity+1)*levelWidth]=checkNeighbours(editx,edity+1);
-			}
-			else if(tool=="skull") // Placera ut en skurkerist
-			{
-				if(mouseClick==1)
-				{
+			}	else if(tool=="skull") {
+				if(mouseClick==1) {
 					enemies.push({type:"skull",x:parseInt(-screenx+mousex),y:parseInt(-screeny+mousey),width:40,height:50,oldx:0,oldy:0,direction:Math.round(Math.random())});
+				}
+			} else if(tool=="mutant") {
+				if(mouseClick==1) {
+					enemies.push({type:"mutant",x:parseInt(-screenx+mousex),y:parseInt(-screeny+mousey),width:40,height:50,oldx:0,oldy:0,direction:Math.round(Math.random())});
 				}
 			} else if(tool=="jumper") {// Placera ut en skurkerist
 				if(mouseClick==1) {
@@ -879,6 +881,8 @@ GameLoop();
 <li>8: Tree</li>
 <li>9: Baguette rock</li>
 <li>0: Fly nest</li>
+<li>q: Mutant</li>
+<li>p: flower1</li>
 <li>s: Save</li>
 <li>e: Eraser ground tiles</li>
 <li>r: Eraser for enemies and content</li>
