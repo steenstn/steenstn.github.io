@@ -296,7 +296,8 @@ var renderContent = function(content) {
         ctx.drawImage(tree1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
         break;
       case "flower1":
-        ctx.drawImage(flower1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
+        var offset = typeof content.offset == 'number' ? content.offset : 0;
+        ctx.drawImage(flower1Image, offset*7, 0, 7, 15, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 7, 15);
         break;
     }
 
@@ -666,10 +667,13 @@ var setUpContent = function() {
         }
         break;
       case "flower1":
+        var numFlowerTypes = 4;
+        content[i].offset = Math.floor(Math.random()*numFlowerTypes)
         flowers.push(content[i]);
         break;
 		}
 	}
+
 
 }
 
