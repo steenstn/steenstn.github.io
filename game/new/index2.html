@@ -165,9 +165,6 @@ backgroundImage.src = "background.png";
 var background = new Background(ctx);
 var mutantSpecs;
 
-
-var animationSpeed = 3; // Number of ticks before changing frame
-
 for(var i=0;i<Level.currentLevel.length;i++)
 	Level.currentLevel[i]=new Object();
 
@@ -199,7 +196,6 @@ var init = function() {
     players[i].speedy = 0;
   	score=0;
   	players[i].hp=100;
-
   }
 
 }
@@ -213,12 +209,9 @@ addEventListener("keydown", function (e) {
 
 addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
-
 }, false);
 
-
 var canvas = document.getElementById('c');
-
 
 var clear = function(){
   if(pixelBackground) {
@@ -675,9 +668,7 @@ var setUpContent = function() {
 		}
 	}
 
-
 }
-
 
 var drawLevel = function() {
 	//Only loop through tiles that are almost in the screen
@@ -787,7 +778,7 @@ var GameLoop = function(){
        players[0].y + Viewport.y < Viewport.height - players[0].height+10 &&
        players[0].y + Viewport.y > 0) {
 
-         animating = 0;
+       animating = 0;
     }
   }
 
@@ -828,7 +819,6 @@ var GameLoop = function(){
       }
     }
   }
-
 
   var arrayPos1 = Level.getBlockAt(players[0].x + players[0].width/2, players[0].y + players[0].height/2);
   var arrayPos2 = Level.getBlockAt(players[1].x + players[1].width/2, players[1].y + players[1].height/2);
@@ -913,12 +903,10 @@ var IntroScreen = function() {
     gLoop = setTimeout(IntroScreen, 1000 / 50);
 }
 
-
 jukeBox.selectSong(0);
 jukeBox.playCurrentSong();
 
 IntroScreen();
-
 
 </script>
 </body>
