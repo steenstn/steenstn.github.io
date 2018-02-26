@@ -12,6 +12,10 @@ var Jumper = (function (_super) {
     __extends(Jumper, _super);
     function Jumper(enemy, currentLevel) {
         var _this = _super.call(this, new JumpingStrategy(enemy, currentLevel)) || this;
+        _this.width = 10;
+        _this.height = 20;
+        _this.offsetx = 3;
+        _this.offsety = 3;
         _this.speedx = 3.5;
         _this.speedy = 0;
         _this.jumping = 1;

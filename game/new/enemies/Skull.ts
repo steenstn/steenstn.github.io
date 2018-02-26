@@ -1,6 +1,9 @@
 class Skull extends Enemy {
   static image = new Image();
   speedx = 0;
+  width = 28;
+  height = 35;
+  offsetx=3;
   acceleration;
   direction : number;
   constructor(enemy, currentLevel) {

@@ -13,8 +13,10 @@ var Mutant = (function (_super) {
     function Mutant(enemy, currentLevel) {
         var _this = _super.call(this, new MutantStrategy(enemy, currentLevel)) || this;
         _this.speedx = 3;
-        _this.width = 88;
+        _this.width = 80;
         _this.height = 36;
+        _this.offsetx = 5;
+        _this.offsety = 5;
         _this.idleAnimationCounter = 0;
         _this.idleCurrentFrame = 0;
         _this.x = enemy.x;

@@ -1,8 +1,10 @@
 class Mutant extends Enemy {
   static image = new Image();
   speedx = 3;
-  width = 88;
+  width = 80;
   height = 36;
+  offsetx = 5;
+  offsety = 5;
   idleAnimationCounter = 0;
   idleCurrentFrame = 0;
   direction : number;

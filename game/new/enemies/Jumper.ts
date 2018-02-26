@@ -1,6 +1,9 @@
 class Jumper extends Enemy {
   static image = new Image();
-
+  width=10;
+  height=20;
+  offsetx=3;
+  offsety=3;
   speedx = 3.5;
   speedy = 0;
   jumping = 1;
@@ -15,7 +18,7 @@ class Jumper extends Enemy {
     this.oldx = enemy.oldx;
     this.oldy = enemy.oldy;
     this.direction = enemy.direction;
-    
+
     Jumper.image.src = "frances.png";
     Jumper.image.width = 32;
     Jumper.image.height = 60;

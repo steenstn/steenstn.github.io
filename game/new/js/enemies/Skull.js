@@ -13,6 +13,9 @@ var Skull = (function (_super) {
     function Skull(enemy, currentLevel) {
         var _this = _super.call(this, new GlidingStrategy(enemy, currentLevel)) || this;
         _this.speedx = 0;
+        _this.width = 28;
+        _this.height = 35;
+        _this.offsetx = 3;
         _this.x = enemy.x;
         _this.y = enemy.y;
         _this.oldx = enemy.oldx;
