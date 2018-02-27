@@ -591,7 +591,7 @@ var loadContent = function(levelName) {
         var numTypes = 4;
         tempContent[i].offset = i%numTypes;
     } else if(tempContent[i].type=="tree1") {
-        var numTypes = 3;
+        var numTypes = 4;
         tempContent[i].offset = i%numTypes;
     }
     if(typeof tempContent[i].flower !== 'undefined' && tempContent[i].flower === true) {
@@ -658,6 +658,8 @@ txtFile.send(null);
 
 drawText("Loading enemies...", 10, 40);
 mutantSpecs = loadJsonFile('enemies/mutant.json');
+content = [];
+flies = [];
 loadContent(levelName);
 setUpContent();
 
@@ -665,7 +667,7 @@ jukeBox.playCurrentSong();
 }
 
 var setUpContent = function() {
-  flies.length = 0;
+
 	for(var i = 0; i < content.length; i++) {
 		switch(content[i].type) {
 			case "startPos":
@@ -677,6 +679,7 @@ var setUpContent = function() {
         startPos.y = content[i].y;
 	      break;
       case "flynest":
+      console.log("adding flies");
         for(var j = 0; j < 10; j++) {
           flies.push(new Fly(flyImage, content[i].x, content[i].y));
         }
@@ -786,7 +789,7 @@ var GameLoop = function(){
 		players[0].hp=0;
     players[1].hp=0;
 		score=lastScore;
-    flies.length=0;
+    flies= [];
 		loadLevel(levelNow);
 
 		init();
