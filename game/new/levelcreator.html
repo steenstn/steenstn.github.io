@@ -387,6 +387,10 @@ var setUpContent = function() {
         var numTypes = 3;
         content[i].offset = i%numTypes;
         break;
+      case "tree1":
+        var numTypes = 2;
+        content[i].offset = i%numTypes;
+        break;
 		}
 	}
 }
@@ -453,7 +457,8 @@ var renderContent = function(zValue) {
           ctx.drawImage(rock1Image, screenx+content[i].x, screeny+content[i].y);
           break;
         case "tree1":
-          ctx.drawImage(tree1Image, screenx+content[i].x, screeny+content[i].y);
+          var offset = typeof content[i].offset == 'number' ? content[i].offset : 0;
+          ctx.drawImage(tree1Image, offset*72, 0, 72, 96, screenx+content[i].x, screeny+content[i].y, 72, 96);
           break;
         case "baguetterock":
           ctx.drawImage(baguetterockImage, screenx+content[i].x, screeny+content[i].y);
@@ -465,7 +470,6 @@ var renderContent = function(zValue) {
           ctx.drawImage(flower1Image, offset*7, 0, 7, 15, screenx+content[i].x, screeny+content[i].y, 7, 15);
           break;
         case "vines1":
-
           var offset = typeof content[i].offset == 'number' ? content[i].offset : 0;
           ctx.drawImage(vines1Image, offset*20, 0, 20, 40, screenx+content[i].x, screeny+content[i].y, 20, 40);
           break;

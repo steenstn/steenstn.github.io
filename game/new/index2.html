@@ -287,6 +287,7 @@ var renderForegroundContent = function() {
 }
 
 var renderContent = function(content) {
+    var offset = typeof content.offset == 'number' ? content.offset : 0;
     switch(content.type) {
       case "rock1":
         ctx.drawImage(rock1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
@@ -295,14 +296,12 @@ var renderContent = function(content) {
         ctx.drawImage(baguetterockImage, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
         break;
       case "tree1":
-        ctx.drawImage(tree1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
+        ctx.drawImage(tree1Image, offset*72, 0, 72, 96, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 72, 96);
         break;
       case "flower1":
-        var offset = typeof content.offset == 'number' ? content.offset : 0;
         ctx.drawImage(flower1Image, offset*7, 0, 7, 15, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 7, 15);
         break;
       case "vines1":
-        var offset = typeof content.offset == 'number' ? content.offset : 0;
         ctx.drawImage(vines1Image, offset*20, 0, 20, 40, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 20, 40);
         break;
     }
@@ -589,8 +588,11 @@ var loadContent = function(levelName) {
       var numTypes = 3;
       tempContent[i].offset = i%numTypes;
     } else if(tempContent[i].type=="flower1") {
-        var numFlowerTypes = 4;
-        tempContent[i].offset = i%numFlowerTypes;
+        var numTypes = 4;
+        tempContent[i].offset = i%numTypes;
+    } else if(tempContent[i].type=="tree1") {
+        var numTypes = 3;
+        tempContent[i].offset = i%numTypes;
     }
     if(typeof tempContent[i].flower !== 'undefined' && tempContent[i].flower === true) {
       content.push(tempContent[i]);
@@ -663,7 +665,7 @@ jukeBox.playCurrentSong();
 }
 
 var setUpContent = function() {
-  flies = [];
+  flies.length = 0;
 	for(var i = 0; i < content.length; i++) {
 		switch(content[i].type) {
 			case "startPos":
@@ -784,7 +786,7 @@ var GameLoop = function(){
 		players[0].hp=0;
     players[1].hp=0;
 		score=lastScore;
-    flies = [];
+    flies.length=0;
 		loadLevel(levelNow);
 
 		init();
