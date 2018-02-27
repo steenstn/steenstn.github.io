@@ -4,7 +4,7 @@
 <head>
 
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <title></title>
+    <title>Back To The Studio - The Mars Volta Adventure</title>
   <style>
     body {
       margin:0px;
@@ -668,7 +668,7 @@ var setUpContent = function() {
         break;
       case "flower1":
         var numFlowerTypes = 4;
-        content[i].offset = Math.floor(Math.random()*numFlowerTypes)
+        content[i].offset = i%numFlowerTypes;
         flowers.push(content[i]);
         break;
 		}
