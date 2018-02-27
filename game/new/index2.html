@@ -302,7 +302,8 @@ var renderContent = function(content) {
         ctx.drawImage(flower1Image, offset*7, 0, 7, 15, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 7, 15);
         break;
       case "vines1":
-        ctx.drawImage(vines1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
+        var offset = typeof content.offset == 'number' ? content.offset : 0;
+        ctx.drawImage(vines1Image, offset*20, 0, 20, 40, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 20, 40);
         break;
     }
 
@@ -584,6 +585,13 @@ var loadContent = function(levelName) {
 	var tempContent = loadJsonFile("levels/" + levelName+'content.json');//JSON.parse(jsonTexto);
 
   for(var i = 0; i < tempContent.length; i++) {
+    if(tempContent[i].type=="vines1") {
+      var numTypes = 3;
+      tempContent[i].offset = i%numTypes;
+    } else if(tempContent[i].type=="flower1") {
+        var numFlowerTypes = 4;
+        tempContent[i].offset = i%numFlowerTypes;
+    }
     if(typeof tempContent[i].flower !== 'undefined' && tempContent[i].flower === true) {
       content.push(tempContent[i]);
     } if(typeof tempContent[i].zIndex !== 'undefined' && tempContent[i].zIndex === 0) {
@@ -672,8 +680,6 @@ var setUpContent = function() {
         }
         break;
       case "flower1":
-        var numFlowerTypes = 4;
-        content[i].offset = i%numFlowerTypes;
         flowers.push(content[i]);
         break;
 		}
