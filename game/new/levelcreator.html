@@ -30,8 +30,8 @@
 <textarea id='contentTextarea' cols='50' rows='5'></textarea>
 </div>
 <script>
-var width = 800,
-height = 400,
+var width = 900,
+height = 500,
 gLoop,
 c = document.getElementById('c'),
 ctx = c.getContext('2d');
@@ -86,6 +86,8 @@ tree1Image.src = "tree1.png";
 
 var flower1Image = new Image();
 flower1Image.src = "flower1.png";
+var vines1Image = new Image();
+vines1Image.src = "vines1.png";
 
 var goalx;
 var goaly;
@@ -125,14 +127,15 @@ tileset.height=tilesize;
  var enemies= []; // An array containing objects of all enemies
  var content = [];
 
- var toolMap = {};
- toolMap["rock1"] = rock1Image;
- toolMap["baguetterock"] = baguetterockImage;
- toolMap["tree1"] = tree1Image;
- toolMap["skull"] = skullImage;
- toolMap["jumper"] = francesImage;
- toolMap["mutant"] = mutantImage;
- toolMap["flower1"] = flower1Image;
+var toolMap = {};
+toolMap["rock1"] = rock1Image;
+toolMap["baguetterock"] = baguetterockImage;
+toolMap["tree1"] = tree1Image;
+toolMap["skull"] = skullImage;
+toolMap["jumper"] = francesImage;
+toolMap["mutant"] = mutantImage;
+toolMap["flower1"] = flower1Image;
+toolMap["vines1"] = vines1Image;
 
 var init = function()
 {
@@ -271,7 +274,9 @@ var checkKeys = function (modifier) {
 	if(74 in keysDown) // j
 		tool="startPos";
   if(80 in keysDown) // j
-  		tool="flower1";
+  	tool="flower1";
+  if(84 in keysDown) // t
+    tool="vines1";
 
 	if(83 in keysDown) // S
 	{
@@ -374,6 +379,10 @@ var setUpContent = function() {
 				playerStartx = content[i].x;
 				playerStarty = content[i].y;
 				break;
+      case "flower1":
+        var numFlowerTypes = 4;
+        content[i].offset = i%numFlowerTypes;
+        break;
 		}
 	}
 }
@@ -446,7 +455,13 @@ var renderContent = function(zValue) {
           ctx.drawImage(baguetterockImage, screenx+content[i].x, screeny+content[i].y);
           break;
         case "flower1":
-          ctx.drawImage(flower1Image, screenx+content[i].x, screeny+content[i].y);
+          var offset = typeof content[i].offset == 'number' ? content[i].offset : 0;
+          ctx.fillStyle = "#FF0000";
+          ctx.fillText(offset,screenx+content[i].x, screeny+content[i].y);
+          ctx.drawImage(flower1Image, offset*7, 0, 7, 15, screenx+content[i].x, screeny+content[i].y, 7, 15);
+          break;
+        case "vines1":
+          ctx.drawImage(vines1Image, screenx+content[i].x, screeny+content[i].y);
           break;
       }
     }
@@ -829,6 +844,11 @@ var GameLoop = function(){
           content.push({type:"flower1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex, flower: true});
         }
 
+      } else if(tool=="vines1") {
+        if(mouseClick==1) {
+          content.push({type:"vines1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex});
+        }
+
       } else if(tool=="r") { // Sudda content
 
 				for(i=0;i<enemies.length;i++) {
@@ -883,6 +903,7 @@ GameLoop();
 <li>0: Fly nest</li>
 <li>q: Mutant</li>
 <li>p: flower1</li>
+<li>t: vines</li>
 <li>s: Save</li>
 <li>e: Eraser ground tiles</li>
 <li>r: Eraser for enemies and content</li>

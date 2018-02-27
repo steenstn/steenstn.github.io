@@ -110,6 +110,8 @@ tree1Image.src = "tree1.png";
 
 var flower1Image = new Image();
 flower1Image.src = "flower1.png";
+var vines1Image = new Image();
+vines1Image.src = "vines1.png";
 
 var blackParticleFactory = new HealthParticleFactory(blackParticleImage);
 var whiteParticleFactory = new HealthParticleFactory(whiteParticleImage);
@@ -298,6 +300,9 @@ var renderContent = function(content) {
       case "flower1":
         var offset = typeof content.offset == 'number' ? content.offset : 0;
         ctx.drawImage(flower1Image, offset*7, 0, 7, 15, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 7, 15);
+        break;
+      case "vines1":
+        ctx.drawImage(vines1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
         break;
     }
 
@@ -773,6 +778,7 @@ var GameLoop = function(){
 		players[0].hp=0;
     players[1].hp=0;
 		score=lastScore;
+    flies = [];
 		loadLevel(levelNow);
 
 		init();
