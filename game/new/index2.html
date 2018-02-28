@@ -93,9 +93,6 @@ coinParticleImage.src = "particles/coinpixel.png";
 coinParticleImage.width=2;
 coinParticleImage.height=2;
 
-var whiteParticleImage = new Image();
-whiteParticleImage.src = "particles/whitepixel.png";
-
 var blackParticleImage = new Image();
 blackParticleImage.src = "particles/blackpixel.png";
 
@@ -114,7 +111,6 @@ var vines1Image = new Image();
 vines1Image.src = "vines1.png";
 
 var blackParticleFactory = new HealthParticleFactory(blackParticleImage);
-var whiteParticleFactory = new HealthParticleFactory(whiteParticleImage);
 
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
 
@@ -420,9 +416,7 @@ var updatePlayer = function(index) {
 
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 30; i++) {
-      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
       particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
-      particles.push(whiteParticleFactory.createParticle(players[index].x, players[index].y, players[index], players[0]));
       particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y, players[index], players[0]));
     }
 	}
