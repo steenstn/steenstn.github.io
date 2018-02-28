@@ -93,8 +93,8 @@ coinParticleImage.src = "particles/coinpixel.png";
 coinParticleImage.width=2;
 coinParticleImage.height=2;
 
-var blackParticleImage = new Image();
-blackParticleImage.src = "particles/blackpixel.png";
+var healthParticleImage = new Image();
+healthParticleImage.src = "particles/greenpixel.png";
 
 var rock1Image = new Image();
 rock1Image.src = "rock1.png";
@@ -110,7 +110,7 @@ flower1Image.src = "flower1.png";
 var vines1Image = new Image();
 vines1Image.src = "vines1.png";
 
-var blackParticleFactory = new HealthParticleFactory(blackParticleImage);
+var healthParticleFactory = new HealthParticleFactory(healthParticleImage);
 
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
 
@@ -416,8 +416,8 @@ var updatePlayer = function(index) {
 
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 30; i++) {
-      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
-      particles.push(blackParticleFactory.createParticle(players[index].x, players[index].y, players[index], players[0]));
+      particles.push(healthParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
+      particles.push(healthParticleFactory.createParticle(players[index].x, players[index].y, players[index], players[0]));
     }
 	}
 	if(Level.currentLevel[arrayPos].type=="s") // Coins
