@@ -1,18 +1,60 @@
 body {
 	background-color: #000014;
-	font-family: Helvetica;
+	font-family: "Helvetica";
+	color: #FAFAFA;
+	margin:0px;
+	padding:0px;
+}
+
+ul {
+	
+}
+li {
+	
+	
+	text-align:left;
+	
+	
+}
+.listdiv {
+	margin-left:40%;
+	
+	
+}
+ .background {
+	background-color:#444444;
+	width:90%;
+	margin-top:20px;
+	margin-bottom:20px;
+	
+}
+.leftbackground {
+	border-radius: 0px 10px 10px 0px;
+	float:left;
+}
+.rightbackground {
+	border-radius: 10px 0px 0px 10px;
+	float:right;
+}
+
+.project {
+	text-align:center;
+}
+.leftproject {
+	margin-left:10%;
+}
+.rightproject {
+	margin-right:10%;
+}
+.project a {
 	color: #FAFAFA;
 }
-
-a.mainLink {
-	color: #FFFFFF;
-}
-
+/*
 a.mainLink:link {
  text-decoration:none;
-}
+}*/
 
-a.mainLink:hover {
+.project a:hover {
 	color: #AFAFAF;
-	text-decoration:none;
+	
 }
