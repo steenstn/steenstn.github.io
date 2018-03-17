@@ -42,7 +42,6 @@ class Jukebox {
           }, false);
       }
     this.currentSong.play();
-
   }
 
   isSongReady() {

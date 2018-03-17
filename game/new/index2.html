@@ -58,6 +58,7 @@
 <script src="js/enemies/Jumper.js" type="text/javascript"></script>
 
 <script src="js/Fly.js" type="text/javascript"></script>
+<script src="js/Bedlam.js" type="text/javascript"></script>
 
 <script src="js/enemyMovementStrategies/GlidingStrategy.js" language="javascript" type="text/javascript"></script>
 <script src="js/enemyMovementStrategies/JumpingStrategy.js" language="javascript" type="text/javascript"></script>
@@ -123,6 +124,9 @@ var bloodFactory = new BloodFactory(bloodImage);
 var particleCleaner = new ParticleCleaner();
 
 var flowers = [];
+
+var bedlam;
+
 var image = new Image();
 image.src = "playersprite.png";
 image.width = 180;
@@ -195,6 +199,7 @@ var init = function() {
     players[i].speedy = 0;
   	score=0;
   	players[i].hp=100;
+    players[i].inBucket = false;
   }
 
 }
@@ -391,7 +396,7 @@ var updatePlayer = function(index) {
 		if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1) {
 			players[index].jumping = 0;
 
-			while(Level.getBlockAt(players[index].x+players[index].width/2, players[index].y+players[index].height).blocking==1) {
+			while(typeof Level.currentLevel[arrayPos] != "undefined" && Level.getBlockAt(players[index].x+players[index].width/2, players[index].y+players[index].height).blocking==1) {
 				players[index].y-=0.2;
 			}
 			players[index].speedy=0;
@@ -516,7 +521,7 @@ var checkKeys = function (modifier) {
   }
 	for(var i = 0; i < players.length; i++) {
 
-		if (players[i].keyUp in keysDown) {
+		if (animating=== 0 && players[i].keyUp in keysDown) {
 			if(players[i].jumping < WorldConstants.maxJump) {
 				players[i].jumping++;
 
@@ -525,13 +530,13 @@ var checkKeys = function (modifier) {
 			}
 		}
 
-		if (players[i].keyLeft in keysDown) {
+		if (animating === 0 && players[i].keyLeft in keysDown) {
 		players[i].goingLeft = 1;
 		players[i].animationCounter++;
 			if(players[i].speedx>-WorldConstants.maxSpeedx)
 				players[i].speedx -= WorldConstants.playerAcc * modifier;
 		}
-		else if (players[i].keyRight in keysDown) {
+		else if (animating === 0 && players[i].keyRight in keysDown) {
 		players[i].goingLeft = 0;
 		players[i].animationCounter++;
 			if(players[i].speedx<WorldConstants.maxSpeedx)
@@ -810,6 +815,8 @@ var GameLoop = function(){
     }
   }
 
+
+
 	if(animating===0) {
 		checkKeys(1);
 
@@ -821,8 +828,8 @@ var GameLoop = function(){
 
 	}
   renderBackgroundContent();
-  render();
   if(animating === 0) {
+    render();
     updateEnemies();
     updateParticles();
     for(var i = 0; i < flies.length; i++) {
@@ -834,10 +841,25 @@ var GameLoop = function(){
 	drawLevel();
   renderForegroundContent();
 
+  if(animating===2) {
+    playerIsOutOfBounds = false;
+    checkKeys(1);
+      render();
+  //  updatePlayer(0);
+	//	updatePlayer(1);
+    bedlam.move(players);
+    bedlam.render(ctx);
+    if(bedlam.isComplete()) {
+      animating = 0;
+      loadLevel(levelNow);
+
+    	init();
+      Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+    }
+  }
 
   for(var i = 0; i < flies.length; i++) {
-  flies[i].render(ctx);
-
+    flies[i].render(ctx);
   }
   if(numFramesSinceStart%200 === 0) {
     particleCleaner.cleanupBlood(particles);
@@ -853,13 +875,11 @@ var GameLoop = function(){
   var arrayPos1 = Level.getBlockAt(players[0].x + players[0].width/2, players[0].y + players[0].height/2);
   var arrayPos2 = Level.getBlockAt(players[1].x + players[1].width/2, players[1].y + players[1].height/2);
 
-	if(arrayPos1.type=="k" || arrayPos2.type=="k") {
+	if(animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
 			levelNow++;
 			lastScore=score;
-			loadLevel(levelNow);
-
-			init();
-      Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+      animating=2;
+      bedlam = new Bedlam();
 	}
 	drawAllText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);

@@ -31,10 +31,9 @@ class Player {
   keyLeft : number;
   keyRight : number;
   friction = WorldConstants.normalFriction;
-
+  inBucket : boolean;
+  
   private animationSpeed = 3;
-
-
 
   constructor(public x,public y,public image) {
     this.x = x;
