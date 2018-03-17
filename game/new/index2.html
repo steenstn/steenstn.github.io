@@ -136,6 +136,7 @@ var players = [new Player(2*Level.tileSize, 2*Level.tileSize, image), new Player
 
 var playerIsOutOfBounds = false;
 var outOfBoundsTimer = 0;
+var scoreTimer = 0;
 // A - 65
 // D 68
 // W 87
@@ -368,7 +369,7 @@ var updatePlayer = function(index) {
 			players[index].speedx = 0;
 		}
 	}
-	
+
 	if(players[index].speedy < WorldConstants.maxSpeedy) {
 		players[index].speedy += WorldConstants.gravity;
 	}
@@ -423,6 +424,7 @@ var updatePlayer = function(index) {
 	if(Level.currentLevel[arrayPos].type=="s") // Coins
 	{
 		score+=20;
+    scoreTimer=10;
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 20; i++) {
       particles.push(coinParticleFactory.createParticle(players[index].x, players[index].y,100));
@@ -431,6 +433,7 @@ var updatePlayer = function(index) {
 	if(Level.currentLevel[arrayPos].type=="l" || Level.currentLevel[arrayPos].type=="m" || Level.currentLevel[arrayPos].type=="n" || Level.currentLevel[arrayPos].type=="o") // Phadderist
 	{
 		score+=50;
+    scoreTimer=10;
 		Level.currentLevel[arrayPos].type=".";
 	}
 
@@ -479,6 +482,7 @@ var updateEnemies = function() {
 
   			players[playerIndex].speedy=-4;
   			score+=100;
+        scoreTimer = 10;
         enemyIsDead = true;
         break;
   		}
@@ -733,12 +737,19 @@ var drawText = function(textToDraw, x, y) {
 }
 
 var drawAllText = function() {
+    var scoreFontSize = 14 + scoreTimer/2;
 	  ctx.fillStyle    = '#FFF';
-    ctx.font         = '10px Verdana';
+    ctx.font         = '14px Verdana';
     ctx.textBaseline = 'Top';
     ctx.textAlign = 'left';
-    ctx.fillText  ("Score: " + score, 4,20);
+    ctx.fillText  ("Score:", 4,20);
+    ctx.textAlign = 'left';
+    ctx.font         = scoreFontSize + 'px Verdana';
+    ctx.fillText  (score, 55,20);
 
+    if(scoreTimer>0) {
+      scoreTimer--;
+    }
     if(outOfBoundsTimer >= 3 && numFramesSinceStart > 10) {
       var fadeOutFactor = outOfBoundsTimer/100;
       ctx.fillStyle    = 'rgba(255,255,255,' + fadeOutFactor + ')';
