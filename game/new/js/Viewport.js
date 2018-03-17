@@ -25,7 +25,8 @@ var Viewport = (function () {
         if (Viewport.y < -Level.height * Level.tileSize + Viewport.numTilesInScreenHeight * Level.tileSize)
             Viewport.y = -Level.height * Level.tileSize + Viewport.numTilesInScreenHeight * Level.tileSize;
     };
-    Viewport.moveTowardsCenter = function (x1, y1, x2, y2) {
+    Viewport.moveTowardsCenter = function (x1, y1, x2, y2, maxSpeed) {
+        if (maxSpeed === void 0) { maxSpeed = 14; }
         Viewport.oldx = Viewport.floatx;
         Viewport.oldy = Viewport.floaty;
         var xMidpoint = (x1 + x2) / 2;
@@ -36,7 +37,6 @@ var Viewport = (function () {
         var yDist = Math.abs(yTarget - Viewport.oldy);
         var normalizedXDist = Helper.clamp(xDist / 100, 0, 1);
         var normalizedYDist = Helper.clamp(yDist / 100, 0, 1);
-        var maxSpeed = 14;
         var xSpeed = Math.pow(normalizedXDist, 5) * maxSpeed;
         var ySpeed = Math.pow(normalizedYDist, 5) * maxSpeed;
         xSpeed = Helper.clamp(xSpeed, 0, maxSpeed);

@@ -376,7 +376,6 @@ var updatePlayer = function(index) {
 
 	players[index].y += players[index].speedy;
 
-
 	// If going up, check for blocking tiles
 	if(players[index].speedy < 0) {
 		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+5)/Level.tileSize)*Level.width;
@@ -385,6 +384,7 @@ var updatePlayer = function(index) {
 			players[index].speedy = 0;
 		}
 	} else if(players[index].speedy > 0) { // Going down, check for blocking tiles
+
 		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/(Level.tileSize))*Level.width;
 		// If the player lands on a blocking tile, iteratively move him upwards until he is free from the
 		// tile. This will remove bouncing when landing in high speed
@@ -677,7 +677,6 @@ var setUpContent = function() {
         startPos.y = content[i].y;
 	      break;
       case "flynest":
-      console.log("adding flies");
         for(var j = 0; j < 10; j++) {
           flies.push(new Fly(flyImage, content[i].x, content[i].y));
         }
@@ -801,7 +800,7 @@ var GameLoop = function(){
     animating = 1;
 	}
   if(animating===1) {
-    Viewport.moveTowardsCenter(startPos.x,startPos.y,startPos.x,startPos.y);
+    Viewport.moveTowardsCenter(startPos.x,startPos.y,startPos.x,startPos.y, 30);
     if(players[0].x + Viewport.x > -1*players[0].width+5 &&
        players[0].x + Viewport.x < Viewport.width -5 &&
        players[0].y + Viewport.y < Viewport.height - players[0].height+10 &&
@@ -834,6 +833,8 @@ var GameLoop = function(){
   renderEnemies();
 	drawLevel();
   renderForegroundContent();
+
+
   for(var i = 0; i < flies.length; i++) {
   flies[i].render(ctx);
 

@@ -47,7 +47,7 @@ class Viewport {
 
   }
 
-  static moveTowardsCenter(x1, y1, x2, y2) {
+  static moveTowardsCenter(x1, y1, x2, y2, maxSpeed = 14) {
     Viewport.oldx = Viewport.floatx;
     Viewport.oldy = Viewport.floaty;
 
@@ -65,7 +65,6 @@ class Viewport {
     let normalizedXDist = Helper.clamp(xDist/100, 0, 1);
     let normalizedYDist = Helper.clamp(yDist/100, 0, 1);
 
-    let maxSpeed = 14;
     let xSpeed = Math.pow(normalizedXDist,5)*maxSpeed;
     let ySpeed = Math.pow(normalizedYDist,5)*maxSpeed;
 
