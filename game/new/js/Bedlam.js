@@ -3,17 +3,17 @@ var Bedlam = (function () {
         this.image = new Image();
         this.animCounter = 0;
         this.currentFrame = 0;
-        this.x = -Viewport.x - 50;
+        this.x = -Viewport.x - 70;
         this.y = -Viewport.y + 118;
         this.image.src = "bedlam.png";
     }
     Bedlam.prototype.move = function (players) {
         this.animCounter++;
-        if (this.animCounter > 5) {
+        if (this.animCounter > 4) {
             this.animCounter = 0;
             this.currentFrame = 1 - this.currentFrame;
         }
-        this.x += 3;
+        this.x += 4;
         for (var i = 0; i < players.length; i++) {
             if (!players[i].inBucket && Math.abs(this.x - players[i].x) < 40) {
                 players[i].inBucket = true;
