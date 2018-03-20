@@ -14,7 +14,8 @@
 			<a class="mainLink" href="game/new/index2.html">Back to the Studio - The Mars Volta Adventure</a><br />
 		</h1>
 		<img src="mv.png" />
-		<p>WORK IN PROGRESS<br /><a href="https://github.com/steenstn/steenstn.github.io">Source code</a></p>
+		<p>WORK IN PROGRESS<br />
+			<span id="lastCommitGame"></span><br/><a href="https://github.com/steenstn/steenstn.github.io">Source code</a></p>
 		
 		<p>2D platformer game for two players. Help The Mars Volta get back to the studio to record a new album.</p>	
 		<br />
@@ -54,5 +55,26 @@
 	</div>
 </div>
 <br />
+<script>
+var HttpClient = function() {
+    this.get = function(aUrl, aCallback) {
+        var anHttpRequest = new XMLHttpRequest();
+        anHttpRequest.onreadystatechange = function() { 
+            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+                aCallback(anHttpRequest.responseText);
+        }
+
+        anHttpRequest.open( "GET", aUrl, true );            
+        anHttpRequest.send( null );
+    }
+}
+var client = new HttpClient();
+client.get('https://api.github.com/repos/steenstn/steenstn.github.io/commits', function(response) {
+	var json = JSON.parse(response);
+	var lastCommitMessage = json[0].commit.message;
+	var lastCommitDate = json[0].commit.author.date;
+    document.getElementById("lastCommitGame").innerHTML = lastCommitDate.substring(0,10) + ": " + lastCommitMessage;
+});
+</script>
 </body>
-<!html>
+</html>
