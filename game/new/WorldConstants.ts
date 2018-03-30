@@ -9,4 +9,5 @@ class WorldConstants {
   static jumpAcc : number = 2;
   static maxJump : number = 7;
   static normalFriction : number = 1.2;
+  static maxBloodParticles = 2000;
 }

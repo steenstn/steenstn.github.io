@@ -20,6 +20,7 @@ class Mutant extends Enemy {
     Mutant.image.src = "mutant.png";
     Mutant.image.width = 88;
     Mutant.image.height = 36;
+
   }
 
   draw(context) {

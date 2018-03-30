@@ -13,3 +13,4 @@ WorldConstants.maxSpeedy = 6;
 WorldConstants.jumpAcc = 2;
 WorldConstants.maxJump = 7;
 WorldConstants.normalFriction = 1.2;
+WorldConstants.maxBloodParticles = 2000;

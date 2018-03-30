@@ -5,6 +5,9 @@ var Level = (function () {
         var index = Math.floor(x / Level.tileSize) + Math.floor(y / Level.tileSize) * Level.width;
         return Level.currentLevel[index];
     };
+    Level.getIndexAt = function (x, y) {
+        return Math.floor(x / Level.tileSize) + Math.floor(y / Level.tileSize) * Level.width;
+    };
     return Level;
 }());
 Level.width = 200;

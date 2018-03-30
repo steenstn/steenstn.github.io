@@ -2,6 +2,13 @@ var ParticleCleaner = (function () {
     function ParticleCleaner() {
     }
     ParticleCleaner.prototype.cleanupBlood = function (particles) {
+        if (particles.length > WorldConstants.maxBloodParticles) {
+            var numParticlesToDelete = particles.length - WorldConstants.maxBloodParticles;
+            console.log(numParticlesToDelete);
+            for (var i = 0; i < numParticlesToDelete; i++) {
+                particles[i].shouldBeDeleted = true;
+            }
+        }
         for (var i = 0; i < particles.length - 1; i++) {
             if (particles[i].shouldBeDeleted) {
                 continue;

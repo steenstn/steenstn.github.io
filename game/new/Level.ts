@@ -14,4 +14,8 @@ class Level {
     let index = Math.floor(x/Level.tileSize)+Math.floor(y/Level.tileSize)*Level.width;
     return Level.currentLevel[index];
   }
+
+  static getIndexAt(x: number, y: number) : number {
+    return Math.floor(x/Level.tileSize)+Math.floor(y/Level.tileSize)*Level.width;
+  }
 }
