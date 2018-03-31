@@ -466,18 +466,12 @@ var updateEnemies = function() {
       var enemyInKillZone = Helper.overlap(enemies[i].x+offsetx,enemies[i].y+offsety,enemyWidth,enemyHeight,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
 
   		if(enemyInHurtZone) { // 1 = right
-        if(enemies[i].speedx>0) {
-          players[playerIndex].speedx=WorldConstants.kickbackForce;
-          for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
-            particles.push(bloodFactory.createBlood(players[playerIndex].x, players[playerIndex].y, 1));
-          }
+        var direction = enemies[i].speedx > 0 ? 1 : -1;
+        players[playerIndex].speedx=direction * WorldConstants.kickbackForce;
+        for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
+          particles.push(bloodFactory.createBlood(players[playerIndex].x, players[playerIndex].y, direction));
         }
-        else{
-  			     players[playerIndex].speedx=-1*WorldConstants.kickbackForce;
-             for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
-             particles.push(bloodFactory.createBlood(players[playerIndex].x, players[playerIndex].y, -1));
-           }
-        }
+        
         players[playerIndex].speedy=-0.25*WorldConstants.kickbackForce;
   			players[0].hp-=2;
         enemyIsInteracting = true;
