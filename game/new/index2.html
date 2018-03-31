@@ -185,11 +185,7 @@ var flies = [];
 var flyImage = new Image();
 flyImage.src = "fly.png";
 
-var tileset = new Image();
-tileset.src = "tileset.png"; // Tileset for the level and all powerups
-tileset.width=Level.tileSize;
-tileset.height=Level.tileSize;
-
+Level.loadTileset();
 
 var init = function() {
   numFramesSinceStart = 0;
@@ -725,43 +721,6 @@ var setUpContent = function() {
 
 }
 
-var drawLevel = function() {
-	//Only loop through tiles that are almost in the screen
-	var startx=Math.floor(-Viewport.x/Level.tileSize)-1;
-	var starty=Math.floor(-Viewport.y/Level.tileSize)-1;
-	if(startx<0)
-		startx=0;
-	if(starty<0)
-		starty=0;
-	var endx=startx+Viewport.width/Level.tileSize+2;
-	var endy=starty+Viewport.height/Level.tileSize+2;
-
-	if(endx>Level.width)
-		endx=Level.width;
-	if(endy>Level.height)
-		endy=Level.height;
-
-
-	for(var y=starty;y<endy;y++) {
-		for(var x=startx;x<endx;x++) {
-			var posx = Math.round(Viewport.x+x*Level.tileSize);
-			var posy = Math.round(Viewport.y+y*Level.tileSize);
-
-      var isAirTile = Level.currentLevel[x+y*Level.width].type==="."
-			if(!isAirTile) {
-				ctx.drawImage(tileset,Level.currentLevel[x+y*Level.width].tileOffsetx,Level.currentLevel[x+y*Level.width].tileOffsety, Level.tileSize,
-					Level.tileSize,posx,posy, Level.tileSize, Level.tileSize);
-			}
-
-		}
-	}
-
-  for(var i = 0; i < particles.length; i++) {
-    if(!particles[i].shouldBeDeleted) {
-      particles[i].render(ctx);
-    }
-  }
-}
 
 var drawText = function(textToDraw, x, y) {
   ctx.fillStyle    = '#F00';
@@ -866,7 +825,14 @@ var GameLoop = function(){
   }
 
   renderEnemies();
-	drawLevel();
+  Level.render(ctx);
+
+  for(var i = 0; i < particles.length; i++) {
+    if(!particles[i].shouldBeDeleted) {
+      particles[i].render(ctx);
+    }
+  }
+
   renderForegroundContent();
 
   if(animating===2) {
