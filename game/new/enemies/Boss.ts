@@ -6,7 +6,7 @@ class Boss extends Enemy {
   height = 60;
   type = "boss";
   currentState = BossStrategy.JUMPING;
-  private maxHp = 40;
+  private maxHp = 30;
   private oldHp;
   private hurtAnimationCounter : number;
   firing : boolean;
