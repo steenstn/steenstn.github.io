@@ -521,7 +521,7 @@ var updateEnemies = function() {
             for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount/4; bloodIndex++) {
               particles.push(bloodFactory.createBlood(currentPlayer.x, currentPlayer.y, direction));
             }
-            players[0].hp-=1;
+            players[0].hp-=0.9;
           }
         }
       }

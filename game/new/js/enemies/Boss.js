@@ -53,10 +53,11 @@ var Boss = (function (_super) {
         this.hurtAnimationCounter--;
     };
     Boss.prototype.drawHp = function (context) {
+        var barSize = 4;
         context.fillStyle = this.hp !== this.oldHp ? "#ffffff" : "#fa0000";
-        context.fillRect(Viewport.width - 50, Viewport.height - 2 * this.hp - 20, 30, 2 * this.hp);
+        context.fillRect(Viewport.width - 50, Viewport.height - barSize * this.hp - 10, 30, barSize * this.hp);
         context.strokeStyle = "#ffffff";
-        context.strokeRect(Viewport.width - 50, Viewport.height - 2 * this.maxHp - 20, 30, 2 * this.maxHp);
+        context.strokeRect(Viewport.width - 50, Viewport.height - barSize * this.maxHp - 10, 30, barSize * this.maxHp);
         this.oldHp = this.hp;
     };
     return Boss;
