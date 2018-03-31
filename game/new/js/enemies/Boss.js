@@ -17,6 +17,7 @@ var Boss = (function (_super) {
         _this.width = 60;
         _this.height = 60;
         _this.type = "boss";
+        _this.currentState = BossStrategy.JUMPING;
         _this.maxHp = 40;
         _this.x = enemy.x;
         _this.y = enemy.y;
@@ -24,15 +25,30 @@ var Boss = (function (_super) {
         _this.oldHp = _this.hp;
         Boss.image.src = "deloused.png";
         _this.hurtAnimationCounter = 10;
+        _this.firing = false;
         return _this;
     }
     Boss.prototype.draw = function (context) {
+        var offsetx;
         if (this.hp !== this.oldHp) {
             this.hurtAnimationCounter = 10;
         }
-        var offsetx = this.hurtAnimationCounter > 0 ? 120 : 60;
+        offsetx = (this.hurtAnimationCounter > 0 && !this.firing) ? 120 : this.currentState === BossStrategy.SHOOTING ? 0 : 60;
         var offsety = this.speedx > 0 ? 1 : 0;
-        context.fillStyle = "#fafafa";
+        if (this.firing) {
+            var gradient = this.speedx > 0 ? context.createLinearGradient(Viewport.x + this.x, 0, Viewport.width, 0) : context.createLinearGradient(Viewport.x + this.x, 0, 0, 0);
+            gradient.addColorStop(0, "white");
+            gradient.addColorStop(1, "rgba(200,200,50,0.5)");
+            context.fillStyle = gradient;
+            var endx = this.speedx > 0 ? this.x + Viewport.x + Viewport.width : this.x + Viewport.x - Viewport.width;
+            context.beginPath();
+            context.moveTo(Viewport.x + this.x + this.width / 2, Viewport.y + this.y + 47);
+            context.lineTo(endx, Viewport.y + this.y - 150);
+            context.lineTo(endx, Viewport.y + this.y + 150);
+            context.lineTo(Viewport.x + this.x + this.width / 2, Viewport.y + this.y + 47);
+            context.closePath();
+            context.fill();
+        }
         context.drawImage(Boss.image, offsetx, 60 * offsety, 60, 60, Math.round(this.x + Viewport.x), Math.round(this.y + Viewport.y), 60, 60);
         this.hurtAnimationCounter--;
     };

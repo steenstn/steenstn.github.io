@@ -461,6 +461,7 @@ var updateEnemies = function() {
       var enemyHeight = typeof enemies[i].height == 'number' ? enemies[i].height : 20;
       var offsetx = typeof enemies[i].offsetx == 'number' ? enemies[i].offsetx : 0;
       var offsety = typeof enemies[i].offsety == 'number' ? enemies[i].offsety : 0;
+
       var enemyInHurtZone = Helper.overlap(enemies[i].x+offsetx,enemies[i].y+offsety,enemyWidth,enemyHeight,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
       var enemyInKillZone = Helper.overlap(enemies[i].x+offsetx,enemies[i].y+offsety,enemyWidth,enemyHeight,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
 
@@ -509,11 +510,45 @@ var updateEnemies = function() {
         }
 
   		}
+
     }
     if(!enemyIsDead && !enemyIsInteracting) {
         enemies[i].move();
     }
 	}
+  for(var j = 0 ; j < enemies.length; j++) {
+    if(enemies[j].type=="boss") {
+      if(enemies[j].firing) {
+
+        for(var playerIndex = 0; playerIndex < players.length; playerIndex++) {
+          var currentPlayer = players[playerIndex];
+          var beamWidth;
+          var beamStartx;
+          var beamStarty;
+          var beamHeight;
+          if(enemies[j].speedx < 0) {
+            beamWidth = enemies[j].x;
+            beamStartx = 0;
+            beamStarty = enemies[j].y
+            beamHeight = enemies[j].height;
+          } else {
+            beamWidth  = Viewport.width;
+            beamStartx = enemies[j].x+enemies[j].width;
+            beamStarty = enemies[j].y
+            beamHeight = enemies[j].height;
+          }
+          if(Helper.overlap(currentPlayer.x, currentPlayer.y, currentPlayer.width, currentPlayer.height,beamStartx, beamStarty, beamWidth,beamHeight)) {
+            var direction = enemies[j].speedx > 0 ? 1 : -1;
+            currentPlayer.speedx=direction*WorldConstants.kickbackForce;
+            for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount/4; bloodIndex++) {
+              particles.push(bloodFactory.createBlood(currentPlayer.x, currentPlayer.y, direction));
+            }
+            players[0].hp-=0.2;
+          }
+        }
+      }
+    }
+  }
 }
 
 var updateParticles = function() {
