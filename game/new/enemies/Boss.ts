@@ -1,5 +1,5 @@
 class Boss extends Enemy {
-
+  static image = new Image();
   private killZonex: number;
   private killZoney: number;
   private killZoneWidth: number;
@@ -15,6 +15,7 @@ class Boss extends Enemy {
   type = "boss";
   private maxHp = 40;
   private oldHp;
+  private hurtAnimationCounter : number;
 
   constructor(enemy, currentLevel) {
     super(new BossStrategy(enemy, currentLevel));
@@ -22,13 +23,21 @@ class Boss extends Enemy {
     this.y = enemy.y;
     this.hp = this.maxHp;
     this.oldHp = this.hp;
+    Boss.image.src = "deloused.png";
+    this.hurtAnimationCounter = 8;
   }
 
 
   draw(context) {
-    context.fillStyle = "#fafafa";
-    context.fillRect(Math.round(this.x+Viewport.x), Math.round(this.y+Viewport.y), this.width, this.height);
+    if(this.hp !== this.oldHp) {
+      this.hurtAnimationCounter = 8;
+    }
+    let offsetx = this.hurtAnimationCounter > 0 ? 120 : 60;
 
+    context.fillStyle = "#fafafa";
+    context.drawImage(Boss.image, offsetx, 0,60, 60, Math.round(this.x+Viewport.x), Math.round(this.y+Viewport.y), 60, 60);
+
+    this.hurtAnimationCounter--;
   }
 
   drawHp(context) {
