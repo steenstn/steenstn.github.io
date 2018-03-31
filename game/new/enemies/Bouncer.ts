@@ -2,6 +2,7 @@ class Bouncer extends Enemy {
   static image = new Image();
   speedx : number;
   speedy : number;
+  currentFrame = 0;
   constructor(enemy, currentLevel) {
     super(new FlyingStrategy(enemy, currentLevel));
     this.x = enemy.x;
@@ -10,9 +11,21 @@ class Bouncer extends Enemy {
     this.oldy = enemy.oldy;
     this.speedx = enemy.speedx;
     this.speedy = enemy.speedy;
+    Bouncer.image.src = "hand.png";
   }
 
   draw(context) {
-    context.drawImage(Bouncer.image,67,0,17,30,Viewport.x+this.x,Viewport.y+this.y, 17, 30);
+    let offsety;
+    if(this.speedx < 0 && this.speedy < 0) {
+      offsety=0;
+    } else if(this.speedx < 0 && this.speedy > 0){
+      offsety=1;
+    } else if(this.speedx > 0 && this.speedy < 0) {
+      offsety = 2;
+    } else if(this.speedx > 0 && this.speedy > 0) {
+      offsety = 3;
+    }
+
+    context.drawImage(Bouncer.image, 0+20*this.currentFrame, 20*offsety, 20, 20,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), 20, 20);
   }
 }

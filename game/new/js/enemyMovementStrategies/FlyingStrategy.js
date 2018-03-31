@@ -2,8 +2,14 @@ var FlyingStrategy = (function () {
     function FlyingStrategy(enemy, currentLevel) {
         this.enemy = enemy;
         this.currentLevel = currentLevel;
+        this.animationCounter = 0;
     }
     FlyingStrategy.prototype.move = function (enemy) {
+        this.animationCounter++;
+        if (this.animationCounter % 8 === 0) {
+            enemy.currentFrame = 1 - enemy.currentFrame;
+            this.animationCounter = 0;
+        }
         var xOffset = 0;
         var yOffset = 15;
         if (enemy.speedx > 0) {

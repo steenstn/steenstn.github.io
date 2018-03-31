@@ -12,16 +12,31 @@ var Bouncer = (function (_super) {
     __extends(Bouncer, _super);
     function Bouncer(enemy, currentLevel) {
         var _this = _super.call(this, new FlyingStrategy(enemy, currentLevel)) || this;
+        _this.currentFrame = 0;
         _this.x = enemy.x;
         _this.y = enemy.y;
         _this.oldx = enemy.oldx;
         _this.oldy = enemy.oldy;
         _this.speedx = enemy.speedx;
         _this.speedy = enemy.speedy;
+        Bouncer.image.src = "hand.png";
         return _this;
     }
     Bouncer.prototype.draw = function (context) {
-        context.drawImage(Bouncer.image, 67, 0, 17, 30, Viewport.x + this.x, Viewport.y + this.y, 17, 30);
+        var offsety;
+        if (this.speedx < 0 && this.speedy < 0) {
+            offsety = 0;
+        }
+        else if (this.speedx < 0 && this.speedy > 0) {
+            offsety = 1;
+        }
+        else if (this.speedx > 0 && this.speedy < 0) {
+            offsety = 2;
+        }
+        else if (this.speedx > 0 && this.speedy > 0) {
+            offsety = 3;
+        }
+        context.drawImage(Bouncer.image, 0 + 20 * this.currentFrame, 20 * offsety, 20, 20, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 20, 20);
     };
     return Bouncer;
 }(Enemy));

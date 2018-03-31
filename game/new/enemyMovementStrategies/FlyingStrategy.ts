@@ -1,9 +1,15 @@
 class FlyingStrategy{
-  constructor(public enemy, public currentLevel){
 
+  private animationCounter = 0;
+  constructor(public enemy, public currentLevel){
   }
 
   move(enemy : Bouncer) {
+    this.animationCounter++;
+    if(this.animationCounter%8===0) {
+      enemy.currentFrame = 1-enemy.currentFrame;
+      this.animationCounter=0;
+    }
     var xOffset = 0;
     var yOffset = 15;
 
