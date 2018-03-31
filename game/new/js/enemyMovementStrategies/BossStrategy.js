@@ -21,7 +21,6 @@ var BossStrategy = (function () {
                 enemy.speedy = -4;
             }
             if (Level.getBlockAt(enemy.x + enemy.width / 2, enemy.y + offsety).blocking === true) {
-                console.log(this.reloadCounter);
                 enemy.speedy = -8;
                 if (Math.random() > 0.7) {
                     Level.currentLevel[Level.getIndexAt(enemy.x + enemy.width / 2, enemy.y + offsety)] = LevelTile.newFromCharacter('.');

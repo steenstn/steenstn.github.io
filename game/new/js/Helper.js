@@ -10,5 +10,13 @@ var Helper = (function () {
     Helper.outOfBounds = function (x, y) {
         return Math.abs(Viewport.x + x - Viewport.width / 2) > Viewport.width * 0.6;
     };
+    Helper.loadJsonFile = function (path) {
+        var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
+        xobj.open('GET', path, false);
+        xobj.send(null);
+        var jsonTexto = xobj.responseText;
+        return JSON.parse(jsonTexto);
+    };
     return Helper;
 }());

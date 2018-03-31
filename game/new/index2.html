@@ -4,7 +4,7 @@
 <head>
 
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <title>Back To The Studio - The Mars Volta Adventure</title>
+  <title>Back To The Studio - The Mars Volta Adventure</title>
   <style>
     body {
       margin:0px;
@@ -16,17 +16,17 @@
     canvas{
       outline:0;
       border:1px solid #666;
-	  image-rendering: optimizeSpeed;             /* Older versions of FF          */
-	  image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
-	  image-rendering: -webkit-optimize-contrast; /* Safari                        */
-	  image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
-	  image-rendering: pixelated;                 /* Awesome future-browsers       */
-	  -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
-	  transform:scale(2);
-	  transform-origin: top;
+  	  image-rendering: optimizeSpeed;             /* Older versions of FF          */
+  	  image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+  	  image-rendering: -webkit-optimize-contrast; /* Safari                        */
+  	  image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+  	  image-rendering: pixelated;                 /* Awesome future-browsers       */
+  	  -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+  	  transform:scale(2);
+  	  transform-origin: top;
       margin-left: auto;
       margin-right: auto;
-	  margin-top:40px;
+      margin-top:40px;
     }
   </style>
 </head>
@@ -235,17 +235,6 @@ var clearBlack = function() {
   ctx.clearRect(0, 0, Viewport.width, Viewport.height);
   ctx.beginPath();
   ctx.rect(0, 0, Viewport.width, Viewport.height);
-  ctx.closePath();
-  ctx.fill();
-}
-
-var showRect = function(pos){
-  var x = pos%Level.width;
-
-  var y = Math.floor(pos/Level.width);
-  ctx.fillStyle = '#FFFFFF';
-  ctx.beginPath();
-  ctx.rect(x*Level.tileSize,y*Level.tileSize, Level.tileSize, Level.tileSize);
   ctx.closePath();
   ctx.fill();
 }
@@ -471,7 +460,7 @@ var updateEnemies = function() {
         for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
           particles.push(bloodFactory.createBlood(players[playerIndex].x, players[playerIndex].y, direction));
         }
-        
+
         players[playerIndex].speedy=-0.25*WorldConstants.kickbackForce;
   			players[0].hp-=2;
         enemyIsInteracting = true;
@@ -485,8 +474,6 @@ var updateEnemies = function() {
         } else {
           players[playerIndex].speedy=-4;
         }
-
-
 
         if(enemies[i].hp <= 0) {
           var bloodAmount = typeof enemies[i].width == 'number' ? (enemies[i].width + enemies[i].height)*2 : WorldConstants.bloodAmount;
@@ -510,6 +497,7 @@ var updateEnemies = function() {
         enemies[i].move();
     }
 	}
+
   for(var j = 0 ; j < enemies.length; j++) {
     if(enemies[j].type=="boss") {
       if(enemies[j].firing) {
@@ -601,18 +589,9 @@ var checkKeys = function (modifier) {
 }
 
 
-var loadJsonFile = function(path) {
-  var xobj = new XMLHttpRequest();
-  xobj.overrideMimeType("application/json");
-  xobj.open('GET', path, false);
-  xobj.send(null);
-  var jsonTexto = xobj.responseText;
-  return JSON.parse(jsonTexto);
-}
-
 var loadContent = function(levelName) {
 
-	enemies = loadJsonFile("levels/" + levelName+'enemies.json');
+	enemies = Helper.loadJsonFile("levels/" + levelName+'enemies.json');
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
       case "skull":
@@ -635,7 +614,7 @@ var loadContent = function(levelName) {
 
 
   }
-	var tempContent = loadJsonFile("levels/" + levelName+'content.json');//JSON.parse(jsonTexto);
+	var tempContent = Helper.loadJsonFile("levels/" + levelName+'content.json');//JSON.parse(jsonTexto);
 
   for(var i = 0; i < tempContent.length; i++) {
     if(tempContent[i].type=="vines1") {
@@ -711,7 +690,7 @@ txtFile.onreadystatechange = function() {
 txtFile.send(null);
 
 drawText("Loading enemies...", 10, 40);
-mutantSpecs = loadJsonFile('enemies/mutant.json');
+mutantSpecs = Helper.loadJsonFile('enemies/mutant.json');
 content = [];
 flies = [];
 loadContent(levelName);
@@ -866,8 +845,6 @@ var GameLoop = function(){
     }
   }
 
-
-
 	if(animating===0) {
 		checkKeys(1);
 
@@ -895,9 +872,7 @@ var GameLoop = function(){
   if(animating===2) {
     playerIsOutOfBounds = false;
     checkKeys(1);
-      render();
-  //  updatePlayer(0);
-	//	updatePlayer(1);
+    render();
     bedlam.move(players);
     bedlam.render(ctx);
     if(bedlam.isComplete()) {
@@ -1019,9 +994,7 @@ var IntroScreen = function() {
 
 jukeBox.selectSong(0);
 jukeBox.playCurrentSong();
-
 IntroScreen();
-
 </script>
 </body>
 </html>

@@ -1,13 +1,5 @@
 class Boss extends Enemy {
   static image = new Image();
-  private killZonex: number;
-  private killZoney: number;
-  private killZoneWidth: number;
-  private killZoneHeight: number;
-  private hurtZonex: number;
-  private hurtZoney: number;
-  private hurtZoneWidth: number;
-  private hurtZoneHeight: number;
   speedx = 4.5;
   speedy = 0;
   width = 60;
@@ -54,16 +46,12 @@ class Boss extends Enemy {
       context.lineTo(Viewport.x+this.x+this.width/2, Viewport.y+this.y+47);
       context.closePath();
       context.fill();
-  
     }
 
     context.drawImage(Boss.image, offsetx, 60*offsety,60, 60, Math.round(this.x+Viewport.x), Math.round(this.y+Viewport.y), 60, 60);
 
     this.hurtAnimationCounter--;
-
   }
-
-
 
   drawHp(context) {
     context.fillStyle = this.hp !== this.oldHp ? "#ffffff" : "#fa0000";

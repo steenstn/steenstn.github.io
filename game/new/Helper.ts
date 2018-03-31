@@ -9,4 +9,13 @@ class Helper {
   static outOfBounds(x : number, y : number) {
     return Math.abs(Viewport.x + x - Viewport.width/2) > Viewport.width*0.6;
   }
+
+  static loadJsonFile(path) {
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', path, false);
+    xobj.send(null);
+    var jsonTexto = xobj.responseText;
+    return JSON.parse(jsonTexto);
+  }
 }
