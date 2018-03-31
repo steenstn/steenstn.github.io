@@ -24,18 +24,18 @@ class Boss extends Enemy {
     this.hp = this.maxHp;
     this.oldHp = this.hp;
     Boss.image.src = "deloused.png";
-    this.hurtAnimationCounter = 8;
+    this.hurtAnimationCounter = 10;
   }
 
 
   draw(context) {
     if(this.hp !== this.oldHp) {
-      this.hurtAnimationCounter = 8;
+      this.hurtAnimationCounter = 10;
     }
     let offsetx = this.hurtAnimationCounter > 0 ? 120 : 60;
-
+    let offsety = this.speedx > 0 ? 1 : 0;
     context.fillStyle = "#fafafa";
-    context.drawImage(Boss.image, offsetx, 0,60, 60, Math.round(this.x+Viewport.x), Math.round(this.y+Viewport.y), 60, 60);
+    context.drawImage(Boss.image, offsetx, 60*offsety,60, 60, Math.round(this.x+Viewport.x), Math.round(this.y+Viewport.y), 60, 60);
 
     this.hurtAnimationCounter--;
   }

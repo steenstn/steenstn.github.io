@@ -23,16 +23,17 @@ var Boss = (function (_super) {
         _this.hp = _this.maxHp;
         _this.oldHp = _this.hp;
         Boss.image.src = "deloused.png";
-        _this.hurtAnimationCounter = 8;
+        _this.hurtAnimationCounter = 10;
         return _this;
     }
     Boss.prototype.draw = function (context) {
         if (this.hp !== this.oldHp) {
-            this.hurtAnimationCounter = 8;
+            this.hurtAnimationCounter = 10;
         }
         var offsetx = this.hurtAnimationCounter > 0 ? 120 : 60;
+        var offsety = this.speedx > 0 ? 1 : 0;
         context.fillStyle = "#fafafa";
-        context.drawImage(Boss.image, offsetx, 0, 60, 60, Math.round(this.x + Viewport.x), Math.round(this.y + Viewport.y), 60, 60);
+        context.drawImage(Boss.image, offsetx, 60 * offsety, 60, 60, Math.round(this.x + Viewport.x), Math.round(this.y + Viewport.y), 60, 60);
         this.hurtAnimationCounter--;
     };
     Boss.prototype.drawHp = function (context) {

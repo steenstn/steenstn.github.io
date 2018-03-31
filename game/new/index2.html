@@ -481,11 +481,7 @@ var updateEnemies = function() {
   			players[0].hp-=2;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
-        var bloodAmount = typeof enemies[i].width == 'number' ? (enemies[i].width + enemies[i].height)*2 : WorldConstants.bloodAmount;
-        for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
-          particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, 1));
-          particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, -1));
-        }
+
         enemies[i].hp--;
 
         if(enemies[i].type=="boss") {
@@ -498,6 +494,11 @@ var updateEnemies = function() {
 
 
         if(enemies[i].hp <= 0) {
+          var bloodAmount = typeof enemies[i].width == 'number' ? (enemies[i].width + enemies[i].height)*2 : WorldConstants.bloodAmount;
+          for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
+            particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, 1));
+            particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, -1));
+          }
           enemies.splice(i,1); // Remove the enemy from the array
 
 
