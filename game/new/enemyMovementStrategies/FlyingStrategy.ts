@@ -34,7 +34,7 @@ class FlyingStrategy{
 		}
 		else if(enemy.speedy>0) // Going down
 		{
-			yOffset = 31;
+			yOffset = 21;
 		}
 
     arrayPos=Level.getBlockAt(enemy.x + xOffset, enemy.y + yOffset);

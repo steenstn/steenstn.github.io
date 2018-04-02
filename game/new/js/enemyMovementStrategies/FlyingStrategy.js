@@ -27,7 +27,7 @@ var FlyingStrategy = (function () {
             yOffset = -1;
         }
         else if (enemy.speedy > 0) {
-            yOffset = 31;
+            yOffset = 21;
         }
         arrayPos = Level.getBlockAt(enemy.x + xOffset, enemy.y + yOffset);
         if (arrayPos.blocking == 1 || arrayPos.type == "h") {
