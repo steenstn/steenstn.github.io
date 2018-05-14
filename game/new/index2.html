@@ -687,8 +687,10 @@ txtFile.send(null);
 
 drawText("Loading enemies...", 10, 40);
 mutantSpecs = Helper.loadJsonFile('enemies/mutant.json');
-content = [];
-flies = [];
+content.length = 0;
+flies.length = 0;
+backgroundContent.length = 0;
+foregroundContent.length = 0;
 loadContent(levelName);
 setUpContent();
 

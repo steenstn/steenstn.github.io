@@ -9,11 +9,7 @@ class MutantStrategy implements IEnemyMovementStrategy {
 
   move(enemy : Mutant) {
     if(!this.idle) {
-      if(enemy.direction==1) {
-  			enemy.x+=enemy.speedx;
-      }	else {
-  			enemy.x-=enemy.speedx;
-      }
+			enemy.x+=enemy.speedx;
       enemy.idleAnimationCounter++;
       if(enemy.idleAnimationCounter > 4) {
         enemy.idleCurrentFrame = 1- enemy.idleCurrentFrame;
@@ -26,7 +22,7 @@ class MutantStrategy implements IEnemyMovementStrategy {
       }
       enemy.idleAnimationCounter++;
       if(enemy.idleAnimationCounter > 10) {
-        enemy.idleCurrentFrame = 1- enemy.idleCurrentFrame;
+        enemy.idleCurrentFrame = 1 - enemy.idleCurrentFrame;
         enemy.idleAnimationCounter = 0;
       }
     }
@@ -41,21 +37,22 @@ class MutantStrategy implements IEnemyMovementStrategy {
       enemy.y++;
     }
 		if(arrayPos.blocking==1 || arrayPos.type=="h")
-			enemy.direction=1-enemy.direction;
+			enemy.speedx=-enemy.speedx;
 
 
 		// Check one tile ahead and below, if it's empty, turn around
-		if(enemy.direction==1) // Going right
+		if(enemy.speedx>0) // Going right
 			arrayPos=Level.getBlockAt(enemy.x + enemyWidth + 5, enemy.y + enemyHeight + 15);
 		else
 			arrayPos=Level.getBlockAt(enemy.x - 5, enemy.y + enemyHeight + 15);
 
     if(arrayPos.blocking==0) {
-      enemy.direction=1-enemy.direction;
+      enemy.speedx=-enemy.speedx;
     }
     if(!this.idle && Math.random() > 0.995) {
       this.idleTimer = 60 + Math.random()*20;
       this.idle = true;
+      enemy.speedx=-enemy.speedx;
     }
 	}
 }

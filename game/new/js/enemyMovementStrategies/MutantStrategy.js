@@ -9,12 +9,7 @@ var MutantStrategy = (function () {
     }
     MutantStrategy.prototype.move = function (enemy) {
         if (!this.idle) {
-            if (enemy.direction == 1) {
-                enemy.x += enemy.speedx;
-            }
-            else {
-                enemy.x -= enemy.speedx;
-            }
+            enemy.x += enemy.speedx;
             enemy.idleAnimationCounter++;
             if (enemy.idleAnimationCounter > 4) {
                 enemy.idleCurrentFrame = 1 - enemy.idleCurrentFrame;
@@ -40,17 +35,18 @@ var MutantStrategy = (function () {
             enemy.y++;
         }
         if (arrayPos.blocking == 1 || arrayPos.type == "h")
-            enemy.direction = 1 - enemy.direction;
-        if (enemy.direction == 1)
+            enemy.speedx = -enemy.speedx;
+        if (enemy.speedx > 0)
             arrayPos = Level.getBlockAt(enemy.x + enemyWidth + 5, enemy.y + enemyHeight + 15);
         else
             arrayPos = Level.getBlockAt(enemy.x - 5, enemy.y + enemyHeight + 15);
         if (arrayPos.blocking == 0) {
-            enemy.direction = 1 - enemy.direction;
+            enemy.speedx = -enemy.speedx;
         }
         if (!this.idle && Math.random() > 0.995) {
             this.idleTimer = 60 + Math.random() * 20;
             this.idle = true;
+            enemy.speedx = -enemy.speedx;
         }
     };
     return MutantStrategy;
