@@ -28,8 +28,15 @@ class Boss extends Enemy {
     if(this.hp !== this.oldHp) {
       this.hurtAnimationCounter = 10;
     }
-    offsetx = (this.hurtAnimationCounter > 0  && !this.firing) ? 120 : this.currentState === BossStrategy.SHOOTING ? 0 : 60;
-
+    if(this.hurtAnimationCounter>8) {
+      offsetx = 180;
+    } else if (this.hurtAnimationCounter > 0  && !this.firing) {
+      offsetx = 120;
+    } else if(this.currentState === BossStrategy.SHOOTING) {
+      offsetx = 0;
+    } else {
+      offsetx = 60;
+    }
     let offsety = this.speedx > 0 ? 1 : 0;
     if(this.firing) {
       let gradient = this.speedx > 0 ? context.createLinearGradient(Viewport.x+this.x,0,Viewport.width,0) : context.createLinearGradient(Viewport.x+this.x, 0, 0, 0);
