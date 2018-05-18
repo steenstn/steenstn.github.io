@@ -11,6 +11,7 @@ var BossStrategy = (function () {
         return this.currentState;
     };
     BossStrategy.prototype.move = function (enemy) {
+        enemy.breakingBlock = false;
         if (this.currentState === BossStrategy.JUMPING) {
             this.reloadCounter--;
             var offsetx = enemy.speedx > 0 ? enemy.width + 5 : -5;
@@ -24,6 +25,7 @@ var BossStrategy = (function () {
                 enemy.speedy = -8;
                 if (Math.random() > 0.5) {
                     Level.currentLevel[Level.getIndexAt(enemy.x + enemy.width / 2, enemy.y + offsety)] = LevelTile.newFromCharacter('.');
+                    enemy.breakingBlock = true;
                 }
                 else if (this.reloadCounter < 0 && Math.random() > 0.3) {
                     this.currentState = enemy.currentState = BossStrategy.CHARGING;

@@ -19,6 +19,7 @@ var Boss = (function (_super) {
         _this.type = "boss";
         _this.currentState = BossStrategy.JUMPING;
         _this.maxHp = 30;
+        _this.breakingBlock = false;
         _this.x = enemy.x;
         _this.y = enemy.y;
         _this.hp = _this.maxHp;

@@ -97,6 +97,13 @@ coinParticleImage.src = "particles/coinpixel.png";
 coinParticleImage.width=2;
 coinParticleImage.height=2;
 
+var dirtParticleImage=new Image();
+dirtParticleImage.src = "particles/dirtpixel.png";
+dirtParticleImage.width=2;
+dirtParticleImage.height=2;
+
+
+
 var healthParticleImage = new Image();
 healthParticleImage.src = "particles/greenpixel.png";
 
@@ -115,8 +122,8 @@ var vines1Image = new Image();
 vines1Image.src = "vines1.png";
 
 var healthParticleFactory = new HealthParticleFactory(healthParticleImage);
-
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
+var dirtParticleFactory = new TimedParticleFactory(dirtParticleImage);
 
 var logoImage = new Image();
 logoImage.src = "logo2.png";
@@ -496,6 +503,11 @@ var updateEnemies = function() {
 
   for(var j = 0 ; j < enemies.length; j++) {
     if(enemies[j].type=="boss") {
+      if(enemies[j].breakingBlock) {
+        for(let i = 0; i < 80; i++) {
+          particles.push(dirtParticleFactory.createParticle(enemies[j].x+enemies[j].width/2, enemies[j].y+enemies[j].height,100));
+        }
+      }
       if(enemies[j].firing) {
 
         for(var playerIndex = 0; playerIndex < players.length; playerIndex++) {
