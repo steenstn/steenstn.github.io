@@ -10,6 +10,7 @@ class Boss extends Enemy {
   private oldHp;
   private hurtAnimationCounter : number;
   firing : boolean;
+  breakingBlock = false;
 
   constructor(enemy, currentLevel) {
     super(new BossStrategy(enemy, currentLevel));
@@ -37,7 +38,7 @@ class Boss extends Enemy {
     } else {
       offsetx = 60;
     }
-    
+
     let offsety = this.speedx > 0 ? 1 : 0;
     if(this.firing) {
       let gradient = this.speedx > 0 ? context.createLinearGradient(Viewport.x+this.x,0,Viewport.width,0) : context.createLinearGradient(Viewport.x+this.x, 0, 0, 0);
