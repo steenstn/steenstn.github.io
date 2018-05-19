@@ -102,8 +102,6 @@ dirtParticleImage.src = "particles/dirtpixel.png";
 dirtParticleImage.width=2;
 dirtParticleImage.height=2;
 
-
-
 var healthParticleImage = new Image();
 healthParticleImage.src = "particles/greenpixel.png";
 
@@ -288,7 +286,7 @@ var renderContent = function(content) {
     var offset = typeof content.offset == 'number' ? content.offset : 0;
     switch(content.type) {
       case "rock1":
-        ctx.drawImage(rock1Image, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
+        ctx.drawImage(rock1Image, offset*21, 0, 21, 9, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 21, 9);
         break;
       case "baguetterock":
         ctx.drawImage(baguetterockImage, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y));
@@ -470,7 +468,6 @@ var updateEnemies = function() {
   		} else if(enemyInKillZone) {
 
         enemies[i].hp--;
-
         if(enemies[i].type=="boss") {
             players[playerIndex].speedy=-8;
             enemies[i].speedy/=1.5;
@@ -633,6 +630,9 @@ var loadContent = function(levelName) {
         tempContent[i].offset = i%numTypes;
     } else if(tempContent[i].type=="tree1") {
         var numTypes = 4;
+        tempContent[i].offset = i%numTypes;
+    } else if(tempContent[i].type == "rock1") {
+        var numTypes = 5;
         tempContent[i].offset = i%numTypes;
     }
     if(typeof tempContent[i].flower !== 'undefined' && tempContent[i].flower === true) {
