@@ -6,42 +6,47 @@ body {
 	padding:0px;
 }
 
-ul {
-	
-}
 li {
 	text-align:left;
 }
-.listdiv {
-	margin-left:40%;
-	
-	
+h4 {
+	margin-bottom:4px;
+}
+h1 {
+	text-align:center;
+}
+.last-commit{
+	float:right;
+	font-size:0.9em;
+}
+img.center {
+	margin-left:auto;
+	margin-right:auto;
+	display:block;
 }
  .background {
 	background-color:#525B27;
-	width:90%;
+	width:70%;
 	margin-top:20px;
 	margin-bottom:20px;
+	overflow:hidden;
 	
 }
 .leftbackground {
-	border-radius: 0px 10px 10px 0px;
-	float:left;
-	animation: slide-in-right 0.8s;
+	border-radius: 10px 10px 10px 10px;
+	margin-left:auto;
+	margin-right:auto;
+	padding:10px;
+	animation: slide-in-right 0.5s;
 }
 .rightbackground {
 	border-radius: 10px 0px 0px 10px;
 	float:right;
-	animation: slide-in-left 0.8s;
+	animation: slide-in-left 0.5s;
 }
 @keyframes slide-in-left {
+	
 	0% {
-		transform: translate(110%,0em) scaleY(0.01);
-	}
-	50% {
-		transform: translate(0em,0em) scaleY(0.01);
-	}
-	70% {
 		transform: translate(0em,0em) scaleY(0.01);
 	}
 	100% {
@@ -50,13 +55,8 @@ li {
 }
 
 @keyframes slide-in-right {
+	
 	0% {
-		transform: translate(-110%,0em) scaleY(0.01);
-	}
-	50% {
-		transform: translate(0em,0em) scaleY(0.01);
-	}
-	70% {
 		transform: translate(0em,0em) scaleY(0.01);
 	}
 	100% {
@@ -65,13 +65,15 @@ li {
 }
 
 .project {
-	text-align:center;
+	text-align:left;
 }
 .leftproject {
-	margin-left:10%;
+	margin-left:5%;
+	
 }
 .rightproject {
 	margin-right:10%;
+	margin-left:10%
 }
 .project a {
 	color: #0E285A;
