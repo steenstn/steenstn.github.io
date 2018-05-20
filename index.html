@@ -15,7 +15,7 @@
 		</h1>
 		<img src="mv.png" />
 		<p>WORK IN PROGRESS<br />
-			<span id="lastCommitGame"></span><br/><a href="https://github.com/steenstn/steenstn.github.io">Source code</a></p>
+			<span id="lastCommitMVGame"></span><br/><a href="https://github.com/steenstn/steenstn.github.io">Source code</a></p>
 		
 		<p>2D platformer game for two players. Help The Mars Volta get back to the studio to record a new album.</p>	
 		<br />
@@ -26,8 +26,19 @@
 	</div>
 </div>
 <br />
-<div class="background rightbackground">
+<div class ="background rightbackground">
 	<div class="project rightproject">
+	<h1><a class="mainLink" href="https://steenstn.github.io/achtung/achtung.html">Achtung, Steen's Kurve!</a></h1>
+	<p>WORK IN PROGRESS</p>
+	<span id="lastCommitAchtungGame"></span><br/>
+	<a href="https://github.com/steenstn/achtung">Source code</a>
+	<p>A version of the game Achtung, die Kurve! playable in the browser.</p><br />
+	<p>Written in Javascript/Typescript</p>
+	
+	</div>
+</div>
+<div class="background leftbackground">
+	<div class="project leftproject">
 		<h1>Monte Carlo Path Tracer</h1>
 		<a href="https://github.com/steenstn/raytracer">Source code</a><br /><br />
 		<a href="https://raw.githubusercontent.com/steenstn/raytracer/master/diffuseballs.jpg"><img src="https://raw.githubusercontent.com/steenstn/raytracer/master/diffuseballs.jpg" width=300 height=200 /></a>
@@ -73,7 +84,13 @@ client.get('https://api.github.com/repos/steenstn/steenstn.github.io/commits', f
 	var json = JSON.parse(response);
 	var lastCommitMessage = json[0].commit.message;
 	var lastCommitDate = json[0].commit.author.date;
-    document.getElementById("lastCommitGame").innerHTML = lastCommitDate.substring(0,10) + ": " + lastCommitMessage;
+    document.getElementById("lastCommitMVGame").innerHTML = "Last commit " + lastCommitDate.substring(0,10) + ": " + lastCommitMessage;
+});
+client.get('https://api.github.com/repos/steenstn/achtung/commits', function(response) {
+	var json = JSON.parse(response);
+	var lastCommitMessage = json[0].commit.message;
+	var lastCommitDate = json[0].commit.author.date;
+    document.getElementById("lastCommitAchtungGame").innerHTML = "Last commit " + lastCommitDate.substring(0,10) + ": " + lastCommitMessage;
 });
 </script>
 </body>
