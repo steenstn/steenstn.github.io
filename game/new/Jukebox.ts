@@ -2,9 +2,10 @@ class Jukebox {
   private currentSong : any;
   private levelSongs : Array<string>;
   private canPlay : boolean;
-
-  constructor(songs: string[]) {
+  private finalSong: string;
+  constructor(songs: string[], finalSong: string) {
     this.levelSongs = songs;
+    this.finalSong = finalSong;
   }
 
   selectSong(songNumber : number) {
@@ -27,6 +28,12 @@ class Jukebox {
     this.currentSong.oncanplay = function() {
       _self.canPlay = true;
     };
+  }
+
+  playFinalSong() {
+    this.currentSong.pause();
+    this.currentSong = new Audio(this.finalSong);
+    this.currentSong.play();
   }
 
   playCurrentSong() {

@@ -131,7 +131,7 @@ var bossKilled = false;
 var logoImage = new Image();
 logoImage.src = "logo2.png";
 
-var jukeBox = new Jukebox(["roulette_dares.mp3","teflon.mp3", "eriatarka.mp3", "vermicide.mp3", "televators.mp3", "cotopaxi.mp3"]);
+var jukeBox = new Jukebox(["roulette_dares.mp3","teflon.mp3", "eriatarka.mp3", "vermicide.mp3", "televators.mp3", "cotopaxi.mp3"], "inertiaticesp.mp3");
 var bloodFactory = new BloodFactory(bloodImage);
 
 var particleCleaner = new ParticleCleaner();
@@ -882,6 +882,7 @@ var GameLoop = function(){
       bedlam = null;
       animating = 0;
       if(bossKilled) {
+        jukeBox.playFinalSong();
         endScreen();
         return;
       } else {
@@ -1016,8 +1017,9 @@ var IntroScreen = function() {
 }
 
 var endScreen = function() {
+
   numFramesSinceStart++;
-  var frame = numFramesSinceStart%30>15 ? 1 : 0;
+  var frame = numFramesSinceStart%20>10 ? 1 : 0;
   clearBlack();
   ctx.drawImage(finalImage, 222*frame,0, 222, 99, Viewport.width-300, Viewport.height-150, 222, 99);
   drawText("Congratulations! You have made it back to the studio!", 50, 50);

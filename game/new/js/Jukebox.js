@@ -1,6 +1,7 @@
 var Jukebox = (function () {
-    function Jukebox(songs) {
+    function Jukebox(songs, finalSong) {
         this.levelSongs = songs;
+        this.finalSong = finalSong;
     }
     Jukebox.prototype.selectSong = function (songNumber) {
         this.canPlay = false;
@@ -20,6 +21,11 @@ var Jukebox = (function () {
         this.currentSong.oncanplay = function () {
             _self.canPlay = true;
         };
+    };
+    Jukebox.prototype.playFinalSong = function () {
+        this.currentSong.pause();
+        this.currentSong = new Audio(this.finalSong);
+        this.currentSong.play();
     };
     Jukebox.prototype.playCurrentSong = function () {
         if (typeof this.currentSong.loop == 'boolean') {
