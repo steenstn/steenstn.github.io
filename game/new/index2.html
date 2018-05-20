@@ -352,7 +352,7 @@ var updatePlayer = function(index) {
 
 	// Check to the left if going left and stop the player if he collides with a blocking tile
 	if(players[index].speedx < 0) {
-		var arrayPos=Level.getBlockAt(players[index].x, players[index].y + players[index].height-2);
+		var arrayPos=Level.getBlockAt(players[index].x, players[index].y + players[index].height/2+5);
 
 		if(arrayPos.blocking==1) {
 			players[index].x = players[index].oldx;
@@ -360,7 +360,7 @@ var updatePlayer = function(index) {
 		}
 	} else {// Check to the right
 
-		var arrayPos=Level.getBlockAt(players[index].x + players[index].width, players[index].y + players[index].height-2);
+		var arrayPos=Level.getBlockAt(players[index].x + players[index].width, players[index].y + players[index].height/2+5);
 
 
 		if(typeof arrayPos !== 'NaN' && arrayPos.blocking==1) {
@@ -377,26 +377,37 @@ var updatePlayer = function(index) {
 
 	// If going up, check for blocking tiles
 	if(players[index].speedy < 0) {
-		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+5)/Level.tileSize)*Level.width;
-		if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1) {
+		arrayPos=Math.floor((players[index].x+players[index].width-8)/Level.tileSize)+Math.floor((players[index].y+5)/Level.tileSize)*Level.width;
+    var leftCollisionPoint = Math.floor((players[index].x+8)/Level.tileSize)+Math.floor((players[index].y+5)/(Level.tileSize))*Level.width;
+    // If the player lands on a blocking tile, iteratively move him upwards until he is free from the
+		// tile. This will remove bouncing when landing in high speed
+    var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1;
+    var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking==1;
+
+		if(rightCollisionPointCollided || leftCollisionPointCollided) {
 			players[index].y = players[index].oldy;
 			players[index].speedy = 0;
 		}
 	} else if(players[index].speedy > 0) { // Going down, check for blocking tiles
 
-		arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/(Level.tileSize))*Level.width;
-		// If the player lands on a blocking tile, iteratively move him upwards until he is free from the
+		arrayPos=Math.floor((players[index].x+players[index].width-8)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/(Level.tileSize))*Level.width;
+    var leftCollisionPoint = Math.floor((players[index].x+8)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/(Level.tileSize))*Level.width;
+    // If the player lands on a blocking tile, iteratively move him upwards until he is free from the
 		// tile. This will remove bouncing when landing in high speed
-		if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1) {
-			players[index].jumping = 0;
+    var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1;
+    var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking==1;
 
-			while(typeof Level.currentLevel[arrayPos] != "undefined" && Level.getBlockAt(players[index].x+players[index].width/2, players[index].y+players[index].height).blocking==1) {
+		if(rightCollisionPointCollided || leftCollisionPointCollided) {
+			players[index].jumping = 0;
+      var movePlayerUp = true;
+			while(typeof Level.currentLevel[arrayPos] != "undefined" && Level.getBlockAt(players[index].x+players[index].width-8, players[index].y+players[index].height).blocking==1
+        || Level.currentLevel[leftCollisionPoint] != "undefined" && Level.getBlockAt(players[index].x+8, players[index].y+players[index].height).blocking==1) {
 				players[index].y-=0.2;
 			}
 			players[index].speedy=0;
 		}
 	}
-	if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==0) { // Disable jumping when in mid-air
+	if(!rightCollisionPointCollided && !leftCollisionPointCollided) { // Disable jumping when in mid-air
 		players[index].jumping++;
 	}
 
@@ -568,7 +579,7 @@ var checkKeys = function (modifier) {
 
 				if(players[i].speedy>-WorldConstants.jumpStrength)
 				    players[i].speedy-=WorldConstants.jumpAcc;
-			}
+        }
 		}
 
 		if (animating === 0 && players[i].keyLeft in keysDown) {
