@@ -123,6 +123,11 @@ var healthParticleFactory = new HealthParticleFactory(healthParticleImage);
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
 var dirtParticleFactory = new TimedParticleFactory(dirtParticleImage);
 
+var finalImage = new Image();
+finalImage.src = "studiofinal.png";
+
+var bossDeadTimer = 100;
+var bossKilled = false;
 var logoImage = new Image();
 logoImage.src = "logo2.png";
 
@@ -492,12 +497,18 @@ var updateEnemies = function() {
             particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, 1));
             particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, -1));
           }
+          if(enemies[i].type == "boss") {
+            animating = 3;
+            bossKilled = true;
+            bedlam = new Bedlam();
+          }
           enemies.splice(i,1); // Remove the enemy from the array
 
 
     			score+=100;
           scoreTimer = 10;
           enemyIsDead = true;
+
           break;
         }
 
@@ -870,10 +881,31 @@ var GameLoop = function(){
     if(bedlam.isComplete()) {
       bedlam = null;
       animating = 0;
-      loadLevel(levelNow);
+      if(bossKilled) {
+        endScreen();
+        return;
+      } else {
 
-    	init();
-      Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+        loadLevel(levelNow);
+
+      	init();
+        Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+      }
+
+    }
+  }
+
+  if(animating===3) {
+    bossDeadTimer--;
+    checkKeys(0);
+    updatePlayer(0);
+		updatePlayer(1);
+
+    Viewport.moveTowardsCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+    render();
+    updateParticles();
+    if(bossDeadTimer<=0) {
+      animating = 2;
     }
   }
 
@@ -931,7 +963,6 @@ var IntroScreen = function() {
     else {
 
       ctx.drawImage(logoImage,220,40);
-
       ctx.fillStyle    = '#FFF';
       for(var i = 0; i < stars.length; i++) {
         stars[i].x+=stars[i].xSpeed;
@@ -984,6 +1015,20 @@ var IntroScreen = function() {
     gLoop = setTimeout(IntroScreen, 1000 / 50);
 }
 
+var endScreen = function() {
+  numFramesSinceStart++;
+  var frame = numFramesSinceStart%30>15 ? 1 : 0;
+  clearBlack();
+  ctx.drawImage(finalImage, 222*frame,0, 222, 99, Viewport.width-300, Viewport.height-150, 222, 99);
+  drawText("Congratulations! You have made it back to the studio!", 50, 50);
+  drawText("Recording of the new album can now begin thanks to you.", 50, 65);
+  drawText("Fans everywhere are rejoicing and getting ready for the album release.", 50, 80);
+  drawText("Hopefully they won't need to wait for too long...", 50, 95);
+
+  ctx.font = '20px Verdana';
+  ctx.fillText("Final score: " + score, 50, 220);
+  gLoop = setTimeout(endScreen, 1000 / 50);
+}
 jukeBox.selectSong(0);
 jukeBox.playCurrentSong();
 IntroScreen();
