@@ -963,7 +963,7 @@ var IntroScreen = function() {
     }
     else {
 
-      ctx.drawImage(logoImage,220,40);
+      ctx.drawImage(logoImage,220,20);
       ctx.fillStyle    = '#FFF';
       for(var i = 0; i < stars.length; i++) {
         stars[i].x+=stars[i].xSpeed;
@@ -974,21 +974,29 @@ var IntroScreen = function() {
         || stars[i].y > Viewport.height;
         if(starIsOutsideOfScreen) {
           stars[i].x = 320;
-          stars[i].y = 100;
+          stars[i].y = 80;
         }
         ctx.fillRect(Math.round(stars[i].x),Math.round(stars[i].y), 2, 2 );
       }
-      ctx.fillStyle    = '#F00';
-      ctx.font         = '10px Verdana';
+      ctx.fillStyle    = '#FFF';
       ctx.textAlign = 'center';
+      ctx.font         = '12px Verdana';
+      ctx.fillText("in", 320, 160);
+      ctx.font         = '26px Verdana';
+      ctx.fillText("-Back to the Studio-", 320, 190);
+      ctx.fillStyle    = '#F00';
+      ctx.font         = '12px Verdana';
+
       if(numFramesSinceStart%100>50) {
-        ctx.fillText  ("Press SPACE to play", 320,200);
+        ctx.fillText  ("Press SPACE to play", 320,280);
       }
+      ctx.font         = '10px Verdana';
+      ctx.fillText  ("Help The Mars Volta get back to the studio in order to record a new album.", 320,220);
 
-      ctx.fillText  ("Player 1(Omar): Arrow keys         Player 2(Cedric): WASD", 320,260);
+      ctx.fillText  ("Controls Player 1 - Arrow keys      Controls Player 2 - WAD", 320,250);
 
-      ctx.drawImage(players[0].image,0,0,20,30,240,220, players[0].width, players[0].height);
-      ctx.drawImage(players[1].image,0,0,20,30,380,220, players[1].width, players[1].height);
+    //  ctx.drawImage(players[0].image,0,0,20,30,240,220, players[0].width, players[0].height);
+    //  ctx.drawImage(players[1].image,0,0,20,30,380,220, players[1].width, players[1].height);
 
       if(32 in keysDown) {
         stars = null;
