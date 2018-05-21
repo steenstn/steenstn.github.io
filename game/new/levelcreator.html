@@ -454,7 +454,7 @@ var renderContent = function(zValue) {
     if(content[i].zIndex === zValue) {
       switch(content[i].type) {
         case "rock1":
-          ctx.drawImage(rock1Image, screenx+content[i].x, screeny+content[i].y);
+          ctx.drawImage(rock1Image, 0, 0, 20, 20, screenx+content[i].x, screeny+content[i].y,20, 20);
           break;
         case "tree1":
           var offset = typeof content[i].offset == 'number' ? content[i].offset : 0;
