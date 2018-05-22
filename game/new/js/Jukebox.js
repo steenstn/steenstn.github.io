@@ -42,5 +42,6 @@ var Jukebox = (function () {
     Jukebox.prototype.isSongReady = function () {
         return this.canPlay;
     };
+    Jukebox.prototype.isSongPlaying = function () { return this.currentSong.currentTime > 0; };
     return Jukebox;
 }());

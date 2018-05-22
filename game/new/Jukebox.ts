@@ -54,4 +54,6 @@ class Jukebox {
   isSongReady() {
     return this.canPlay;
   }
+
+  isSongPlaying() { return this.currentSong.currentTime > 0;}
 }

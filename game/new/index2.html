@@ -960,11 +960,12 @@ for(var i = 0; i < 300; i++) {
 var IntroScreen = function() {
     numFramesSinceStart++;
     clearBlack();
-    if(!jukeBox.isSongReady()) {
+    if(!jukeBox.isSongPlaying()) {
         ctx.fillStyle    = '#F00';
         ctx.font         = '10px Verdana';
         ctx.textAlign = 'center';
         ctx.fillText  ("Loading...", 320,100);
+        ctx.fillRect(320-numFramesSinceStart, 120, 2*numFramesSinceStart, 1);
     }
     else {
 
@@ -1045,8 +1046,16 @@ var endScreen = function() {
   gLoop = setTimeout(endScreen, 1000 / 50);
 }
 jukeBox.selectSong(0);
-jukeBox.playCurrentSong();
-IntroScreen();
+ctx.fillStyle = "#f00";
+ctx.font         = '10px Verdana';
+ctx.textAlign = "center"
+ctx.fillText("Click me to play.", 320, 100);
+var startGame = function() {
+  jukeBox.playCurrentSong();
+  IntroScreen();
+  c.removeEventListener('click', startGame);
+}
+c.addEventListener('click', startGame, false);
 </script>
 </body>
 </html>
