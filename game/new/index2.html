@@ -361,7 +361,7 @@ var updatePlayer = function(index) {
 
 		if(arrayPos.blocking==1) {
 			players[index].x = players[index].oldx;
-			players[index].speedx = 0;
+			players[index].speedx *=-0.5;
 		}
 	} else {// Check to the right
 
@@ -370,7 +370,7 @@ var updatePlayer = function(index) {
 
 		if(typeof arrayPos !== 'NaN' && arrayPos.blocking==1) {
 			players[index].x = players[index].oldx;
-			players[index].speedx = 0;
+			players[index].speedx *= -0.5;
 		}
 	}
 
