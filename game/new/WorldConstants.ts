@@ -6,8 +6,8 @@ class WorldConstants {
   static jumpStrength : number = 7;
   static maxSpeedx : number = 3.2;
   static maxSpeedy : number = 6;
-  static jumpAcc : number = 2;
-  static maxJump : number = 7;
+  static jumpAcc : number = 5;
+  static maxJump : number = 10;
   static normalFriction : number = 1.2;
   static maxBloodParticles = 2000;
 }

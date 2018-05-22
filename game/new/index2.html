@@ -392,6 +392,7 @@ var updatePlayer = function(index) {
 		if(rightCollisionPointCollided || leftCollisionPointCollided) {
 			players[index].y = players[index].oldy;
 			players[index].speedy = 0;
+      players[index].jumping=WorldConstants.maxJump;
 		}
 	} else if(players[index].speedy > 0) { // Going down, check for blocking tiles
 
@@ -411,10 +412,11 @@ var updatePlayer = function(index) {
 			}
 			players[index].speedy=0;
 		}
+    if(!rightCollisionPointCollided && !leftCollisionPointCollided) { // Disable jumping when in mid-air
+  		players[index].jumping=WorldConstants.maxJump;
+  	}
 	}
-	if(!rightCollisionPointCollided && !leftCollisionPointCollided) { // Disable jumping when in mid-air
-		players[index].jumping++;
-	}
+
 
 	if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].type=="g") // Ice block
 		players[index].friction=1; // No friction
@@ -589,9 +591,12 @@ var checkKeys = function (modifier) {
 				players[i].jumping++;
 
 				if(players[i].speedy>-WorldConstants.jumpStrength)
-				    players[i].speedy-=WorldConstants.jumpAcc;
+				    players[i].speedy=-WorldConstants.jumpAcc;
         }
-		}
+		} else if(animating === 0 && players[i].speedy<0) {
+      players[i].jumping=WorldConstants.maxJump;
+      players[i].speedy/=1.05;
+    }
 
 		if (animating === 0 && players[i].keyLeft in keysDown) {
 		players[i].goingLeft = 1;
