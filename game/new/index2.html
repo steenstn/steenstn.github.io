@@ -48,6 +48,7 @@
 <script src="js/particles/HealthParticleFactory.js" type="text/javascript"></script>
 
 <script src="js/Helper.js" type="text/javascript"></script>
+<script src="js/Smoke.js" type="text/javascript"></script>
 
 <script src="js/particles/ParticleCleaner.js" type="text/javascript"></script>
 
@@ -137,8 +138,11 @@ var bloodFactory = new BloodFactory(bloodImage);
 var particleCleaner = new ParticleCleaner();
 
 var flowers = [];
+var effects = [];
 
 var bedlam;
+
+
 
 
 var image = new Image();
@@ -248,12 +252,19 @@ var clearBlack = function() {
 var render = function(){
 	for(var i = 0; i < players.length; i++) {
     players[i].draw(ctx);
+    if(players[i].drawingSmoke===1) {
+      effects.push(new Smoke(players[i].x, players[i].y+players[i].height-10));
+      players[i].drawingSmoke++;
+    }
     if(debug===1) {
       players[i].drawHurtZone(ctx);
       players[i].drawKillZone(ctx);
     }
 
 	}
+  for(var i = 0; i < effects.length; i++) {
+    effects[i].draw(ctx);
+  }
 };
 
 var renderEnemies = function()
@@ -406,6 +417,7 @@ var updatePlayer = function(index) {
 		if(rightCollisionPointCollided || leftCollisionPointCollided) {
 			players[index].jumping = 0;
       var movePlayerUp = true;
+      players[index].drawingSmoke++;
 			while(typeof Level.currentLevel[arrayPos] != "undefined" && Level.getBlockAt(players[index].x+players[index].width-8, players[index].y+players[index].height).blocking==1
         || Level.currentLevel[leftCollisionPoint] != "undefined" && Level.getBlockAt(players[index].x+8, players[index].y+players[index].height).blocking==1) {
 				players[index].y-=0.2;
@@ -414,6 +426,7 @@ var updatePlayer = function(index) {
 		}
     if(!rightCollisionPointCollided && !leftCollisionPointCollided) { // Disable jumping when in mid-air
   		players[index].jumping=WorldConstants.maxJump;
+      players[index].drawingSmoke = 0;
   	}
 	}
 
@@ -589,7 +602,7 @@ var checkKeys = function (modifier) {
 		if (animating=== 0 && players[i].keyUp in keysDown) {
 			if(players[i].jumping < WorldConstants.maxJump) {
 				players[i].jumping++;
-
+        players[i].drawingSmoke++;
 				if(players[i].speedy>-WorldConstants.jumpStrength)
 				    players[i].speedy=-WorldConstants.jumpAcc;
         }

@@ -32,14 +32,14 @@ class Player {
   keyRight : number;
   friction = WorldConstants.normalFriction;
   inBucket : boolean;
-  
+  drawingSmoke: number;
   private animationSpeed = 3;
 
   constructor(public x,public y,public image) {
     this.x = x;
     this.y = y;
     this.image = image;
-
+    this.drawingSmoke = 0;
     this.oldx = x;
   	this.oldy = y;
   	this.width = 20;
