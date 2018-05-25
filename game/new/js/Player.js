@@ -9,6 +9,7 @@ var Player = (function () {
         this.y = y;
         this.image = image;
         this.drawingSmoke = 0;
+        this.drawingLeftBrakingSmoke = this.drawingRightBrakingSmoke = 3;
         this.oldx = x;
         this.oldy = y;
         this.width = 20;

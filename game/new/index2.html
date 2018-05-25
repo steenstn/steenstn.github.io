@@ -253,8 +253,16 @@ var render = function(){
 	for(var i = 0; i < players.length; i++) {
     players[i].draw(ctx);
     if(players[i].drawingSmoke===1) {
-      effects.push(new Smoke(players[i].x, players[i].y+players[i].height-10));
+      effects.push(new Smoke(players[i].x, players[i].y+players[i].height-10, 0));
       players[i].drawingSmoke++;
+    }
+    if(players[i].speedy === 0 && players[i].drawingLeftBrakingSmoke > 1 && players[i].drawingLeftBrakingSmoke%2===0) {
+      effects.push(new Smoke(players[i].x-10, players[i].y+players[i].height-10, 1));
+      players[i].drawingLeftBrakingSmoke++;
+    }
+    if(players[i].speedy === 0 && players[i].drawingRightBrakingSmoke > 1 && players[i].drawingRightBrakingSmoke%2===0) {
+      effects.push(new Smoke(players[i].x+players[i].width, players[i].y+players[i].height-10, 2));
+      players[i].drawingRightBrakingSmoke++;
     }
     if(debug===1) {
       players[i].drawHurtZone(ctx);
@@ -598,7 +606,12 @@ var checkKeys = function (modifier) {
     keyHeldDown = 0;
   }
 	for(var i = 0; i < players.length; i++) {
-
+    if(players[i].drawingLeftBrakingSmoke > 1) {
+      players[i].drawingLeftBrakingSmoke = 0;
+    }
+    if(players[i].drawingRightBrakingSmoke > 1) {
+      players[i].drawingRightBrakingSmoke = 0;
+    }
 		if (animating=== 0 && players[i].keyUp in keysDown) {
 			if(players[i].jumping < WorldConstants.maxJump) {
 				players[i].jumping++;
@@ -614,12 +627,18 @@ var checkKeys = function (modifier) {
 		if (animating === 0 && players[i].keyLeft in keysDown) {
 		players[i].goingLeft = 1;
 		players[i].animationCounter++;
+    if(players[i].speedx> WorldConstants.maxSpeedx-1) {
+      players[i].drawingRightBrakingSmoke++;
+    }
 			if(players[i].speedx>-WorldConstants.maxSpeedx)
 				players[i].speedx -= WorldConstants.playerAcc * modifier;
 		}
 		else if (animating === 0 && players[i].keyRight in keysDown) {
 		players[i].goingLeft = 0;
 		players[i].animationCounter++;
+    if(players[i].speedx< -WorldConstants.maxSpeedx+1) {
+      players[i].drawingLeftBrakingSmoke++;
+    }
 			if(players[i].speedx<WorldConstants.maxSpeedx)
 				players[i].speedx += WorldConstants.playerAcc * modifier;
 		}

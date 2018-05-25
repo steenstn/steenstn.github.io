@@ -33,6 +33,9 @@ class Player {
   friction = WorldConstants.normalFriction;
   inBucket : boolean;
   drawingSmoke: number;
+  drawingLeftBrakingSmoke: number;
+  drawingRightBrakingSmoke: number;
+
   private animationSpeed = 3;
 
   constructor(public x,public y,public image) {
@@ -40,6 +43,7 @@ class Player {
     this.y = y;
     this.image = image;
     this.drawingSmoke = 0;
+    this.drawingLeftBrakingSmoke = this.drawingRightBrakingSmoke = 3;
     this.oldx = x;
   	this.oldy = y;
   	this.width = 20;
