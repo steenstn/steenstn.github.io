@@ -5,10 +5,19 @@ var Smoke = (function () {
         this.numFrames = 7;
         Smoke.image.src = "smoke.png";
         this.animationTimer = 0;
+        this.done = false;
     }
+    Smoke.prototype.isDone = function () {
+        return this.done;
+    };
     Smoke.prototype.draw = function (context) {
-        context.drawImage(Smoke.image, this.animationTimer * 20, 0, 20, 10, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 20, 10);
-        this.animationTimer++;
+        if (!this.done) {
+            context.drawImage(Smoke.image, this.animationTimer * 20, 0, 20, 10, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 20, 10);
+            this.animationTimer++;
+            if (this.animationTimer > this.numFrames) {
+                this.done = true;
+            }
+        }
     };
     return Smoke;
 }());

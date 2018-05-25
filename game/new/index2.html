@@ -936,6 +936,7 @@ var GameLoop = function(){
   }
   if(numFramesSinceStart%50 === 0) {
     particleCleaner.cleanupBlood(particles);
+    cleanSmoke();
   } else if(numFramesSinceStart%20 === 0) {
 
     for(var i = 0; i < particles.length; i++) {
@@ -973,6 +974,19 @@ for(var i = 0; i < 300; i++) {
   stars.push(new Particle(320, 100, xadd*5*Math.random(), yadd*5*Math.random(), logoImage));
 }
 
+var cleanSmoke = function() {
+  var allEffectsDone = true;
+  for(var i = 0; i < effects.length; i++) {
+    if(!effects[i].isDone()) {
+      allEffectsDone = false;
+      break;
+    }
+  }
+  if(allEffectsDone) {
+    console.log("cleaing smoke");
+    effects = [];
+  }
+}
 var IntroScreen = function() {
     numFramesSinceStart++;
     clearBlack();
