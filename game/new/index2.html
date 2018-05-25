@@ -502,7 +502,7 @@ var updateEnemies = function() {
           if(enemies[i].type == "boss") {
             animating = 3;
             bossKilled = true;
-            bedlam = new Bedlam();
+
           }
           enemies.splice(i,1); // Remove the enemy from the array
 
@@ -913,6 +913,7 @@ var GameLoop = function(){
     render();
     updateParticles();
     if(bossDeadTimer<=0) {
+      bedlam = new Bedlam();
       animating = 2;
     }
   }
