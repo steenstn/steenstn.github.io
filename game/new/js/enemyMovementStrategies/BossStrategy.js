@@ -31,6 +31,9 @@ var BossStrategy = (function () {
                     this.currentState = enemy.currentState = BossStrategy.CHARGING;
                 }
             }
+            if (this.reloadCounter < -200) {
+                this.currentState = enemy.currentState = BossStrategy.CHARGING;
+            }
             enemy.x += enemy.speedx;
             enemy.y += enemy.speedy;
         }

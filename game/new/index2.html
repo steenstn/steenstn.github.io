@@ -126,7 +126,7 @@ var dirtParticleFactory = new TimedParticleFactory(dirtParticleImage);
 var finalImage = new Image();
 finalImage.src = "studiofinal.png";
 
-var bossDeadTimer = 100;
+var bossDeadTimer = 160;
 var bossKilled = false;
 var logoImage = new Image();
 logoImage.src = "logo2.png";
@@ -826,6 +826,7 @@ var drawAllText = function() {
 var GameLoop = function(){
   numFramesSinceStart++;
 	clear();
+  
 	if(players[0].hp<1) {
 		players[0].hp=0;
     players[1].hp=0;

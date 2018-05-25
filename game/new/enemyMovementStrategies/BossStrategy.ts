@@ -33,7 +33,9 @@ class BossStrategy{
         } else if(this.reloadCounter < 0 && Math.random() > 0.3){
           this.currentState = enemy.currentState = BossStrategy.CHARGING;
         }
-
+      }
+      if(this.reloadCounter < -200) {
+        this.currentState = enemy.currentState = BossStrategy.CHARGING;
       }
 
       enemy.x+=enemy.speedx;
