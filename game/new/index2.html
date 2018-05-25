@@ -656,8 +656,8 @@ var loadContent = function(levelName) {
         var numTypes = 4;
         tempContent[i].offset = i%numTypes;
     } else if(tempContent[i].type=="tree1") {
-        var numTypes = 4;
-        tempContent[i].offset = i%numTypes;
+        var numTypes = 5;
+        tempContent[i].offset = (i-1)%numTypes;
     } else if(tempContent[i].type == "rock1") {
         var numTypes = 5;
         tempContent[i].offset = i%numTypes;
@@ -826,7 +826,7 @@ var drawAllText = function() {
 var GameLoop = function(){
   numFramesSinceStart++;
 	clear();
-  
+
 	if(players[0].hp<1) {
 		players[0].hp=0;
     players[1].hp=0;
