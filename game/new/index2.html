@@ -833,10 +833,12 @@ var drawAllText = function() {
       for(var i = 0; i < particles.length; i++){
         if(particles[i].shouldBeDeleted) particlesThatShouldBeDeleted++;
       }
+      ctx.font = "10px Verdana";
       ctx.fillText  ("particles: " + particles.length, 4,60);
-      ctx.fillText  ("particlesThatShouldBeDeleted: " + particlesThatShouldBeDeleted, 4,75);
-      ctx.fillText  ("numFramesSinceStart: " + numFramesSinceStart, 4,90);
-      ctx.fillText  ("Player 1 coordinates: " + players[0].x + " - " + players[0].y, 4,110);
+      ctx.fillText  ("particlesThatShouldBeDeleted: " + particlesThatShouldBeDeleted, 4,70);
+      ctx.fillText  ("numFramesSinceStart: " + numFramesSinceStart, 4,80);
+      ctx.fillText  ("Player 1 coordinates: " + Math.round(players[0].x) + " - " + Math.round(players[0].y), 4,90);
+      ctx.fillText("effects: " + effects.length, 4, 100);
     }
 	ctx.strokeStyle = "black";
 	ctx.strokeRect(Viewport.width/2-51,15,102,10);
