@@ -11,9 +11,9 @@ var Smoke = (function () {
         return this.done;
     };
     Smoke.prototype.draw = function (context) {
-        if (!this.done) {
-            context.drawImage(Smoke.image, this.animationTimer * 20, 0, 20, 10, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 20, 10);
-            this.animationTimer++;
+        if (!this.isDone()) {
+            context.drawImage(Smoke.image, Math.floor(this.animationTimer) * 20, 0, 20, 10, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 20, 10);
+            this.animationTimer += 0.3;
             if (this.animationTimer > this.numFrames) {
                 this.done = true;
             }
