@@ -13,13 +13,13 @@ var Smoke = (function () {
     };
     Smoke.prototype.draw = function (context) {
         if (!this.isDone()) {
-            if (this.mode === 0) {
+            if (this.mode === Smoke.LandingSmoke) {
                 context.drawImage(Smoke.image, Math.floor(this.animationTimer) * 20, 0, 20, 10, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 20, 10);
             }
-            else if (this.mode === 1) {
+            else if (this.mode === Smoke.LeftSmoke) {
                 context.drawImage(Smoke.image, Math.floor(this.animationTimer) * 20, 0, 10, 10, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 10, 10);
             }
-            else if (this.mode === 2) {
+            else if (this.mode === Smoke.RightSmoke) {
                 context.drawImage(Smoke.image, Math.floor(this.animationTimer) * 20 + 10, 0, 10, 10, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 10, 10);
             }
             this.animationTimer += 0.3;
@@ -31,3 +31,6 @@ var Smoke = (function () {
     return Smoke;
 }());
 Smoke.image = new Image();
+Smoke.LandingSmoke = 0;
+Smoke.LeftSmoke = 1;
+Smoke.RightSmoke = 2;
