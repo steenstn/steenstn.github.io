@@ -84,10 +84,17 @@ c.width = Viewport.width;
 c.height = Viewport.height;
 
 var animating = 0;
+var lastLevel = 0;
 var levelNow = 1; // Number of current level
 
 var score = 0;
 var dead=0;
+var totalNumVinylCollected = 0;
+
+var vinylCollectedInLevel = 0;
+var numVinylInLevel = 0;
+var totalVinylsInAllLevels = 0;
+
 var bloodImage = new Image();
 bloodImage.src = "particles/bloodpixel.png";
 bloodImage.width=1;
@@ -463,6 +470,7 @@ var updatePlayer = function(index) {
 	{
 		score+=20;
     scoreTimer=10;
+    vinylCollectedInLevel++;
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 30; i++) {
       particles.push(coinParticleFactory.createParticle(players[index].x, players[index].y,100));
@@ -707,67 +715,75 @@ var loadContent = function(levelName) {
 }
 
 var loadLevel = function(levelNumber) {
-
+  numVinylInLevel = 0;
+  vinylCollectedInLevel = 0;
   clearBlack();
 
-var levelName = "level"+levelNumber;
- Level.currentLevel = new Array(Level.width*Level.height);
+  var levelName = "level"+levelNumber;
+   Level.currentLevel = new Array(Level.width*Level.height);
 
-for(var i=0;i<Level.currentLevel.length;i++) { // set up an object for all tiles
-	Level.currentLevel[i]=new Object();
-}
-var txtFile = new XMLHttpRequest();
-ctx.textAlign = "left";
-drawText("Loading song...", 10,10);
-jukeBox.selectSong(levelNow);
+  for(var i=0;i<Level.currentLevel.length;i++) { // set up an object for all tiles
+  	Level.currentLevel[i]=new Object();
+  }
+  var txtFile = new XMLHttpRequest();
+  ctx.textAlign = "left";
+  drawText("Loading song...", 10,10);
+  jukeBox.selectSong(levelNow);
 
-drawText("Loading level...", 10, 20);
-txtFile.open("GET", "levels/" + levelName + ".txt", true);
-txtFile.onreadystatechange = function() {
-  if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
-    if (txtFile.status === 200 || txtFile.status == 0) {  // Makes sure it's found the file.
-      allText = txtFile.responseText;
-	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
-     drawText("Parsing level...", 10,30);
+  drawText("Loading level...", 10, 20);
+  txtFile.open("GET", "levels/" + levelName + ".txt", true);
+  txtFile.onreadystatechange = function() {
+    if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
+      if (txtFile.status === 200 || txtFile.status == 0) {  // Makes sure it's found the file.
+        allText = txtFile.responseText;
+  	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
+       drawText("Parsing level...", 10,30);
 
-    var loadingBarMaxWidth = 600;
+      var loadingBarMaxWidth = 600;
 
-		for(var y=0;y<Level.height;y++) {
-      var progress = (y/Level.height) * loadingBarMaxWidth;
-      ctx.beginPath();
+  		for(var y=0;y<Level.height;y++) {
+        var progress = (y/Level.height) * loadingBarMaxWidth;
+        ctx.beginPath();
 
-      ctx.rect(30, 60, progress, 2);
-      ctx.closePath();
-      ctx.fill();
+        ctx.rect(30, 60, progress, 2);
+        ctx.closePath();
+        ctx.fill();
 
-			for(var x=0;x<Level.width;x++) {
-				var arrayPos = x+y*Level.width;
-				Level.currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
-        var tile = LevelTile.newFromCharacter(Level.currentLevel[arrayPos].type);
-        Level.currentLevel[arrayPos].blocking=tile.blocking; // Blocking tile
-        Level.currentLevel[arrayPos].tileOffsetx=tile.drawingOffsetx; // Where in the tileset the tile is
-        Level.currentLevel[arrayPos].tileOffsety=tile.drawingOffsety;
+  			for(var x=0;x<Level.width;x++) {
+  				var arrayPos = x+y*Level.width;
+  				Level.currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
+          var tile = LevelTile.newFromCharacter(Level.currentLevel[arrayPos].type);
+          Level.currentLevel[arrayPos].blocking=tile.blocking; // Blocking tile
+          Level.currentLevel[arrayPos].tileOffsetx=tile.drawingOffsetx; // Where in the tileset the tile is
+          Level.currentLevel[arrayPos].tileOffsety=tile.drawingOffsety;
+          if(allText[arrayPos]==='s') {
+            numVinylInLevel++;
+          }
 
-			}
-		}
+  			}
+  		}
+
+        if(lastLevel<levelNumber) {
+          totalVinylsInAllLevels+=numVinylInLevel;
+          lastLevel = levelNumber;
+        }
+      }
 
     }
-
   }
-}
-txtFile.send(null);
+  txtFile.send(null);
 
-drawText("Loading enemies...", 10, 40);
-mutantSpecs = Helper.loadJsonFile('enemies/mutant.json');
-content.length = 0;
-flies.length = 0;
-backgroundContent.length = 0;
-foregroundContent.length = 0;
-flowers.length = 0;
-loadContent(levelName);
-setUpContent();
+  drawText("Loading enemies...", 10, 40);
+  mutantSpecs = Helper.loadJsonFile('enemies/mutant.json');
+  content.length = 0;
+  flies.length = 0;
+  backgroundContent.length = 0;
+  foregroundContent.length = 0;
+  flowers.length = 0;
+  loadContent(levelName);
+  setUpContent();
 
-jukeBox.playCurrentSong();
+  jukeBox.playCurrentSong();
 }
 
 var setUpContent = function() {
@@ -815,7 +831,9 @@ var drawAllText = function() {
     ctx.textAlign = 'left';
     ctx.font         = scoreFontSize + 'px Verdana';
     ctx.fillText  (score, 55,20);
-
+    ctx.font         = '14px Verdana';
+    ctx.fillStyle = vinylCollectedInLevel >= numVinylInLevel ? "#0f0" : "#fff";
+    ctx.fillText(vinylCollectedInLevel + "/" + numVinylInLevel, 38, Viewport.height-13);
     if(scoreTimer>0) {
       scoreTimer--;
     }
@@ -866,6 +884,7 @@ var GameLoop = function(){
 		players[0].hp=0;
     players[1].hp=0;
 		score=lastScore;
+    vinylCollectedInLevel = 0;
     flies= [];
 		loadLevel(levelNow);
 
@@ -923,6 +942,7 @@ var GameLoop = function(){
     if(bedlam.isComplete()) {
       bedlam = null;
       animating = 0;
+      totalNumVinylCollected+=vinylCollectedInLevel;
       if(bossKilled) {
         jukeBox.playFinalSong();
         endScreen();
@@ -933,6 +953,7 @@ var GameLoop = function(){
 
       	init();
         Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+
       }
 
     }
@@ -981,6 +1002,7 @@ var GameLoop = function(){
   for(var i = 0; i < enemies.length; i++) {
     enemies[i].drawHp(ctx);
   }
+  ctx.drawImage(Level.tileset, 64,128, 32, 32, 4, Viewport.height-35, 32, 32);
 	drawAllText();
 
 	gLoop = setTimeout(GameLoop, 1000 / 50);
@@ -1097,6 +1119,7 @@ var endScreen = function() {
 
   ctx.font = '20px Verdana';
   ctx.fillText("Final score: " + score, 50, 220);
+  ctx.fillText("Vinyls collected: " + totalNumVinylCollected + "/" + totalVinylsInAllLevels, 50, 245);
   gLoop = setTimeout(endScreen, 1000 / 50);
 }
 jukeBox.selectSong(0);
