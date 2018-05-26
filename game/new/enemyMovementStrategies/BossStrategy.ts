@@ -21,11 +21,11 @@ class BossStrategy{
       let offsety = enemy.height;
 
       enemy.speedy+=WorldConstants.gravity;
-      if(Level.getBlockAt(enemy.x+offsetx, enemy.y).blocking===true || Level.getBlockAt(enemy.x+offsetx, enemy.y).type=='h') {
+      if(Level.getBlockAt(enemy.x+offsetx, enemy.y) != "undefined" && Level.getBlockAt(enemy.x+offsetx, enemy.y).blocking===true || Level.getBlockAt(enemy.x+offsetx, enemy.y).type=='h') {
         enemy.speedx*=-1;
         enemy.speedy=-4;
       }
-      if(Level.getBlockAt(enemy.x+enemy.width/2, enemy.y+offsety).blocking===true) {
+      if(Level.getBlockAt(enemy.x+enemy.width/2, enemy.y+offsety) != "undefined" && Level.getBlockAt(enemy.x+enemy.width/2, enemy.y+offsety).blocking===true) {
         enemy.speedy=-8;
         if(Math.random() > 0.5) {
             Level.currentLevel[Level.getIndexAt(enemy.x+enemy.width/2, enemy.y+offsety)] = LevelTile.newFromCharacter('.');
