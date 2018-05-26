@@ -783,7 +783,8 @@ var setUpContent = function() {
         startPos.y = content[i].y;
 	      break;
       case "flynest":
-        for(var j = 0; j < 10; j++) {
+
+        for(var j = 0; j < content[i].numFlies; j++) {
           flies.push(new Fly(flyImage, content[i].x, content[i].y));
         }
         break;
