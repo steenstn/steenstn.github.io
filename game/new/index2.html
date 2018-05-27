@@ -122,6 +122,8 @@ baguetterockImage.src = "baguetterock.png";
 var tree1Image = new Image();
 tree1Image.src = "tree1.png";
 
+var grassImage = new Image();
+grassImage.src = "grass.png";
 var flower1Image = new Image();
 flower1Image.src = "flower1.png";
 var vines1Image = new Image();
@@ -331,6 +333,16 @@ var renderContent = function(content) {
       case "vines1":
         ctx.drawImage(vines1Image, offset*20, 0, 20, 40, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 20, 40);
         break;
+      case "grass":
+        var yFrame = 0;
+        if((Math.abs(players[0].speedx) > 0.5 && Helper.overlap(content.x+8, content.y+8, 34, 34, players[0].x, players[0].y, players[0].width, players[0].height)) ||
+           (Math.abs(players[1].speedx) > 0.5 && Helper.overlap(content.x+8, content.y+8, 34, 42, players[1].x, players[1].y, players[1].width, players[1].height)))
+        {
+          yFrame = numFramesSinceStart%8 > 4 ? 1 : 0;
+        }
+        ctx.drawImage(grassImage, offset*50, yFrame*50, 50, 50, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 50, 50);
+        break;
+
     }
 
 }
@@ -535,11 +547,9 @@ var updateEnemies = function() {
           }
           enemies.splice(i,1); // Remove the enemy from the array
 
-
     			score+=100;
           scoreTimer = 10;
           enemyIsDead = true;
-
           break;
         }
 
@@ -701,6 +711,9 @@ var loadContent = function(levelName) {
     } else if(tempContent[i].type == "rock1") {
         var numTypes = 5;
         tempContent[i].offset = i%numTypes;
+    } else if(tempContent[i].type == "grass") {
+      var numTypes = 3;
+      tempContent[i].offset = i%numTypes;
     }
     if(typeof tempContent[i].flower !== 'undefined' && tempContent[i].flower === true) {
       content.push(tempContent[i]);

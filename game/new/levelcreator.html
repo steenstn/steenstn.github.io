@@ -75,6 +75,8 @@ skullImage.src = "skull.png";
 skullImage.width = 40;
 skullImage.height = 50;
 
+var grassImage = new Image();
+grassImage.src = "grass.png";
 var rock1Image = new Image();
 rock1Image.src = "rock1.png";
 
@@ -136,6 +138,7 @@ toolMap["jumper"] = francesImage;
 toolMap["mutant"] = mutantImage;
 toolMap["flower1"] = flower1Image;
 toolMap["vines1"] = vines1Image;
+toolMap["grass"] = grassImage;
 
 var init = function()
 {
@@ -264,7 +267,7 @@ var checkKeys = function (modifier) {
 	if(67 in keysDown) // c
 		tool="n";
 	if(86 in keysDown) // v
-		tool="o";
+		tool="grass";
 	if(66 in keysDown) // b
 		tool="p";
 	if(77 in keysDown) // m
@@ -391,6 +394,9 @@ var setUpContent = function() {
         var numTypes = 5;
         content[i].offset = (i-1)%numTypes;
         break;
+      case "grass":
+        var numTypes = 3;
+        content[i].offset = i%numTypes;
 		}
 	}
 }
@@ -472,6 +478,10 @@ var renderContent = function(zValue) {
         case "vines1":
           var offset = typeof content[i].offset == 'number' ? content[i].offset : 0;
           ctx.drawImage(vines1Image, offset*20, 0, 20, 40, screenx+content[i].x, screeny+content[i].y, 20, 40);
+          break;
+        case "grass":
+          var offset = typeof content[i].offset == 'number' ? content[i].offset : 0;
+          ctx.drawImage(grassImage, offset*50, 0, 50, 50, screenx+content[i].x, screeny+content[i].y, 50, 50);
           break;
       }
     }
@@ -857,6 +867,11 @@ var GameLoop = function(){
       } else if(tool=="vines1") {
         if(mouseClick==1) {
           content.push({type:"vines1", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex});
+        }
+
+      } else if(tool=="grass") {
+        if(mouseClick==1) {
+          content.push({type:"grass", x:parseInt(-screenx+mousex), y:parseInt(-screeny+mousey), zIndex: zIndex});
         }
 
       } else if(tool=="r") { // Sudda content
