@@ -469,7 +469,7 @@ var updatePlayer = function(index) {
 
 	arrayPos=Math.floor((players[index].x+players[index].width/2)/Level.tileSize)+Math.floor((players[index].y+players[index].height)/Level.tileSize)*Level.width;
 
-	if(Level.currentLevel[arrayPos].type=="p" || Level.currentLevel[arrayPos].type=="q") // 3Cant + Tryckbar, health
+	if(Level.currentLevel[arrayPos].type=="p" || Level.currentLevel[arrayPos].type=="q") // health
 	{
 
 		Level.currentLevel[arrayPos].type=".";
@@ -477,6 +477,7 @@ var updatePlayer = function(index) {
       particles.push(healthParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
       particles.push(healthParticleFactory.createParticle(players[index].x, players[index].y, players[index], players[0]));
     }
+    score += 10;
 	}
 	if(Level.currentLevel[arrayPos].type=="s") // Coins
 	{
@@ -1052,9 +1053,7 @@ var IntroScreen = function() {
         ctx.textAlign = 'center';
         ctx.fillText  ("Loading...", 320,100);
         ctx.fillRect(320-numFramesSinceStart, 120, 2*numFramesSinceStart, 1);
-    }
-    else {
-
+    } else {
       ctx.drawImage(logoImage,220,20);
       ctx.fillStyle    = '#FFF';
       for(var i = 0; i < stars.length; i++) {
@@ -1086,9 +1085,6 @@ var IntroScreen = function() {
       ctx.fillText  ("Help The Mars Volta get back to the studio in order to record a new album.", 320,220);
 
       ctx.fillText  ("Controls Player 1 - Arrow keys      Controls Player 2 - WAD", 320,250);
-
-    //  ctx.drawImage(players[0].image,0,0,20,30,240,220, players[0].width, players[0].height);
-    //  ctx.drawImage(players[1].image,0,0,20,30,380,220, players[1].width, players[1].height);
 
       if(32 in keysDown) {
         stars = null;
