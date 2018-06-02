@@ -471,7 +471,6 @@ var updatePlayer = function(index) {
 
 	if(Level.currentLevel[arrayPos].type=="p" || Level.currentLevel[arrayPos].type=="q") // health
 	{
-
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 30; i++) {
       particles.push(healthParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
