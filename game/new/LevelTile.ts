@@ -17,14 +17,24 @@ class LevelTile {
         return new LevelTile(".", false, 0, 0);
       case "1": // Ground tile
         return new LevelTile("1", true, 0, 0);
+      case "!": // Ground tile secret passage
+        return new LevelTile("!", false, 0, 0);
       case "2": // Ground tile
         return new LevelTile("2", true, 32, 0);
+      case "@": // Ground tile secret passage
+        return new LevelTile("@", false, 32, 0);
       case "3": // Ground tile
         return new LevelTile("3", true, 64, 0);
+      case "#": // Ground tile secret passage
+        return new LevelTile("#", false, 64, 0);
       case "4": // Ground tile
         return new LevelTile("4", true, 96, 0);
+      case "$": // Ground tile secret passage
+        return new LevelTile("$", false, 96, 0);
       case "5": // Ground tile
         return new LevelTile("5", true, 0, 32);
+      case "%": // Ground tile secret passage
+        return new LevelTile("%", false, 0, 32);
       case "6": // Ground tile
         return new LevelTile("6", true, 32, 32);
       case "7": // Ground tile

@@ -223,7 +223,7 @@ var updatePlayer = function()
 }
 
 var checkKeys = function (modifier) {
-  //console.log(keysDown);
+//  console.log(keysDown);
 	if (38 in keysDown) { // Player holding up
 		if(playerSpeedy>-maxSpeedy)
 			playerSpeedy -= playerAcc * modifier;
@@ -263,7 +263,7 @@ var checkKeys = function (modifier) {
 	if(90 in keysDown) // z
 		tool="l";
 	if(88 in keysDown) // x
-		tool="m";
+		tool="secretPassage";
 	if(67 in keysDown) // c
 		tool="n";
 	if(86 in keysDown) // v
@@ -534,7 +534,6 @@ var drawLevel = function(){
 		endy=levelHeight;
 
 
-
 	for(var y=starty;y<endy;y++)
 		for(var x=startx;x<endx;x++)
 		{
@@ -545,25 +544,55 @@ var drawLevel = function(){
 				ctx.drawImage(tileset,0,0, tilesize,
 				tilesize,posx,posy, tilesize, tilesize);
 			}
+      else if(currentLevel[x+y*levelWidth]=="!")
+			{
+				ctx.drawImage(tileset,0,0, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+        drawBlueTransparentRect(posx, posy, tilesize, tilesize);
+			}
 			else if(currentLevel[x+y*levelWidth]=="2")
 			{
 				ctx.drawImage(tileset,32,0, tilesize,
 				tilesize, posx,posy, tilesize, tilesize);
+			}
+      else if(currentLevel[x+y*levelWidth]=="@")
+			{
+				ctx.drawImage(tileset,32,0, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+        drawBlueTransparentRect(posx, posy, tilesize, tilesize);
 			}
 			else if(currentLevel[x+y*levelWidth]=="3")
 			{
 				ctx.drawImage(tileset,64,0, tilesize,
 				tilesize, posx,posy, tilesize, tilesize);
 			}
+      else if(currentLevel[x+y*levelWidth]=="#")
+			{
+				ctx.drawImage(tileset,64,0, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+        drawBlueTransparentRect(posx, posy, tilesize, tilesize);
+			}
 			else if(currentLevel[x+y*levelWidth]=="4")
 			{
 				ctx.drawImage(tileset,96,0, tilesize,
 				tilesize, posx,posy, tilesize, tilesize);
 			}
+      else if(currentLevel[x+y*levelWidth]=="$")
+			{
+				ctx.drawImage(tileset,96,0, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+        drawBlueTransparentRect(posx, posy, tilesize, tilesize);
+			}
 			else if(currentLevel[x+y*levelWidth]=="5")
 			{
 				ctx.drawImage(tileset,0,32, tilesize,
 				tilesize, posx,posy, tilesize, tilesize);
+			}
+      else if(currentLevel[x+y*levelWidth]=="%")
+			{
+				ctx.drawImage(tileset,0,32, tilesize,
+				tilesize, posx,posy, tilesize, tilesize);
+        drawBlueTransparentRect(posx, posy, tilesize, tilesize);
 			}
 			else if(currentLevel[x+y*levelWidth]=="6")
 			{
@@ -681,9 +710,14 @@ var drawLevel = function(){
 				tilesize,posx,posy, tilesize, tilesize);
 			}
 
+
 		}
 
 
+}
+var drawBlueTransparentRect = function(x, y, width, height) {
+  ctx.fillStyle = 'rgba(50,50,225,0.5)';
+  ctx.fillRect(x,y,width,height);
 }
 var drawText = function()
 {
@@ -737,7 +771,7 @@ var checkNeighbours = function(x,y)
 
 	// A string of all non-blocking tiles. These tiles are considered empty, such as air(.) and decals such as trees
 	var nonBlockingTiles=".hklmnopqs";
-
+  
 	// Local binary pattern!
 		if(nonBlockingTiles.search(currentLevel[x+(y-1)*levelWidth])==-1) // If the tile is not found in nonBlockingTiles, the tile has a neighbour
 			neighbours=1;
@@ -888,7 +922,12 @@ var GameLoop = function(){
 						break;
 					}
 				}
-			} else {
+			} else if(tool=="secretPassage") {
+        var secretPassageTile = getSecretPassageTile(editx, edity);
+        if(secretPassageTile!==null) {
+          currentLevel[editx+edity*levelWidth] = secretPassageTile;
+        }
+      } else {
 				currentLevel[editx+edity*levelWidth]=tool;
 			}
 		}
@@ -905,6 +944,23 @@ var GameLoop = function(){
   drawTool();
 	drawText();
 	gLoop = setTimeout(GameLoop, 1000 / 50);
+}
+
+var getSecretPassageTile = function(x, y) {
+  var tileToReplace = currentLevel[editx+edity*levelWidth];
+  switch(tileToReplace) {   // !@#$%&/()=?tuvwxy
+    case "1":
+      return "!";
+    case "2":
+      return "@";
+    case "3":
+      return "#";
+    case "4":
+      return "$";
+    case "5":
+      return "%";
+  }
+  return null;
 }
 
 init();
@@ -934,7 +990,7 @@ GameLoop();
 <li>r: Eraser for enemies and content</li>
 <li>n: Goal</li>
 <li>z: Legionenm�rke</li>
-<li>x: Familjenm�rke</li>
+<li>x: Secret passage</li>
 <li>c: N-Phadderietm�rke</li>
 <li>v: Kretsnm�rke</li>
 <li>b: 3Cantsm�rke</li>

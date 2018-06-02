@@ -11,14 +11,24 @@ var LevelTile = (function () {
                 return new LevelTile(".", false, 0, 0);
             case "1":
                 return new LevelTile("1", true, 0, 0);
+            case "!":
+                return new LevelTile("!", false, 0, 0);
             case "2":
                 return new LevelTile("2", true, 32, 0);
+            case "@":
+                return new LevelTile("@", false, 32, 0);
             case "3":
                 return new LevelTile("3", true, 64, 0);
+            case "#":
+                return new LevelTile("#", false, 64, 0);
             case "4":
                 return new LevelTile("4", true, 96, 0);
+            case "$":
+                return new LevelTile("$", false, 96, 0);
             case "5":
                 return new LevelTile("5", true, 0, 32);
+            case "%":
+                return new LevelTile("%", false, 0, 32);
             case "6":
                 return new LevelTile("6", true, 32, 32);
             case "7":
