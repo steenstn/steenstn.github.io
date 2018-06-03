@@ -35,6 +35,7 @@ class Player {
   drawingSmoke: number;
   drawingLeftBrakingSmoke: number;
   drawingRightBrakingSmoke: number;
+  runningFromEnemy: number;
 
   private animationSpeed = 3;
 
@@ -50,6 +51,7 @@ class Player {
   	this.height = 30;
   	this.hp = 100;
   	this.dead = 0;
+    this.runningFromEnemy = 0;
 
     this.updateKillZone();
   	this.killZoneWidth = this.width - 10;
@@ -83,6 +85,18 @@ class Player {
    this.killZoney = this.y + this.height - 5;
  }
 
+ isFacingPosition(x: number) {
+   if(this.x > x && this.goingLeft === 1) {
+     return true;
+   } else if(this.x < x && this.goingLeft === 1) {
+     return false;
+   } else if(this.x > x && this.goingLeft === 0) {
+     return false;
+   } else {
+     return true;
+   }
+ }
+
  draw(context) {
    if(this.animationCounter>this.animationSpeed) {
      this.animationCounter=0;
@@ -102,12 +116,14 @@ class Player {
    }
    else if(this.speedx>0.05 || this.speedx<-0.05) // Running
    {
-     context.drawImage(this.image,80+20*this.currentFrame,30*this.goingLeft, 20,30,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), this.width, this.height);
+     context.drawImage(this.image,80+20*this.currentFrame,30*this.goingLeft+60*this.runningFromEnemy, 20,30,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), this.width, this.height);
    }
    else
    {
      context.drawImage(this.image,0+20*this.idleCurrentFrame,30*this.goingLeft, 20,30,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), this.width, this.height);
    }
+
+   this.runningFromEnemy=0
  }
 
 drawHurtZone(context) {

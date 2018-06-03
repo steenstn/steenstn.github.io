@@ -16,6 +16,7 @@ var Player = (function () {
         this.height = 30;
         this.hp = 100;
         this.dead = 0;
+        this.runningFromEnemy = 0;
         this.updateKillZone();
         this.killZoneWidth = this.width - 10;
         this.killZoneHeight = 5;
@@ -42,6 +43,20 @@ var Player = (function () {
         this.killZonex = this.x + 5;
         this.killZoney = this.y + this.height - 5;
     };
+    Player.prototype.isFacingPosition = function (x) {
+        if (this.x > x && this.goingLeft === 1) {
+            return true;
+        }
+        else if (this.x < x && this.goingLeft === 1) {
+            return false;
+        }
+        else if (this.x > x && this.goingLeft === 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    };
     Player.prototype.draw = function (context) {
         if (this.animationCounter > this.animationSpeed) {
             this.animationCounter = 0;
@@ -58,11 +73,12 @@ var Player = (function () {
             context.drawImage(this.image, 60, 30 * this.goingLeft, 20, 30, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), this.width, this.height);
         }
         else if (this.speedx > 0.05 || this.speedx < -0.05) {
-            context.drawImage(this.image, 80 + 20 * this.currentFrame, 30 * this.goingLeft, 20, 30, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), this.width, this.height);
+            context.drawImage(this.image, 80 + 20 * this.currentFrame, 30 * this.goingLeft + 60 * this.runningFromEnemy, 20, 30, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), this.width, this.height);
         }
         else {
             context.drawImage(this.image, 0 + 20 * this.idleCurrentFrame, 30 * this.goingLeft, 20, 30, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), this.width, this.height);
         }
+        this.runningFromEnemy = 0;
     };
     Player.prototype.drawHurtZone = function (context) {
         context.fillStyle = '#FF0a00';
