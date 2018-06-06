@@ -38,6 +38,12 @@ var Background = (function () {
         this.context.arc(Viewport.width + Viewport.width / 8 + Viewport.x / 8, 180, 50, 0, 2 * Math.PI);
         this.context.stroke();
         this.context.beginPath();
+        this.context.arc(Viewport.width + Viewport.width / 3.5 + Viewport.x / 8, 160, 40, 0, 2 * Math.PI);
+        this.context.stroke();
+        this.context.beginPath();
+        this.context.arc(Viewport.width + Viewport.width / 4 + Viewport.x / 8.5, 0, 120, 0, 2 * Math.PI);
+        this.context.stroke();
+        this.context.beginPath();
         this.context.arc(Viewport.width / 2 + Viewport.x / 12, Viewport.height, 80, 0, 2 * Math.PI);
         this.context.stroke();
         this.context.beginPath();
