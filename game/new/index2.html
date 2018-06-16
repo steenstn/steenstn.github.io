@@ -606,6 +606,7 @@ var updateEnemies = function() {
             }
             players[0].hp-=0.9;
           }
+
         }
       }
     }
@@ -1104,7 +1105,7 @@ var IntroScreen = function() {
 
         Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
         return
-      } else if(80 in keysDown) {
+      } else if(80 in keysDown && 84 in keysDown) {
         stars = null;
         levelNow = 0;
         loadLevel(levelNow);
@@ -1112,16 +1113,7 @@ var IntroScreen = function() {
         Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
         GameLoop();
         return;
-      } else if(84 in keysDown) {
-        stars = null;
-        levelNow = 5;
-        loadLevel(levelNow);
-
-        Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
-        GameLoop();
-        return;
-      }
-
+      } 
     }
     gLoop = setTimeout(IntroScreen, 1000 / 50);
 }
