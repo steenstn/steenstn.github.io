@@ -58,8 +58,8 @@ var BossStrategy = (function () {
             }
         }
     };
+    BossStrategy.CHARGING = 0;
+    BossStrategy.SHOOTING = 1;
+    BossStrategy.JUMPING = 2;
     return BossStrategy;
 }());
-BossStrategy.CHARGING = 0;
-BossStrategy.SHOOTING = 1;
-BossStrategy.JUMPING = 2;

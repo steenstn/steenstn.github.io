@@ -10,7 +10,7 @@ class Jukebox {
 
   selectSong(songNumber : number) {
     this.canPlay = false;
-
+    
     let songIsPlaying = this.currentSong && (!this.currentSong.paused || this.currentSong.currentTime);
     if(songIsPlaying) {
       this.currentSong.pause();

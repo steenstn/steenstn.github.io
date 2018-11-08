@@ -104,9 +104,9 @@ var Fly = (function () {
     Fly.prototype.render = function (context) {
         context.drawImage(this.image, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
     };
+    Fly.GOING_HOME = 0;
+    Fly.FLEEING = 1;
+    Fly.SEARCHING = 2;
+    Fly.GATHERING = 3;
     return Fly;
 }());
-Fly.GOING_HOME = 0;
-Fly.FLEEING = 1;
-Fly.SEARCHING = 2;
-Fly.GATHERING = 3;

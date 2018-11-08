@@ -60,9 +60,9 @@ var Viewport = (function () {
         if (Viewport.y < -Level.height * Level.tileSize + Viewport.numTilesInScreenHeight * Level.tileSize)
             Viewport.y = -Level.height * Level.tileSize + Viewport.numTilesInScreenHeight * Level.tileSize;
     };
+    Viewport.width = 640;
+    Viewport.height = 300;
+    Viewport.numTilesInScreenWidth = Math.round(Viewport.width / Level.tileSize);
+    Viewport.numTilesInScreenHeight = Math.round(Viewport.height / Level.tileSize);
     return Viewport;
 }());
-Viewport.width = 640;
-Viewport.height = 300;
-Viewport.numTilesInScreenWidth = Math.round(Viewport.width / Level.tileSize);
-Viewport.numTilesInScreenHeight = Math.round(Viewport.height / Level.tileSize);

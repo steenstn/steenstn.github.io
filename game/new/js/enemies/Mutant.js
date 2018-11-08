@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -32,6 +35,6 @@ var Mutant = (function (_super) {
     Mutant.prototype.draw = function (context) {
         context.drawImage(Mutant.image, 88 * this.idleCurrentFrame, 0, 88, 36, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 88, 36);
     };
+    Mutant.image = new Image();
     return Mutant;
 }(Enemy));
-Mutant.image = new Image();

@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -38,6 +41,6 @@ var Bouncer = (function (_super) {
         }
         context.drawImage(Bouncer.image, 0 + 20 * this.currentFrame, 20 * offsety, 20, 20, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 20, 20);
     };
+    Bouncer.image = new Image();
     return Bouncer;
 }(Enemy));
-Bouncer.image = new Image();

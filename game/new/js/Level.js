@@ -36,9 +36,9 @@ var Level = (function () {
             }
         }
     };
+    Level.width = 200;
+    Level.height = 100;
+    Level.tileSize = 32;
+    Level.currentLevel = new Array(Level.width * Level.height);
     return Level;
 }());
-Level.width = 200;
-Level.height = 100;
-Level.tileSize = 32;
-Level.currentLevel = new Array(Level.width * Level.height);

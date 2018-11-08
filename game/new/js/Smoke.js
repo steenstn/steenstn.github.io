@@ -28,9 +28,9 @@ var Smoke = (function () {
             }
         }
     };
+    Smoke.image = new Image();
+    Smoke.LandingSmoke = 0;
+    Smoke.LeftSmoke = 1;
+    Smoke.RightSmoke = 2;
     return Smoke;
 }());
-Smoke.image = new Image();
-Smoke.LandingSmoke = 0;
-Smoke.LeftSmoke = 1;
-Smoke.RightSmoke = 2;

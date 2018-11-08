@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -34,8 +37,8 @@ var BloodParticle = (function (_super) {
             this.y = Math.round(this.y);
         }
     };
+    BloodParticle.ACTIVE = 1;
+    BloodParticle.INACTIVE = 0;
+    BloodParticle.DRIPPING = 2;
     return BloodParticle;
 }(Particle));
-BloodParticle.ACTIVE = 1;
-BloodParticle.INACTIVE = 0;
-BloodParticle.DRIPPING = 2;
