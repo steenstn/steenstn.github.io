@@ -164,22 +164,28 @@ var image2 = new Image();
 image2.src = "playersprite2.png";
 image2.width = 180;
 image2.height = 120;
-var players = [new Player(2*Level.tileSize, 2*Level.tileSize, image), new Player(2*Level.tileSize,2*Level.tileSize,image2)];
+var players = [];//[new Player(2*Level.tileSize, 2*Level.tileSize, image), new Player(2*Level.tileSize,2*Level.tileSize,image2)];
 
 var playerIsOutOfBounds = false;
 var outOfBoundsTimer = 0;
 var scoreTimer = 0;
+
+var playerKeys = [];
+
 // A - 65
 // D 68
 // W 87
 // S 83
 // 38 up 37 left 39 right
+/*
 players[0].keyLeft = 37
 players[0].keyUp = 38
 players[0].keyRight = 39
-players[1].keyLeft = 65
-players[1].keyRight = 68
-players[1].keyUp = 87
+if(players[1]) {
+  players[1].keyLeft = 65
+  players[1].keyRight = 68
+  players[1].keyUp = 87
+}*/
 
 var lastScore = 0;
 var startPos = {};
@@ -226,6 +232,21 @@ var init = function() {
     players[i].inBucket = false;
   }
 
+}
+
+var addPlayer = function(playerImage, keyLeft, keyUp, keyRight) {
+  var p = new Player(0,0,playerImage);
+  p.keyLeft = keyLeft;
+  p.keyUp = keyUp;
+  p.keyRight = keyRight;
+  players.push(p);
+}
+
+var setUpKeyMap = function() {
+  playerKeys.push(["⇦", "⇧", "⇨"]);
+if(players[1]) {
+  playerKeys.push(["A", "W", "D"]);
+}
 }
 
 
@@ -337,7 +358,7 @@ var renderContent = function(content) {
       case "grass":
         var yFrame = 0;
         if((Math.abs(players[0].speedx) > 0.5 && Helper.overlap(content.x+8, content.y+8, 34, 34, players[0].x, players[0].y, players[0].width, players[0].height)) ||
-           (Math.abs(players[1].speedx) > 0.5 && Helper.overlap(content.x+8, content.y+8, 34, 42, players[1].x, players[1].y, players[1].width, players[1].height)))
+           (players[1] && Math.abs(players[1].speedx) > 0.5 && Helper.overlap(content.x+8, content.y+8, 34, 42, players[1].x, players[1].y, players[1].width, players[1].height)))
         {
           yFrame = numFramesSinceStart%10 > 3 ? numFramesSinceStart%10 > 6 ? 2: 1 : 0;
         }
@@ -350,7 +371,7 @@ var renderContent = function(content) {
 
 var updatePlayer = function(index) {
 
-  if(index === 0) { // Collision between players
+  if(index === 0 && players[1]) { // Collision between players
     var distX = players[0].x+players[0].width/2 - (players[1].x+players[1].width/2);
     var distY = players[0].y+players[0].height/2 - (players[1].y+players[1].height/2);
 
@@ -474,8 +495,11 @@ var updatePlayer = function(index) {
 	{
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 30; i++) {
-      particles.push(healthParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
+      if(players[1]) {
+        particles.push(healthParticleFactory.createParticle(players[index].x, players[index].y, players[1-index], players[0]));
+      }
       particles.push(healthParticleFactory.createParticle(players[index].x, players[index].y, players[index], players[0]));
+      
     }
     score += 10;
 	}
@@ -643,6 +667,7 @@ var checkKeys = function (modifier) {
       players[i].drawingRightBrakingSmoke = 0;
     }
 		if (animating=== 0 && players[i].keyUp in keysDown) {
+      playerKeys[i][1] = "";
 			if(players[i].jumping < WorldConstants.maxJump) {
 				players[i].jumping++;
         players[i].drawingSmoke++;
@@ -655,6 +680,7 @@ var checkKeys = function (modifier) {
     }
 
 		if (animating === 0 && players[i].keyLeft in keysDown) {
+      playerKeys[i][0] = "";
 		players[i].goingLeft = 1;
 		players[i].animationCounter++;
     if(players[i].speedx> WorldConstants.maxSpeedx-1) {
@@ -664,6 +690,7 @@ var checkKeys = function (modifier) {
 				players[i].speedx -= WorldConstants.playerAcc * modifier;
 		}
 		else if (animating === 0 && players[i].keyRight in keysDown) {
+      playerKeys[i][2] = "";
 		players[i].goingLeft = 0;
 		players[i].animationCounter++;
     if(players[i].speedx< -WorldConstants.maxSpeedx+1) {
@@ -817,9 +844,13 @@ var setUpContent = function() {
 		switch(content[i].type) {
 			case "startPos":
         var offset = 15;
-				players[0].x = players[0].oldx = content[i].x - offset;
-        players[1].x = players[1].oldx = content[i].x + offset;
-				players[0].y = players[1].y = players[0].oldy = players[1].oldy = content[i].y;
+        players[0].x = players[0].oldx = content[i].x - offset;
+        players[0].y = players[0].oldy = content[i].y;
+        if(players[1]) {
+          players[1].x = players[1].oldx = content[i].x + offset;
+          players[1].y = players[1].oldy = content[i].y;
+				
+        }
         startPos.x = content[i].x;
         startPos.y = content[i].y;
 	      break;
@@ -859,6 +890,11 @@ var drawAllText = function() {
     ctx.font         = '14px Verdana';
     ctx.fillStyle = vinylCollectedInLevel >= numVinylInLevel ? "#0f0" : "#fff";
     ctx.fillText(vinylCollectedInLevel + "/" + numVinylInLevel, 38, Viewport.height-13);
+    
+    ctx.font         = '11px Verdana';
+    playerKeys.forEach(p => p.forEach(key => ctx.fillText(key, Viewport.x+players[playerKeys.indexOf(p)].x-5+p.indexOf(key)*10,
+     Viewport.y+players[playerKeys.indexOf(p)].y-5)));
+    
     if(scoreTimer>0) {
       scoreTimer--;
     }
@@ -907,7 +943,9 @@ var GameLoop = function(){
 
 	if(players[0].hp<1) {
 		players[0].hp=0;
-    players[1].hp=0;
+    if(players[1]) {
+      players[1].hp=0;
+    }
 		score=lastScore;
     numDeaths++;
     vinylCollectedInLevel = 0;
@@ -932,10 +970,14 @@ var GameLoop = function(){
 		checkKeys(1);
 
     playerIsOutOfBounds = false;
-		updatePlayer(0);
-		updatePlayer(1);
-
-    Viewport.moveTowardsCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+    for(var i = 0; i < players.length; i++) {
+      updatePlayer(i);
+		
+    }
+    var x2 = players[1] ? players[1].x : players[0].x+(players[0].goingLeft ? -50 : 50)+10*players[0].speedx;
+    var y2 = players[1] ? players[1].y : players[0].y;
+    
+    Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
 
 	}
   renderBackgroundContent();
@@ -977,8 +1019,11 @@ var GameLoop = function(){
 
         loadLevel(levelNow);
 
-      	init();
-        Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+        init();
+            
+        var x2 = players[1] ? players[1].x : players[0].x;
+        var y2 = players[1] ? players[1].y : players[0].y;
+        Viewport.moveToCenter(players[0].x, players[0].y, x2, y2);
 
       }
 
@@ -988,10 +1033,13 @@ var GameLoop = function(){
   if(animating===3) {
     bossDeadTimer--;
     checkKeys(0);
-    updatePlayer(0);
-		updatePlayer(1);
+    for(var i = 0; i < players.length; i++) {
+      updatePlayer(i);
+		}
 
-    Viewport.moveTowardsCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+    var x2 = players[1] ? players[1].x : players[0].x;
+    var y2 = players[1] ? players[1].y : players[0].y;
+    Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
     render();
     updateParticles();
     if(bossDeadTimer<=0) {
@@ -1016,7 +1064,7 @@ var GameLoop = function(){
   }
 
   var arrayPos1 = Level.getBlockAt(players[0].x + players[0].width/2, players[0].y + players[0].height/2);
-  var arrayPos2 = Level.getBlockAt(players[1].x + players[1].width/2, players[1].y + players[1].height/2);
+  var arrayPos2 = players[1] ? Level.getBlockAt(players[1].x + players[1].width/2, players[1].y + players[1].height/2) : arrayPos1;
 
 	if(animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
 			levelNow++;
@@ -1056,6 +1104,9 @@ var cleanSmoke = function() {
     effects = [];
   }
 }
+
+var selectedOption = 0;
+
 var IntroScreen = function() {
     numFramesSinceStart++;
     clearBlack();
@@ -1084,33 +1135,70 @@ var IntroScreen = function() {
       ctx.fillStyle    = '#FFF';
       ctx.textAlign = 'center';
       ctx.font         = '12px Verdana';
-      ctx.fillText("in", 320, 160);
       ctx.font         = '26px Verdana';
-      ctx.fillText("-Back to the Studio-", 320, 190);
+      ctx.fillText("-Back to the Studio-", 320, 170);
+      ctx.font         = '10px Verdana';
+      ctx.fillText  ("Help The Mars Volta get back to the studio in order to record a new album.", 320,195);
       ctx.fillStyle    = '#F00';
       ctx.font         = '12px Verdana';
 
-      if(numFramesSinceStart%100>50) {
-        ctx.fillText  ("Press SPACE to play", 320,280);
+      
+      ctx.textAlign = 'left';
+      ctx.fillStyle = selectedOption === 0 ? "#0F0" : "#F00";
+      ctx.fillText  ("1 PLAYER GAME (CEDRIC)", 235,230);
+      ctx.fillStyle = selectedOption === 1 ? "#0F0" : "#F00";
+      ctx.fillText  ("1 PLAYER GAME (OMAR)", 235,250);
+      ctx.fillStyle = selectedOption === 2 ? "#0F0" : "#F00";
+      ctx.fillText  ("2 PLAYER GAME (CEDRIC + OMAR)", 235,270);
+      
+      if(40 in keysDown) {
+        keyHeldDown++;
+        if(keyHeldDown === 1) {
+          selectedOption = selectedOption >= 2 ? 0 : ++selectedOption;
+        } 
+      } else if(38 in keysDown) {
+        keyHeldDown++;
+        if(keyHeldDown === 1) {
+          selectedOption = selectedOption <= 0 ? 2 : --selectedOption;
+        } 
+      } else {
+          keyHeldDown = 0;
       }
-      ctx.font         = '10px Verdana';
-      ctx.fillText  ("Help The Mars Volta get back to the studio in order to record a new album.", 320,220);
-
-      ctx.fillText  ("Controls Player 1 - Arrow keys      Controls Player 2 - WAD", 320,250);
-
-      if(32 in keysDown) {
+      if(32 in keysDown || 13 in keysDown) {
+        if(selectedOption===0) {
+          addPlayer(image2, 37, 38, 39)
+        } else if(selectedOption===1) {
+          addPlayer(image,37,38,39);
+        } else if(selectedOption===2) {
+          addPlayer(image,37,38,39);
+          addPlayer(image2,65,87,68);
+        }
+        setUpKeyMap();
+        /*
+players[0].keyLeft = 37
+players[0].keyUp = 38
+players[0].keyRight = 39
+if(players[1]) {
+  players[1].keyLeft = 65
+  players[1].keyRight = 68
+  players[1].keyUp = 87
+}*/
         stars = null;
         loadLevel(levelNow);
         GameLoop();
-
-        Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+        var x2 = players[1] ? players[1].x : players[0].x;
+        var y2 = players[1] ? players[1].y : players[0].y;
+        
+        Viewport.moveToCenter(players[0].x, players[0].y, x2, y2);
         return
-      } else if(80 in keysDown && 84 in keysDown) {
+      } else if(77 in keysDown && 86 in keysDown) {
         stars = null;
         levelNow = 0;
         loadLevel(levelNow);
-
-        Viewport.moveToCenter(players[0].x, players[0].y, players[1].x, players[1].y);
+        var x2 = players[1] ? players[1].x : players[0].x;
+        var y2 = players[1] ? players[1].y : players[0].y;
+        
+        Viewport.moveToCenter(players[0].x, players[0].y, x2, y2);
         GameLoop();
         return;
       } 
