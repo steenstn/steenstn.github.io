@@ -100,6 +100,7 @@ var snake = {
 	oldx: 0,
 	oldy: 0,
 	direction: 0,
+	health:80,
 	getLeft: function() {
 		switch(this.direction){
 			case 0:
@@ -161,6 +162,7 @@ var snake = {
 				this.x++;
 				break;
 		}
+		this.health--;
 	}
 }
 
@@ -187,11 +189,12 @@ var apple = {
 
 var tail = [new tailSegment(snake)];
 
+var speed = 100;
 var checkKeys = function () {
-  if(39 in keysDown) {
-		snake.turnRight();
-  } else if(37 in keysDown) {
-		snake.turnLeft();
+	if(38 in keysDown) {
+		speed = speed < 1 ? 1 : speed-10;
+	} else if(40 in keysDown) {
+		speed = speed > 500 ? 500 : speed+10;
 	}
 }
 
@@ -203,14 +206,22 @@ var resetGame = function() {
 	snake.oldx = snake.x;
 	snake.oldy = snake.y+1;
 	snake.direction = 0;
+	snake.health = 80;
 	tail = [new tailSegment(snake)];
 	if(score > highScore) {
 		highScore = score;
 	}
 	score = 0;
 	
-	apple.x = Math.round(levelWidth*0.7);
-	apple.y = Math.round(levelHeight*0.6);
+	do {
+		apple.x = Math.floor(2+Math.random()*(levelWidth-3));
+		apple.y = Math.floor(2+Math.random()*(levelHeight-3));
+		var appleIsFree = (level[apple.x+1+apple.y*levelWidth]===0 &&
+		level[apple.x-1+apple.y*levelWidth]===0 &&
+		level[apple.x+(apple.y+1)*levelWidth]===0 &&
+		level[apple.x+(apple.y-1)*levelWidth]===0)
+	} while(!appleIsFree  || (tail.some(t => t.x === apple.x && t.y === apple.y) || snake.x === apple.x && snake.y === apple.y))
+	
 	level[apple.x+apple.y*levelHeight] = 4;
 	
 }
@@ -278,10 +289,11 @@ var rewardFunction = function(position, currentDistance) {
 	var x = position.x;
 	var y = position.y;
 	var reward = 0;
-	if(level[x+y*levelWidth]===1 || level[x+y*levelWidth]===3) {
-		reward-=10;
-	} else if(level[x+y*levelWidth]===0) {
-		reward++;
+	if(level[x+y*levelWidth]===1) {
+		reward-=20;
+	}
+	if(level[x+y*levelWidth]===3) {
+		reward -=40;
 	}
 	if(distance(x,y,apple.x,apple.y) < currentDistance) {
 		reward++;
@@ -335,12 +347,11 @@ var GameLoop = function() {
 	var pointLeft = rewardFunction(snake.getLeft(), currentDistance);
 	var pointFront = rewardFunction(snake.getFront(), currentDistance);
 	var pointRight = rewardFunction(snake.getRight(), currentDistance);
-
 	
 	var pointArray = [sigmoid(pointLeft), sigmoid(pointFront),sigmoid(pointRight)];
-	//console.log("pointarray", pointArray);
 	
 	var selectedDirection = indexOfMax(output);
+	
 	if(selectedDirection === indexOfMax(pointArray)) {
 		myNetwork.propagate(0.3,output);
 	} else {
@@ -358,17 +369,23 @@ var GameLoop = function() {
   
   if(snake.x === apple.x && snake.y === apple.y) {
 		score++;
+		snake.health = 80;
 		level[apple.x+apple.y*levelHeight] = 0;
 		do {
 			apple.x = Math.floor(2+Math.random()*(levelWidth-3));
 			apple.y = Math.floor(2+Math.random()*(levelHeight-3));
-		} while((tail.some(t => t.x === apple.x && t.y === apple.y) || snake.x === apple.x && snake.y === apple.y))
+			var appleIsFree = (level[apple.x+1+apple.y*levelWidth]===0 &&
+			level[apple.x-1+apple.y*levelWidth]===0 &&
+			level[apple.x+(apple.y+1)*levelWidth]===0 &&
+			level[apple.x+(apple.y-1)*levelWidth]===0)
+		} while(!appleIsFree  /*(tail.some(t => t.x === apple.x && t.y === apple.y) || snake.x === apple.x && snake.y === apple.y)*/)
+		
 		tail.push(new tailSegment(tail[tail.length-1]));
 		level[apple.x+apple.y*levelHeight] = 4;
   }
   
   var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
-  if(tail.some(t => t.x === snake.x && t.y ===snake.y) || snakeOutOfBounds || level[snake.x+snake.y*levelWidth]===1) {
+  if(snake.health <= 0 || tail.some(t => t.x === snake.x && t.y ===snake.y) || snakeOutOfBounds || level[snake.x+snake.y*levelWidth]===1) {
 		//result[maxIndex]=-1;
 		//myNetwork.propagate(0.3,[0,0,1]);
 		resetGame();
@@ -397,7 +414,7 @@ var GameLoop = function() {
   ctx.fillText("High score: " + highScore,c.width-200,c.height-15);
   ctx.fillText("Steps: " + steps++,100,c.height-15);
   
-  gLoop = setTimeout(GameLoop, 100);
+  gLoop = setTimeout(GameLoop, speed);
   return;
 }
 resetGame();
