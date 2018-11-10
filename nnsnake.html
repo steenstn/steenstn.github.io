@@ -1,0 +1,407 @@
+<html>
+<head>
+<style>
+canvas {
+  border:1px solid #666;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+}
+body {
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<canvas id='c'></canvas>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/synaptic/1.1.4/synaptic.js"></script>
+<script>
+c = document.getElementById('c'),
+ctx = c.getContext('2d');
+
+var tileSize = 20;
+var levelWidth = 20;
+var levelHeight = 20;
+var steps = 0;
+
+c.width = levelWidth*tileSize;
+c.height = levelHeight*tileSize+40;
+
+var Neuron = synaptic.Neuron,
+	Layer = synaptic.Layer,
+	Network = synaptic.Network,
+	Trainer = synaptic.Trainer,
+	Architect = synaptic.Architect;
+
+var inputLayer = new Layer(6);
+var hiddenLayer = new Layer(9);
+var outputLayer = new Layer(3);
+
+inputLayer.project(hiddenLayer);
+hiddenLayer.project(outputLayer);
+var myNetwork = new Network({
+ input: inputLayer,
+ hidden: [hiddenLayer],
+ output: outputLayer
+});
+var gLoop;
+var keysDown = {};
+
+var level = [];
+var resetLevel = function() {
+	level = [];
+	for(var i = 0; i < levelWidth*levelHeight; i++) {
+		var tile = 0;
+		if(i<levelWidth) {
+			tile = 1;
+		} else if (i>levelWidth*levelHeight-levelWidth-1) {
+			tile = 1;
+		} else if(i%levelWidth===0) {
+			tile = 1;
+		} else if(i%levelWidth===levelWidth-1) {
+			tile = 1;
+		} else if(Math.random()>0.8) {
+		//	tile = 1;
+		}
+		level.push(tile);
+	}
+}
+function indexOfMax(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return maxIndex;
+}
+
+var score = 0;
+var highScore = score;
+
+addEventListener("keydown", function (e) {
+	keysDown[e.keyCode] = true;
+}, false);
+addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+}, false);
+
+var snake = {
+	x: 0,
+	y: 0,
+	oldx: 0,
+	oldy: 0,
+	direction: 0,
+	getLeft: function() {
+		switch(this.direction){
+			case 0:
+				return {x: this.x - 1, y: this.y};
+			case 1:
+				return {x: this.x, y: this.y+1};
+			case 2:
+				return {x: this.x + 1, y: this.y};
+			case 3:
+				return {x: this.x, y: this.y-1};
+		}
+	},
+	getRight: function() {
+		switch(this.direction){
+			case 0:
+				return {x: this.x + 1, y: this.y};
+			case 1:
+				return {x: this.x, y: this.y-1};
+			case 2:
+				return {x: this.x - 1, y: this.y};
+			case 3:
+				return {x: this.x, y: this.y+1};
+		}
+	},
+	getFront: function() {
+		switch(this.direction){
+			case 0:
+				return {x: this.x, y: this.y-1};
+			case 1:
+				return {x: this.x-1, y: this.y};
+			case 2:
+				return {x: this.x, y: this.y+1};
+			case 3:
+				return {x: this.x+1, y: this.y};
+		}
+	},
+	turnLeft: function() {
+		snake.direction++;
+		if(snake.direction > 3) snake.direction = 0;
+	},
+	turnRight: function() {
+		snake.direction--;
+		if(snake.direction < 0) snake.direction = 3;
+	},
+	move: function() {
+		this.oldx = this.x;
+		this.oldy = this.y;
+		switch(this.direction) {
+			case 0:
+				this.y--;
+				break;
+			case 1:
+				this.x--;
+				break;
+			case 2:
+				this.y++
+				break;
+			case 3:
+				this.x++;
+				break;
+		}
+	}
+}
+
+function tailSegment(parent) {
+	this.parent = parent;
+	this.x = parent.oldx;
+	this.y = parent.oldy;
+	this.oldx = this.x;
+	this.oldy = this.y;
+	this.move = function() {
+		this.oldx = this.x;
+		this.oldy = this.y;
+		level[this.oldx+this.oldy*levelHeight] = 0;
+		this.x = this.parent.oldx;
+		this.y = this.parent.oldy;
+		level[this.x+this.y*levelHeight] = 3;
+	}
+}
+
+var apple = {
+	x: 0,
+	y: 0
+}
+
+var tail = [new tailSegment(snake)];
+
+var checkKeys = function () {
+  if(39 in keysDown) {
+		snake.turnRight();
+  } else if(37 in keysDown) {
+		snake.turnLeft();
+	}
+}
+
+var resetGame = function() {
+	steps = 0;
+	resetLevel();
+	snake.x = levelWidth/2;
+	snake.y = levelHeight-5;
+	snake.oldx = snake.x;
+	snake.oldy = snake.y+1;
+	snake.direction = 0;
+	tail = [new tailSegment(snake)];
+	if(score > highScore) {
+		highScore = score;
+	}
+	score = 0;
+	
+	apple.x = Math.round(levelWidth*0.7);
+	apple.y = Math.round(levelHeight*0.6);
+	level[apple.x+apple.y*levelHeight] = 4;
+	
+}
+
+var drawBackground = function() {
+	ctx.fillStyle = "#fff";
+  ctx.fillRect(0,0,c.width,c.height);
+  ctx.strokeStyle = "#ddd";
+		for(var i = 0; i < levelWidth; i++) {
+			for(var j = 0; j < levelHeight; j++) {
+			if(level[i+j*levelWidth]===1) {
+				ctx.fillStyle = "#aaa";
+				ctx.fillRect(i*tileSize,j*tileSize,tileSize,tileSize);
+			}
+			ctx.strokeRect(i*tileSize,j*tileSize,tileSize,tileSize);
+
+		}
+  }
+}
+
+
+var distance = function(x1, y1, x2, y2) {
+	return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+}
+
+var isFoodStraightAhead = function() {
+	switch(snake.direction) {
+		case 0:
+			return snake.x === apple.x && apple.y < snake.y;
+		case 1:
+			return snake.y === apple.y && apple.x < snake.x;
+		case 2:
+			return snake.x === apple.x && apple.y > snake.y;
+		case 3:
+			return snake.y === apple.y && apple.x > snake.x;
+	}
+}
+
+var isFoodLeftOfSnake = function() {
+	switch(snake.direction) {
+		case 0:
+			return apple.x < snake.x;
+		case 1:
+			return apple.y > snake.y;
+		case 2:
+			return apple.x > snake.x;
+		case 3:
+			return apple.y < snake.y;
+	}
+}
+
+var isFoodRightOfSnake = function() {
+	switch(snake.direction) {
+		case 0:
+			return apple.x > snake.x;
+		case 1:
+			return apple.y < snake.y;
+		case 2: 
+			return apple.x < snake.x;
+		case 3:
+			return apple.y > snake.y;
+	}
+}
+var rewardFunction = function(position, currentDistance) {
+	var x = position.x;
+	var y = position.y;
+	var reward = 0;
+	if(level[x+y*levelWidth]===1 || level[x+y*levelWidth]===3) {
+		reward-=10;
+	} else if(level[x+y*levelWidth]===0) {
+		reward++;
+	}
+	if(distance(x,y,apple.x,apple.y) < currentDistance) {
+		reward++;
+	} else {
+		reward-=1.5;
+	}
+	if(level[x+y*levelWidth]===4) {
+		reward +=10;
+	}
+	return reward;
+}
+function sigmoid(x) {
+  return 1 / (1 + Math.exp(-x)); 
+}
+var GameLoop = function() {
+  checkKeys();
+	var leftOfSnake;
+	var frontOfSnake;
+	var rightOfSnake;
+	switch(snake.direction) {
+		case 0:
+			leftOfSnake = level[snake.x-1+snake.y*levelWidth]
+			frontOfSnake = level[snake.x+(snake.y-1)*levelWidth];
+			rightOfSnake = level[snake.x+1+snake.y*levelWidth];
+			break;
+		case 1:
+			leftOfSnake = level[snake.x+(snake.y+1)*levelWidth];
+			frontOfSnake = level[snake.x-1+snake.y*levelWidth];
+			rightOfSnake = level[snake.x+(snake.y-1)*levelWidth];
+			break;
+		case 2:
+			leftOfSnake = level[snake.x+1+snake.y*levelWidth];
+			frontOfSnake = level[snake.x+(snake.y+1)*levelWidth];
+			rightOfSnake = level[snake.x-1+(snake.y*levelWidth)];
+			break;
+		case 3:
+			leftOfSnake = level[snake.x+(snake.y-1)*levelWidth];
+			frontOfSnake = level[snake.x+1+snake.y*levelWidth];
+			rightOfSnake = level[snake.x+(snake.y+1)*levelWidth];
+			break;
+	}
+	var isLeft = isFoodLeftOfSnake() ? 1 : 0;
+	var isFront = isFoodStraightAhead() ? 1 : 0;
+	var isRight = isFoodRightOfSnake() ? 1 : 0;
+	
+	var input = [leftOfSnake, frontOfSnake, rightOfSnake, isLeft, isFront, isRight];
+	
+    var output = myNetwork.activate(input);
+	var currentDistance = distance(snake.x, snake.y, apple.x, apple.y);
+
+	var pointLeft = rewardFunction(snake.getLeft(), currentDistance);
+	var pointFront = rewardFunction(snake.getFront(), currentDistance);
+	var pointRight = rewardFunction(snake.getRight(), currentDistance);
+
+	var pointArray = [sigmoid(pointLeft), sigmoid(pointFront),sigmoid(pointRight)];
+	//console.log("pointarray", pointArray);
+	
+	var selectedDirection = indexOfMax(output);
+	if(selectedDirection === indexOfMax(pointArray)) {
+		myNetwork.propagate(0.3,output);
+	} else {
+		myNetwork.propagate(0.3,pointArray);
+	}
+	if(selectedDirection === 0) {
+		snake.turnLeft();
+	} else if(selectedDirection === 2) {
+		snake.turnRight();
+	}
+	
+  snake.move();
+  tail.forEach(t => t.move());
+  
+  
+  if(snake.x === apple.x && snake.y === apple.y) {
+		score++;
+		level[apple.x+apple.y*levelHeight] = 0;
+		do {
+			apple.x = Math.floor(2+Math.random()*(levelWidth-3));
+			apple.y = Math.floor(2+Math.random()*(levelHeight-3));
+		} while((tail.some(t => t.x === apple.x && t.y === apple.y) || snake.x === apple.x && snake.y === apple.y))
+		tail.push(new tailSegment(tail[tail.length-1]));
+		level[apple.x+apple.y*levelHeight] = 4;
+  }
+  
+  var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
+  if(tail.some(t => t.x === snake.x && t.y ===snake.y) || snakeOutOfBounds || level[snake.x+snake.y*levelWidth]===1) {
+		//result[maxIndex]=-1;
+		//myNetwork.propagate(0.3,[0,0,1]);
+		resetGame();
+  } 
+	
+  drawBackground();
+  
+  ctx.fillStyle = "#d44";
+  ctx.fillRect(apple.x*tileSize, apple.y*tileSize,tileSize,tileSize);
+  
+  ctx.fillStyle = "#8e8";
+  ctx.fillRect(snake.x*tileSize, snake.y*tileSize,tileSize,tileSize);
+  
+  ctx.fillStyle = "#afa";
+  tail.forEach(t => ctx.fillRect(t.x*tileSize, t.y*tileSize,tileSize,tileSize));
+  
+  ctx.fillStyle = "#000";
+  ctx.font = "15px Verdana";
+  /*for(var i = 0; i < levelWidth; i++) {
+		for(var j = 0; j < levelHeight; j++) {
+			ctx.fillText(level[i+j*levelHeight], i*20+5, j*20+15);
+		}
+	}*/
+	ctx.fillText("Score: " + score,10,c.height-15);
+	//ctx.fillText("angle: " + , 30, c.height-15);
+  ctx.fillText("High score: " + highScore,c.width-200,c.height-15);
+  ctx.fillText("Steps: " + steps++,100,c.height-15);
+  
+  gLoop = setTimeout(GameLoop, 100);
+  return;
+}
+resetGame();
+
+GameLoop();
+</script>
+</body>
+</html>
