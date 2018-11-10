@@ -336,6 +336,7 @@ var GameLoop = function() {
 	var pointFront = rewardFunction(snake.getFront(), currentDistance);
 	var pointRight = rewardFunction(snake.getRight(), currentDistance);
 
+	
 	var pointArray = [sigmoid(pointLeft), sigmoid(pointFront),sigmoid(pointRight)];
 	//console.log("pointarray", pointArray);
 	
