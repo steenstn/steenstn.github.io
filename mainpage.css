@@ -1,7 +1,7 @@
 body {
-	background-color: #373E17;
+	background-color: #A9B0AC;
 	font-family: "Helvetica";
-	color: #ffffff;
+	color: #000;
 	margin:0px;
 	padding:0px;
 }
@@ -30,7 +30,7 @@ img.center {
 	display:block;
 }
  .background {
-	background-color:#525B27;
+	background-color:#DCE3DF;
 	width:70%;
 	margin-top:20px;
 	margin-bottom:20px;
@@ -81,7 +81,7 @@ img.center {
 	margin-left:10%
 }
 .project a {
-	color: #0E285A;
+	color: #0E289A;
 }
 /*
 a.mainLink:link {
