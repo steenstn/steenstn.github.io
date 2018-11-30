@@ -600,6 +600,7 @@ var updateEnemies = function() {
     if(enemies[j].type=="boss") {
       if(enemies[j].breakingBlock) {
         for(let i = 0; i < 80; i++) {
+          
           particles.push(dirtParticleFactory.createParticle(enemies[j].x+enemies[j].width/2, enemies[j].y+enemies[j].height,100));
         }
       }
@@ -1192,6 +1193,9 @@ if(players[1]) {
         Viewport.moveToCenter(players[0].x, players[0].y, x2, y2);
         return
       } else if(77 in keysDown && 86 in keysDown) {
+        addPlayer(image,37,38,39);
+        addPlayer(image2,65,87,68);
+        setUpKeyMap();
         stars = null;
         levelNow = 0;
         loadLevel(levelNow);
@@ -1238,5 +1242,6 @@ var startGame = function() {
 }
 c.addEventListener('click', startGame, false);
 </script>
+<br />
 </body>
 </html>
