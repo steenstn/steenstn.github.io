@@ -1,0 +1,415 @@
+<html>
+<head>
+<style>
+canvas {
+  border:1px solid #666;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+}
+body {
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<canvas id='c'></canvas>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/synaptic/1.1.4/synaptic.js"></script>
+<script>
+c = document.getElementById('c'),
+ctx = c.getContext('2d');
+
+var tileSize = 20;
+var levelWidth = 10;
+var levelHeight = 10;
+var steps = 0;
+
+c.width = levelWidth*tileSize;
+c.height = levelHeight*tileSize+40;
+
+var Neuron = synaptic.Neuron,
+	Layer = synaptic.Layer,
+	Network = synaptic.Network,
+	Trainer = synaptic.Trainer,
+	Architect = synaptic.Architect;
+
+var inputLayer = new Layer(levelWidth*levelHeight+4);
+var hiddenLayer = new Layer(levelWidth*levelHeight+4);
+var outputLayer = new Layer(1);
+
+var epsilon = 0;
+var epsilonMax = 0.9;
+
+inputLayer.project(hiddenLayer);
+hiddenLayer.project(outputLayer);
+var myNetwork = new Network({
+ input: inputLayer,
+ hidden: [hiddenLayer],
+ output: outputLayer
+});
+var gLoop;
+var keysDown = {};
+
+var level = [];
+var resetLevel = function() {
+	level = [];
+	for(var i = 0; i < levelWidth*levelHeight; i++) {
+		var tile = 0;
+		if(i<levelWidth) {
+			tile = 1;
+		} else if (i>levelWidth*levelHeight-levelWidth-1) {
+			tile = 1;
+		} else if(i%levelWidth===0) {
+			tile = 1;
+		} else if(i%levelWidth===levelWidth-1) {
+			tile = 1;
+		} else if(i > 124 && i < 135) {
+		//	tile = 1;
+		}
+		level.push(tile);
+	}
+}
+function indexOfMax(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return maxIndex;
+}
+
+var score = 0;
+var highScore = score;
+
+addEventListener("keydown", function (e) {
+	keysDown[e.keyCode] = true;
+}, false);
+addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+}, false);
+
+var snake = {
+	x: 0,
+	y: 0,
+	oldx: 0,
+	oldy: 0,
+	direction: 0,
+	health:80,
+	getPosition: function() {
+		return {x: this.x, y: this.y};
+	},
+	turnLeft: function() {
+		snake.direction=1;
+	},
+	turnRight: function() {
+		snake.direction = 3;
+	},
+    turnUp: function() {
+        snake.direction = 0;
+    },
+    turnDown: function() {
+        snake.direction = 2;
+    },
+	move: function() {
+		this.oldx = this.x;
+		this.oldy = this.y;
+		switch(this.direction) {
+			case 0:
+				this.y--;
+				break;
+			case 1:
+				this.x--;
+				break;
+			case 2:
+				this.y++
+				break;
+			case 3:
+				this.x++;
+				break;
+		}
+        level[this.oldx+this.oldy*levelWidth] = 0;
+	//	this.health--;
+	}
+}
+
+
+var apple = {
+	x: 0,
+	y: 0
+}
+
+var paused = false;
+var keyHit = 0;
+var speed = 100;
+
+var checkKeys = function () {
+	if(38 in keysDown) {
+		speed = speed < 1 ? 1 : speed-10;
+	} else if(40 in keysDown) {
+		speed = speed > 500 ? 500 : speed+10;
+	} else if (32 in keysDown) {
+		keyHit++;
+		if(keyHit === 1) {
+			paused = !paused;
+		}
+	} else {
+		keyHit = 0;
+	}
+}
+
+var resetGame = function() {
+	steps = 0;
+	//epsilon = 0.1;
+	discountFactor = discountFactorStart;
+	resetLevel();
+	snake.x = 3;//levelWidth/2;
+	snake.y = 3;//levelHeight-5;
+	snake.oldx = snake.x;
+	snake.oldy = snake.y+1;
+	snake.direction = 0;
+	snake.health = 80;
+	if(score > highScore) {
+		highScore = score;
+	}
+	score = 0;
+	
+	do {
+		apple.x = 6//;;Math.floor(2+Math.random()*(levelWidth-3));
+		apple.y = 6;//;Math.floor(2+Math.random()*(levelHeight-3));
+		var appleIsFree = (level[apple.x+1+apple.y*levelWidth]===0 &&
+		level[apple.x-1+apple.y*levelWidth]===0 &&
+		level[apple.x+(apple.y+1)*levelWidth]===0 &&
+		level[apple.x+(apple.y-1)*levelWidth]===0)
+	} while(!appleIsFree)
+	
+	//level[apple.x+apple.y*levelHeight] = 4;
+	
+}
+
+var drawBackground = function() {
+	ctx.fillStyle = "#fff";
+  ctx.fillRect(0,0,c.width,c.height);
+  ctx.strokeStyle = "#ddd";
+		for(var i = 0; i < levelWidth; i++) {
+			for(var j = 0; j < levelHeight; j++) {
+			if(level[i+j*levelWidth]===1) {
+				ctx.fillStyle = "#aaa";
+				ctx.fillRect(i*tileSize,j*tileSize,tileSize,tileSize);
+			}
+			ctx.strokeRect(i*tileSize,j*tileSize,tileSize,tileSize);
+
+		}
+  }
+}
+
+
+var distance = function(x1, y1, x2, y2) {
+	return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+}
+
+var rewardFunction = function(position, currentDistance) {
+	var x = position.x;
+	var y = position.y;
+	var reward = 0;
+	if(level[x+y*levelWidth]===1) {
+		reward=-1;
+	}
+	if(level[x+y*levelWidth]===3) {
+		reward =-1;
+	}
+	
+	if(level[x+y*levelWidth]===0) {
+		
+		//if(distance(x,y,apple.x,apple.y) < currentDistance) {
+		//	reward+=0.1;
+		//} else {
+			reward=-0.1;
+		//}
+	}
+	
+	
+	if(snake.x === apple.x && snake.y === apple.y) {
+		reward =1;
+	}
+	return reward;
+}
+function sigmoid(x) {
+  return 1 / (1 + Math.exp(-x)); 
+}
+
+function sampleArray(arr, size) {
+    var shuffled = arr.slice(0), i = arr.length, min = i - size, temp, index;
+    while (i-- > min) {
+        index = Math.floor((i + 1) * Math.random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+    }
+    return shuffled.slice(min);
+}
+
+
+var actionArray = [[1,0,0,0], [0,1,0,0], [0,0,1,0],[0,0,0,1]];
+var discountFactor = 0.9;
+var discountFactorStart = discountFactor;
+var replayMemory = [];
+var replayMemoryPointer = 0;
+var replayMemoryMax = 500;
+var replayMemoryBatchSize = 400;
+
+var GameLoop = function() {
+	
+  checkKeys();
+  if(paused) {
+	  setTimeout(GameLoop,speed);
+	  return;
+  }
+	
+	var goRandom = Math.random() > epsilon;
+	var actionIndex = 0;
+	var input = level.slice();
+
+	if(goRandom) {
+		actionIndex = Math.round(Math.random()*3);
+	} else {
+		var input1 = level.slice();
+		input1.push(1,0,0,0);
+		input1 = input1.map(i => i = sigmoid(i));
+		var input1Value = myNetwork.activate(input1);
+
+		var input2 = level.slice();
+		input2.push(0,1,0,0);
+		input2 = input2.map(i => i = sigmoid(i));
+
+		var input2Value = myNetwork.activate(input2);
+
+		var input3 = level.slice();
+		input3.push(0,0,1,0);
+		input3 = input3.map(i => i = sigmoid(i));
+
+		var input3Value = myNetwork.activate(input3);
+
+        var input4 = level.slice();
+		input4.push(0,0,0,1);
+		input4 = input4.map(i => i = sigmoid(i));
+
+		var input4Value = myNetwork.activate(input4);
+
+		var allValues = [input1Value, input2Value, input3Value, input4Value];
+		actionIndex = indexOfMax(allValues);
+		//console.log(actionIndex);
+	}
+	if(actionIndex===0) {
+		snake.turnUp();
+	} else if(actionIndex === 1) {
+		snake.turnLeft();
+	} else if(actionIndex === 2) {
+        snake.turnDown();
+    } else if(actionIndex === 3) {
+        snake.turnRight();
+    }
+	
+	var currentDistance = distance(snake.x, snake.y, apple.x, apple.y);
+	var oldStateInput = level.slice().concat(actionArray[actionIndex]);
+	oldStateInput = oldStateInput.map(i => i = sigmoid(i));
+	snake.move();
+	
+	var reward = rewardFunction(snake.getPosition(), currentDistance);
+	console.log(reward);
+    if(level[snake.x+snake.y*levelWidth] === 0) {
+        level[snake.x+snake.y*levelWidth] = 2;
+    }
+	replayMemory[replayMemoryPointer++]={r: reward, old: oldStateInput.slice(), new: level.slice()};
+	
+	if(replayMemoryPointer > replayMemoryMax) {
+		var batch = sampleArray(replayMemory, replayMemoryBatchSize);
+		var trainingInput = [];
+		var trainingOutput = [];
+		for(var i = 0; i < batch.length; i++) {
+			var allQs = [];
+			var inputState1 = batch[i].new.slice().concat(actionArray[0]);
+			inputState1 = inputState1.map(x => x=sigmoid(x));
+			var q1 = myNetwork.activate(inputState1);
+
+			var inputState2 = batch[i].new.slice().concat(actionArray[1]);
+			inputState2 = inputState2.map(x => x=sigmoid(x));
+			var q2 = myNetwork.activate(inputState2);
+
+			var inputState3 = batch[i].new.slice().concat(actionArray[2]);
+			inputState3 = inputState3.map(x => x=sigmoid(x));
+			var q3 = myNetwork.activate(inputState3);
+
+            var inputState4 = batch[i].new.slice().concat(actionArray[2]);
+			inputState4 = inputState4.map(x => x=sigmoid(x));
+			var q4 = myNetwork.activate(inputState4);
+
+			var allQs = [q1[0], q2[0], q3[0], q4[0]];
+
+			var updatedQ = batch[i].r + discountFactor * allQs[indexOfMax(allQs)];
+			trainingInput.push(batch[i].old);
+			trainingOutput.push(updatedQ);
+		}
+
+		for(var i = 0; i < trainingInput.length; i++) {
+			myNetwork.propagate(0.2, [sigmoid(trainingOutput[i])]);
+		}
+	
+		replayMemoryPointer = 0;
+	}
+//	myNetwork.activate(oldStateInput);
+//	myNetwork.propagate(0.4, [sigmoid(newQ)]);
+	epsilon+=0.0005;
+	if(epsilon > epsilonMax) {
+		epsilon = epsilonMax;
+	}
+//	input.push(actionArray[actionIndex]);
+
+  
+
+  if(snake.x === apple.x && snake.y === apple.y) {
+	  resetGame();
+  }
+  
+  var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
+  if(snake.health <= 0 || snakeOutOfBounds || level[snake.x+snake.y*levelWidth]===1) {
+		resetGame();
+  } 
+	
+  drawBackground();
+  
+  ctx.fillStyle = "#d44";
+  ctx.fillRect(apple.x*tileSize, apple.y*tileSize,tileSize,tileSize);
+  
+  ctx.fillStyle = goRandom ? "#42f" : "#8e8";
+  ctx.fillRect(snake.x*tileSize, snake.y*tileSize,tileSize,tileSize);
+  
+  ctx.fillStyle = "#000";
+  ctx.font = "15px Verdana";
+  for(var i = 0; i < levelWidth; i++) {
+		for(var j = 0; j < levelHeight; j++) {
+			ctx.fillText(level[i+j*levelHeight], i*20+5, j*20+15);
+		}
+    }
+    ctx.fillText("Score: " + score,10,c.height-15);
+    //ctx.fillText("angle: " + , 30, c.height-15);
+  ctx.fillText("High score: " + highScore,c.width-200,c.height-15);
+  ctx.fillText("Steps: " + steps++,100,c.height-15);
+  
+  gLoop = setTimeout(GameLoop, speed);
+  return;
+}
+resetGame();
+
+GameLoop();
+</script>
+</body>
+</html>
