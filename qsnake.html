@@ -44,6 +44,7 @@ var myNetwork = new Network({
  hidden: [hiddenLayer],
  output: outputLayer
 });
+
 var gLoop;
 var keysDown = {};
 
@@ -220,7 +221,7 @@ var rewardFunction = function(position, currentDistance) {
 		if(distance(x,y,apple.x,apple.y) < currentDistance) {
 			reward = 0.1;
 		} else {
-			reward=-0.1;
+		//	reward=-0.1;
 		}
 	}
 	if(snake.x === apple.x && snake.y === apple.y) {
@@ -232,14 +233,25 @@ function sigmoid(x) {
   return 1 / (1 + Math.exp(-x)); 
 }
 
+function sampleArray(arr, size) {
+    var shuffled = arr.slice(0), i = arr.length, min = i - size, temp, index;
+    while (i-- > min) {
+        index = Math.floor((i + 1) * Math.random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+    }
+    return shuffled.slice(min);
+}
+
 var actionArray = [[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]];
 var discount = 0.9;
 var epsilon = 0.1;
 var maxEpsilon = 0.9;
-var replayMemorySize = 500;
+var replayMemorySize = 50;
 var replayMemoryPointer = 0;
 var replayMemory = [];
-var replayBatchSize = 400;
+var replayBatchSize = 20;
 
 var GameLoop = function() {
 	
@@ -274,6 +286,49 @@ var GameLoop = function() {
 	snake.move();
   	
 	var r = rewardFunction(snake.getPosition(), currentDistance);
+	var newState = level.slice();
+	newState[snake.x+snake.y*levelWidth] = 1;
+	replayMemory[replayMemoryPointer++]={reward: r, oldState: input.slice(), newState: newState};
+
+	if(replayMemoryPointer > replayMemorySize) {
+		var batch = sampleArray(replayMemory, replayBatchSize);
+		var trainingInput = [];
+		var trainingOutput = [];
+		
+		for(var i = 0; i < batch.length; i++) {
+			var inputState1 = batch[i].newState.slice().concat(actionArray[0]);
+			//inputState1 = inputState1.map(x => x=sigmoid(x));
+			var q1 = myNetwork.activate(inputState1);
+
+			var inputState2 = batch[i].newState.slice().concat(actionArray[1]);
+			//inputState2 = inputState2.map(x => x=sigmoid(x));
+			var q2 = myNetwork.activate(inputState2);
+
+			var inputState3 = batch[i].newState.slice().concat(actionArray[2]);
+			//inputState3 = inputState3.map(x => x=sigmoid(x));
+			var q3 = myNetwork.activate(inputState3);
+
+            var inputState4 = batch[i].newState.slice().concat(actionArray[3]);
+			//inputState4 = inputState4.map(x => x=sigmoid(x));
+			var q4 = myNetwork.activate(inputState4);
+
+			var allQs = [q1[0], q2[0], q3[0], q4[0]];
+			//console.log("reward", batch[i].reward);
+			//console.log("discout", discount);
+			
+			var updatedQ = batch[i].reward + discount * allQs[indexOfMax(allQs)];
+			
+			console.log("old q", myNetwork.activate(batch[i].oldState));
+			myNetwork.propagate(0.2, [updatedQ]);
+			console.log("new q", myNetwork.activate(batch[i].oldState));
+			
+			
+		}
+		for(var i = 0; i < trainingInput.length; i++) {
+		}
+		replayMemoryPointer = 0;
+	}
+	/*
 	var input2 = level.slice();
 	input2[snake.x+snake.y*levelWidth] = 1;
 	var q0 = myNetwork.activate(input2.concat(actionArray[0]));
@@ -289,7 +344,7 @@ var GameLoop = function() {
 	
 	myNetwork.activate(input);
 	myNetwork.propagate(0.2, [sigmoid(newQ)]);
-	
+	*/
 	epsilon = epsilon > maxEpsilon ? maxEpsilon : epsilon+0.0001;
 	if(snake.x === apple.x && snake.y === apple.y) {
 		console.log("apple!");
