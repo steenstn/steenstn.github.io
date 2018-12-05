@@ -53,7 +53,7 @@ var resetLevel = function() {
 	level = [];
 	for(var i = 0; i < levelWidth*levelHeight; i++) {
 		var tile = 0;
-		if(i<levelWidth) {
+		/*if(i<levelWidth) {
 			tile = 1;
 		} else if (i>levelWidth*levelHeight-levelWidth-1) {
 			tile = 1;
@@ -63,7 +63,7 @@ var resetLevel = function() {
 			tile = 1;
 		} else if(i > 124 && i < 135) {
 		//	tile = 1;
-		}
+		}*/
 		level.push(tile);
 	}
 }
@@ -185,7 +185,6 @@ var resetGame = function() {
 	
 		apple.x = levelWidth-4;
 		apple.y = levelHeight-4;
-	//level[apple.x+apple.y*levelHeight] = 4;
 	
 }
 
@@ -214,14 +213,16 @@ var rewardFunction = function(position, currentDistance) {
 	var x = position.x;
 	var y = position.y;
 	var reward = 0;
-	if(level[x+y*levelWidth]===1) {
-		reward=-1;
+	
+	var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
+	if(snakeOutOfBounds) {
+		reward = -1;
 	}
 	if(level[x+y*levelWidth]===0) {
 		if(distance(x,y,apple.x,apple.y) < currentDistance) {
 			reward = 0.1;
 		} else {
-		//	reward=-0.1;
+			reward=-0.1;
 		}
 	}
 	if(snake.x === apple.x && snake.y === apple.y) {
@@ -244,7 +245,7 @@ function sampleArray(arr, size) {
     return shuffled.slice(min);
 }
 
-var actionArray = [[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]];
+var actionArray = [[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]]; // Up, left, down, right
 var discount = 0.9;
 var epsilon = 0.1;
 var maxEpsilon = 0.9;
@@ -252,6 +253,7 @@ var replayMemorySize = 50;
 var replayMemoryPointer = 0;
 var replayMemory = [];
 var replayBatchSize = 20;
+var bestDirection = [];
 
 var GameLoop = function() {
 	
@@ -263,6 +265,7 @@ var GameLoop = function() {
 
 	var input = level.slice();
 	input[snake.x+snake.y*levelWidth] = 1;
+	
 	var randomMove = Math.random() > epsilon;
 	if(randomMove) {
 		var randomDirection = Math.floor(Math.random()*4);
@@ -280,7 +283,6 @@ var GameLoop = function() {
 		snake.setDirection(indexOfMax(allQs));
 	}
 	
-   // var output = myNetwork.activate(input);
 	var currentDistance = distance(snake.x, snake.y, apple.x, apple.y);
 
 	snake.move();
@@ -288,69 +290,44 @@ var GameLoop = function() {
 	var r = rewardFunction(snake.getPosition(), currentDistance);
 	var newState = level.slice();
 	newState[snake.x+snake.y*levelWidth] = 1;
-	replayMemory[replayMemoryPointer++]={reward: r, oldState: input.slice(), newState: newState};
+	
+	// Update Q-network
+	var inputState1 = newState.slice().concat(actionArray[0]);
+	var q1 = myNetwork.activate(inputState1);
+	
+	var inputState2 = newState.slice().concat(actionArray[1]);
+	var q2 = myNetwork.activate(inputState2);
 
-	if(replayMemoryPointer > replayMemorySize) {
-		var batch = sampleArray(replayMemory, replayBatchSize);
-		var trainingInput = [];
-		var trainingOutput = [];
-		
-		for(var i = 0; i < batch.length; i++) {
-			var inputState1 = batch[i].newState.slice().concat(actionArray[0]);
-			//inputState1 = inputState1.map(x => x=sigmoid(x));
-			var q1 = myNetwork.activate(inputState1);
+	var inputState3 = newState.slice().concat(actionArray[2]);
+	var q3 = myNetwork.activate(inputState3);
 
-			var inputState2 = batch[i].newState.slice().concat(actionArray[1]);
-			//inputState2 = inputState2.map(x => x=sigmoid(x));
-			var q2 = myNetwork.activate(inputState2);
+	var inputState4 =newState.slice().concat(actionArray[3]);
+	var q4 = myNetwork.activate(inputState4);
 
-			var inputState3 = batch[i].newState.slice().concat(actionArray[2]);
-			//inputState3 = inputState3.map(x => x=sigmoid(x));
-			var q3 = myNetwork.activate(inputState3);
+	var allQs = [q1[0], q2[0], q3[0], q4[0]];
 
-            var inputState4 = batch[i].newState.slice().concat(actionArray[3]);
-			//inputState4 = inputState4.map(x => x=sigmoid(x));
-			var q4 = myNetwork.activate(inputState4);
-
-			var allQs = [q1[0], q2[0], q3[0], q4[0]];
-			//console.log("reward", batch[i].reward);
-			//console.log("discout", discount);
-			
-			var updatedQ = batch[i].reward + discount * allQs[indexOfMax(allQs)];
-			
-			console.log("old q", myNetwork.activate(batch[i].oldState));
-			myNetwork.propagate(0.2, [updatedQ]);
-			console.log("new q", myNetwork.activate(batch[i].oldState));
-			
-			
-		}
-		for(var i = 0; i < trainingInput.length; i++) {
-		}
-		replayMemoryPointer = 0;
+	
+	var indexMax = indexOfMax(allQs);
+	if(indexMax=== 0) {
+		bestDirection[input.indexOf(1)] = '^';
+	} else if (indexMax === 1) {
+		bestDirection[input.indexOf(1)] = '<';
+	}else if (indexMax === 2) {
+		bestDirection[input.indexOf(1)] = 'v';
+	}else if (indexMax === 3) {
+		bestDirection[input.indexOf(1)] = '>';
 	}
-	/*
-	var input2 = level.slice();
-	input2[snake.x+snake.y*levelWidth] = 1;
-	var q0 = myNetwork.activate(input2.concat(actionArray[0]));
-	var q1 = myNetwork.activate(input2.concat(actionArray[1]));
-	var q2 = myNetwork.activate(input2.concat(actionArray[2]));
-	var q3 = myNetwork.activate(input2.concat(actionArray[3]));
 	
-	var allQs = [sigmoid(q0[0]), sigmoid(q1[0]), sigmoid(q2[0]), sigmoid(q3[0])];
-
-	var bestQ = allQs[indexOfMax(allQs)];
+	var updatedQ = r + discount * allQs[indexOfMax(allQs)];
 	
-	var newQ = r + discount * bestQ;
+	myNetwork.activate(input); // Current Q-value for input before moving
+	myNetwork.propagate(0.001, [updatedQ]); // Backpropagate with new Q value
 	
-	myNetwork.activate(input);
-	myNetwork.propagate(0.2, [sigmoid(newQ)]);
-	*/
+	
 	epsilon = epsilon > maxEpsilon ? maxEpsilon : epsilon+0.0001;
 	if(snake.x === apple.x && snake.y === apple.y) {
-		console.log("apple!");
 		score++;
 		resetGame();
-		//level[apple.x+apple.y*levelHeight] = 4;
  	}
   
   var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
@@ -367,14 +344,15 @@ var GameLoop = function() {
   ctx.fillRect(snake.x*tileSize, snake.y*tileSize,tileSize,tileSize);
   
   ctx.fillStyle = "#000";
-  ctx.font = "15px Verdana";
-  /*for(var i = 0; i < levelWidth; i++) {
-		for(var j = 0; j < levelHeight; j++) {
-			ctx.fillText(input[i+j*levelHeight], i*20+5, j*20+15);
-		}
-	}*/
-	ctx.fillText("Score: " + score,10,c.height-15);
-	//ctx.fillText("angle: " + , 30, c.height-15);
+  ctx.font = "9px Verdana";
+  for(var i = 0; i < levelWidth; i++) {
+	for(var j = 0; j < levelHeight; j++) {
+	  ctx.fillText(bestDirection[i+j*levelHeight] ? bestDirection[i+j*levelHeight] : "", i*20+5, j*20+15);
+	}
+  }
+  
+  ctx.fillText("Score: " + score,10,c.height-15);
+	
   ctx.fillText("High score: " + highScore,c.width-200,c.height-15);
   ctx.fillText("Steps: " + steps++,100,c.height-15);
   
