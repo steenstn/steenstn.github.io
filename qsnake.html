@@ -33,9 +33,9 @@ var Neuron = synaptic.Neuron,
 	Trainer = synaptic.Trainer,
 	Architect = synaptic.Architect;
 
-var inputLayer = new Layer(levelWidth*levelHeight+4);
-var hiddenLayer = new Layer(levelWidth*levelHeight+4);
-var outputLayer = new Layer(1);
+var inputLayer = new Layer(levelWidth*levelHeight);
+var hiddenLayer = new Layer(levelWidth*levelHeight);
+var outputLayer = new Layer(4);
 
 inputLayer.project(hiddenLayer);
 hiddenLayer.project(outputLayer);
@@ -45,6 +45,8 @@ var myNetwork = new Network({
  output: outputLayer
 });
 
+var deaths = 0;
+var apples = 0;
 var gLoop;
 var keysDown = {};
 
@@ -172,8 +174,8 @@ var checkKeys = function () {
 var resetGame = function() {
 	steps = 0;
 	resetLevel();
-	snake.x = 4;//levelWidth/2;
-	snake.y = 4;//levelHeight-5;
+	snake.x = levelWidth-4;//levelWidth/2;
+	snake.y = levelHeight-4;//levelHeight-5;
 	snake.oldx = snake.x;
 	snake.oldy = snake.y+1;
 	snake.direction = 0;
@@ -183,8 +185,8 @@ var resetGame = function() {
 	}
 	score = 0;
 	
-		apple.x = levelWidth-4;
-		apple.y = levelHeight-4;
+		apple.x = 4;
+		apple.y = 4;
 	
 }
 
@@ -217,17 +219,18 @@ var rewardFunction = function(position, currentDistance) {
 	var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
 	if(snakeOutOfBounds) {
 		reward = -1;
-	}
-	if(level[x+y*levelWidth]===0) {
+	} else if(level[x+y*levelWidth]===0) {
 		if(distance(x,y,apple.x,apple.y) < currentDistance) {
 			reward = 0.1;
 		} else {
 			reward=-0.1;
 		}
-	}
+	} 
 	if(snake.x === apple.x && snake.y === apple.y) {
 		reward =1;
-	}
+	//	console.log("apple");
+	}//
+	//console.log(reward);
 	return reward;
 }
 function sigmoid(x) {
@@ -269,17 +272,11 @@ var GameLoop = function() {
 	var randomMove = Math.random() > epsilon;
 	if(randomMove) {
 		var randomDirection = Math.floor(Math.random()*4);
-		input = input.concat(actionArray[randomDirection]);
 		snake.setDirection(randomDirection);
 	} else {
 		var input2 = level.slice();
 		input2[snake.x+snake.y*levelWidth] = 1;
-		var q0 = myNetwork.activate(input2.concat(actionArray[0]));
-		var q1 = myNetwork.activate(input2.concat(actionArray[1]));
-		var q2 = myNetwork.activate(input2.concat(actionArray[2]));
-		var q3 = myNetwork.activate(input2.concat(actionArray[3]));
-		var allQs = [q0[0], q1[0], q2[0], q3[0]];
-		input = input.concat(actionArray[indexOfMax(allQs)]);
+		var allQs = myNetwork.activate(input2);
 		snake.setDirection(indexOfMax(allQs));
 	}
 	
@@ -292,22 +289,11 @@ var GameLoop = function() {
 	newState[snake.x+snake.y*levelWidth] = 1;
 	
 	// Update Q-network
-	var inputState1 = newState.slice().concat(actionArray[0]);
-	var q1 = myNetwork.activate(inputState1);
-	
-	var inputState2 = newState.slice().concat(actionArray[1]);
-	var q2 = myNetwork.activate(inputState2);
 
-	var inputState3 = newState.slice().concat(actionArray[2]);
-	var q3 = myNetwork.activate(inputState3);
+	var allQs = myNetwork.activate(newState);
 
-	var inputState4 =newState.slice().concat(actionArray[3]);
-	var q4 = myNetwork.activate(inputState4);
-
-	var allQs = [q1[0], q2[0], q3[0], q4[0]];
-
-	
-	var indexMax = indexOfMax(allQs);
+	//console.log(allQs);
+	var indexMax = indexOfMax(myNetwork.activate(input));
 	if(indexMax=== 0) {
 		bestDirection[input.indexOf(1)] = '^';
 	} else if (indexMax === 1) {
@@ -319,20 +305,26 @@ var GameLoop = function() {
 	}
 	
 	var updatedQ = r + discount * allQs[indexOfMax(allQs)];
-	
+	var update = myNetwork.activate(newState);
+	update[indexOfMax(allQs)] = updatedQ;
+	update = update.map(u => u = sigmoid(u));
+	//console.log(update);
+//	console.log(update);
 	myNetwork.activate(input); // Current Q-value for input before moving
-	myNetwork.propagate(0.001, [updatedQ]); // Backpropagate with new Q value
+	myNetwork.propagate(0.1, update); // Backpropagate with new Q value
 	
 	
 	epsilon = epsilon > maxEpsilon ? maxEpsilon : epsilon+0.0001;
 	if(snake.x === apple.x && snake.y === apple.y) {
 		score++;
 		resetGame();
+		apples++;
  	}
   
   var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
   if(snakeOutOfBounds || level[snake.x+snake.y*levelWidth]===1) {
 		resetGame();
+		deaths++;
   } 
 	
   drawBackground();
@@ -351,10 +343,10 @@ var GameLoop = function() {
 	}
   }
   
-  ctx.fillText("Score: " + score,10,c.height-15);
+  ctx.fillText("Percent: " + (apples/(deaths+apples)).toFixed(2),10,c.height-15);
 	
-  ctx.fillText("High score: " + highScore,c.width-200,c.height-15);
-  ctx.fillText("Steps: " + steps++,100,c.height-15);
+  //ctx.fillText("High score: " + highScore,c.width-200,c.height-15);
+  ctx.fillText("Deaths: " + deaths + " Apples: " + apples,100,c.height-15);
   
   gLoop = setTimeout(GameLoop, speed);
   return;
