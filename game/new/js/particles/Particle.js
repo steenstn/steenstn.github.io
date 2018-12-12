@@ -1,5 +1,5 @@
-var Particle = (function () {
-    function Particle(x, y, xSpeed, ySpeed, image) {
+class Particle {
+    constructor(x, y, xSpeed, ySpeed, image) {
         this.x = x;
         this.y = y;
         this.xSpeed = xSpeed;
@@ -8,7 +8,7 @@ var Particle = (function () {
         this.xFriction = 1.1;
         this.shouldBeDeleted = false;
     }
-    Particle.prototype.move = function () {
+    move() {
         if (Math.abs(this.x + Viewport.x) > Viewport.width * 2 &&
             Math.abs(this.y + Viewport.y) > Viewport.height * 2) {
             return;
@@ -42,12 +42,11 @@ var Particle = (function () {
                 this.state = 1;
             }
         }
-    };
-    Particle.prototype.render = function (context) {
+    }
+    render(context) {
         if (Helper.outOfBounds(this.x, this.y)) {
             return;
         }
         context.drawImage(this.image, Math.round(this.x + Viewport.x), Math.round(this.y + Viewport.y));
-    };
-    return Particle;
-}());
+    }
+}

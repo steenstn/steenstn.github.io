@@ -1,10 +1,10 @@
-var FlyingStrategy = (function () {
-    function FlyingStrategy(enemy, currentLevel) {
+class FlyingStrategy {
+    constructor(enemy, currentLevel) {
         this.enemy = enemy;
         this.currentLevel = currentLevel;
         this.animationCounter = 0;
     }
-    FlyingStrategy.prototype.move = function (enemy) {
+    move(enemy) {
         this.animationCounter++;
         if (this.animationCounter % 8 === 0) {
             enemy.currentFrame = 1 - enemy.currentFrame;
@@ -35,6 +35,5 @@ var FlyingStrategy = (function () {
         }
         enemy.x += enemy.speedx;
         enemy.y += enemy.speedy;
-    };
-    return FlyingStrategy;
-}());
+    }
+}

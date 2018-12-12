@@ -322,6 +322,7 @@ var GameLoop = function() {
 	input[apple.x+apple.y*levelWidth] = 1;
 	input.push(snake.x/levelWidth);
 	input.push(snake.y/levelHeight);
+	input.forEach(i => i = sigmoid(i));
 	
     //input = input.map( i => sigmoid(i));
     var allQs = currentGenome.activate(input);

@@ -1,7 +1,4 @@
-var BloodMovementStrategy = (function () {
-    function BloodMovementStrategy() {
+class BloodMovementStrategy {
+    move() {
     }
-    BloodMovementStrategy.prototype.move = function () {
-    };
-    return BloodMovementStrategy;
-}());
+}

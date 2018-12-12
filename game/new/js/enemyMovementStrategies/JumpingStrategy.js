@@ -1,9 +1,9 @@
-var JumpingStrategy = (function () {
-    function JumpingStrategy(enemy, currentLevel) {
+class JumpingStrategy {
+    constructor(enemy, currentLevel) {
         this.enemy = enemy;
         this.currentLevel = currentLevel;
     }
-    JumpingStrategy.prototype.move = function (enemy) {
+    move(enemy) {
         enemy.animationCounter++;
         if (enemy.animationCounter > 3) {
             enemy.currentFrame = 1 - enemy.currentFrame;
@@ -25,7 +25,7 @@ var JumpingStrategy = (function () {
                 arrayPos = Level.getBlockAt(enemy.x + 15, enemy.y + 15);
             else
                 arrayPos = Level.getBlockAt(enemy.x - 15, enemy.y + 15);
-            var shouldJump = (arrayPos.blocking == 0 && Math.random() > 0.8) || Math.random() > 0.98;
+            let shouldJump = (arrayPos.blocking == 0 && Math.random() > 0.8) || Math.random() > 0.98;
             if (shouldJump) {
                 enemy.jumping = 1;
                 enemy.speedy = -5;
@@ -45,6 +45,5 @@ var JumpingStrategy = (function () {
                 enemy.jumping = 0;
             }
         }
-    };
-    return JumpingStrategy;
-}());
+    }
+}

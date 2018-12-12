@@ -47,6 +47,11 @@
 </head>
 <body>
 
+  <script src="https://wagenaartje.github.io/neataptic/cdn/1.4.7/neataptic.js"></script>
+  <script src="js/Vector.js" type="text/javascript"></script>
+  <script src="js/TinyQueue.js" type="text/javascript"></script>
+  
+  <script src="js/PathFinder.js" type="text/javascript"></script>
 <script src="js/Level.js" type="text/javascript"></script>
 <script src="js/LevelTile.js" type="text/javascript"></script>
 <script src="js/Viewport.js" type="text/javascript"></script>
@@ -99,9 +104,50 @@ ctx = c.getContext('2d');
 c.width = Viewport.width;
 c.height = Viewport.height;
 
+var pathFinder;
+var goal;
+var rewardPath;
+var rewardPathLength = 0;
+var Architect = neataptic.architect;
+var populationSize = 20;
+var elitism = 0.2
+var mutationRate = 0.3;
+
+var neat = new neataptic.Neat(
+    264,
+    3,
+    null,
+    {
+      mutation: [
+        neataptic.methods.mutation.ADD_NODE,
+        neataptic.methods.mutation.SUB_NODE,
+        neataptic.methods.mutation.ADD_CONN,
+        neataptic.methods.mutation.SUB_CONN,
+        neataptic.methods.mutation.MOD_WEIGHT,
+        neataptic.methods.mutation.MOD_BIAS,
+        neataptic.methods.mutation.MOD_ACTIVATION,
+        neataptic.methods.mutation.ADD_GATE,
+        neataptic.methods.mutation.SUB_GATE,
+        neataptic.methods.mutation.ADD_SELF_CONN,
+        neataptic.methods.mutation.SUB_SELF_CONN,
+        neataptic.methods.mutation.ADD_BACK_CONN,
+        neataptic.methods.mutation.SUB_BACK_CONN
+      ],
+      popsize: populationSize,
+      mutationRate: mutationRate,
+      elitism: Math.round(elitism * populationSize),
+      network: new Architect.Perceptron(
+        264,
+        100,
+        3
+      )
+    }
+  );
+
+
 var animating = 0;
 var lastLevel = 0;
-var levelNow = 1; // Number of current level
+var levelNow = 2; // Number of current level
 
 var numDeaths = 0;
 var score = 0;
@@ -234,7 +280,10 @@ flyImage.src = "fly.png";
 Level.loadTileset();
 
 var init = function() {
+
+  distanceMoved = oldDistanceMoved = startPos.x;
   numFramesSinceStart = 0;
+  health = 40;
 
 	particles = [];
 
@@ -271,11 +320,11 @@ var keysDown = {};
 addEventListener("keydown", function (e) {
 	keysDown[e.keyCode] = true;
 }, false);
-
+/*
 addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
-
+*/
 var canvas = document.getElementById('c');
 
 var clear = function(){
@@ -573,7 +622,8 @@ var updateEnemies = function() {
         }
 
         players[playerIndex].speedy=-0.25*WorldConstants.kickbackForce;
-  			players[0].hp-=2;
+        players[0].hp-=2;
+        currentGenome.score-=60;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
 
@@ -601,6 +651,7 @@ var updateEnemies = function() {
     			score+=100;
           scoreTimer = 10;
           enemyIsDead = true;
+          currentGenome.score+=100;
           break;
         }
 
@@ -851,7 +902,24 @@ var loadLevel = function(levelNumber) {
   flowers.length = 0;
   loadContent(levelName);
   setUpContent();
-
+  pathFinder = new Pathfinder(Level.currentLevel, Level.width, Level.height);
+  var done = false;
+  
+  for(var x = 0; x < Level.width; x++) {
+    for(var y = 0; y < Level.height; y++) {
+      
+      if(Level.currentLevel[x+y*Level.width].type === "k") {
+        
+        done = true;
+        goal = new Vector(x,y);
+        break;
+      }
+    }
+    if(done) break;
+  }
+  console.log("start", startPos.x/Level.tileSize);
+  rewardPath = pathFinder.findPath(new Vector(Math.round(startPos.x/Level.tileSize), Math.round(startPos.y/Level.tileSize)), goal);
+  rewardPathLength = rewardPath.length;
   jukeBox.playCurrentSong();
 }
 
@@ -904,6 +972,10 @@ var drawAllText = function() {
     ctx.textAlign = 'left';
     ctx.font         = scoreFontSize + 'px Verdana';
     ctx.fillText  (score, 55,20);
+    ctx.fillText("Fitness: " + currentGenome.score, 4, 40);
+    ctx.fillText("Genome: " + genomeIndex, 4, 60);
+    ctx.fillText("Generation: " + neat.generation, 4, 80);
+    ctx.fillText("Health: " + health, 4, 100);
     ctx.font         = '14px Verdana';
     ctx.fillStyle = vinylCollectedInLevel >= numVinylInLevel ? "#0f0" : "#fff";
     ctx.fillText(vinylCollectedInLevel + "/" + numVinylInLevel, 38, Viewport.height-13);
@@ -954,7 +1026,35 @@ var drawAllText = function() {
 
 }
 
+var genomeIndex = 0;
+
+var currentGenome = neat.population[genomeIndex];
+currentGenome.score = 0;
+var distanceMoved = 0;
+var oldDistanceMoved = 0;
+
+var health = 40;
+function evolve() {
+    console.log("generation " + neat.generation + " average score " + neat.getAverage());
+   
+    neat.sort();
+    var newPopulation = [];
+    for(var i = 0; i < neat.elitism; i++) {
+        newPopulation.push(neat.population[i]);
+    }
+
+    for(var i = 0; i < neat.popsize - neat.elitism; i++) {
+        newPopulation.push(neat.getOffspring());
+    }
+
+    neat.population = newPopulation;
+    neat.mutate();
+    neat.generation++;
+}
+var input = [];
+var simSpeed = 1;
 var GameLoop = function(){
+  keysDown = {};
   numFramesSinceStart++;
 	clear();
 
@@ -968,7 +1068,13 @@ var GameLoop = function(){
     vinylCollectedInLevel = 0;
     flies= [];
 		loadLevel(levelNow);
-
+    genomeIndex++;
+    if(genomeIndex >= populationSize) {
+        evolve();
+        genomeIndex = 0;
+    }
+    currentGenome = neat.population[genomeIndex];
+    currentGenome.score = 0;
 		init();
     animating = 1;
 	}
@@ -984,6 +1090,32 @@ var GameLoop = function(){
   }
 
 	if(animating===0) {
+    input = [];
+    input = Level.getInput(enemies, players);
+    
+    
+    
+    var output = currentGenome.activate(input);
+    //console.log(output);
+    if(output[0] > 0.5) {
+      keysDown[37] = true;
+    }
+    if(output[1] > 0.5) {
+      keysDown[38] = true;
+    }
+    if(output[2] > 0.5) {
+      keysDown[39] = true;
+    }
+    /*if(output[3] > 0.5) {
+      keysDown[65] = true;
+    }
+    if(output[4] > 0.5) {
+      keysDown[87] = true;
+    }
+    if(output[5] > 0.5) {
+      keysDown[68] = true;
+    }*/
+    
 		checkKeys(1);
 
     playerIsOutOfBounds = false;
@@ -991,6 +1123,28 @@ var GameLoop = function(){
       updatePlayer(i);
 		
     }
+    if(numFramesSinceStart%10===0) {
+      rewardPath = pathFinder.findPath(new Vector(Math.round(players[0].x/Level.tileSize), Math.round(players[0].y/Level.tileSize)), goal);
+      if(rewardPath.length < rewardPathLength) {
+        rewardPathLength = rewardPath.length;
+        currentGenome.score+=10;
+        health = health > 400 ? 400 : health+10;
+      } else  {
+        if(rewardPath.length > rewardPathLength){
+          currentGenome.score-=5;
+        }
+     }
+    }  
+     if (Math.abs(players[0].speedx) < 2){
+          health--;
+     }
+    
+    
+
+    if(health<=0) {
+      players[0].hp = 0;
+    }
+
     var x2 = players[1] ? players[1].x : players[0].x+(players[0].goingLeft ? -50 : 50)+10*players[0].speedx;
     var y2 = players[1] ? players[1].y : players[0].y;
     
@@ -1095,8 +1249,31 @@ var GameLoop = function(){
   }
   ctx.drawImage(Level.tileset, 64,128, 32, 32, 4, Viewport.height-35, 32, 32);
 	drawAllText();
+  
+  for(var i = 0; i < input.length; i++) {
+    if(input[i] === 1) {
+      ctx.fillStyle = "#fff";
+    } else if(input[i] === 0.4) {
+      ctx.fillStyle  = "#0f0";
+    } else if(input[i] === 0.8) {
+      ctx.fillStyle = "#f00";
+    }
+    
+    if(input[i] !== 0) {
+      ctx.fillRect(Viewport.width-150+6*((i)%(Math.round(Viewport.width / Level.tileSize))),20+6*(Math.floor((i)/(Math.round(Viewport.width / Level.tileSize)))), 5,5);
+    }
 
-	gLoop = setTimeout(GameLoop, 1000 / 50);
+  
+    
+  }
+
+    ctx.fillStyle = "#4f4";
+  for(var i = 0; i < rewardPath.length; i++) {
+    
+    ctx.fillRect(Viewport.x+rewardPath[i].x*Level.tileSize+10, Viewport.y+rewardPath[i].y*Level.tileSize+10, 5, 5);
+  }
+  
+	gLoop = setTimeout(GameLoop, simSpeed);
 }
 
 var stars = [];
@@ -1223,7 +1400,7 @@ if(players[1]) {
         return;
       } 
     }
-    gLoop = setTimeout(IntroScreen, 1000 / 50);
+    gLoop = setTimeout(IntroScreen, simSpeed);
 }
 
 var endScreen = function() {

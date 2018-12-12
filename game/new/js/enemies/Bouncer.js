@@ -1,32 +1,19 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var Bouncer = (function (_super) {
-    __extends(Bouncer, _super);
-    function Bouncer(enemy, currentLevel) {
-        var _this = _super.call(this, new FlyingStrategy(enemy, currentLevel)) || this;
-        _this.currentFrame = 0;
-        _this.x = enemy.x;
-        _this.y = enemy.y;
-        _this.oldx = enemy.oldx;
-        _this.oldy = enemy.oldy;
-        _this.speedx = enemy.speedx;
-        _this.speedy = enemy.speedy;
+class Bouncer extends Enemy {
+    constructor(enemy, currentLevel) {
+        super(new FlyingStrategy(enemy, currentLevel));
+        this.currentFrame = 0;
+        this.width = 20;
+        this.height = 20;
+        this.x = enemy.x;
+        this.y = enemy.y;
+        this.oldx = enemy.oldx;
+        this.oldy = enemy.oldy;
+        this.speedx = enemy.speedx;
+        this.speedy = enemy.speedy;
         Bouncer.image.src = "hand.png";
-        return _this;
     }
-    Bouncer.prototype.draw = function (context) {
-        var offsety;
+    draw(context) {
+        let offsety;
         if (this.speedx < 0 && this.speedy < 0) {
             offsety = 0;
         }
@@ -40,7 +27,6 @@ var Bouncer = (function (_super) {
             offsety = 3;
         }
         context.drawImage(Bouncer.image, 0 + 20 * this.currentFrame, 20 * offsety, 20, 20, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), 20, 20);
-    };
-    Bouncer.image = new Image();
-    return Bouncer;
-}(Enemy));
+    }
+}
+Bouncer.image = new Image();

@@ -3,6 +3,8 @@ class Bouncer extends Enemy {
   speedx : number;
   speedy : number;
   currentFrame = 0;
+  width = 20;
+  height = 20;
   constructor(enemy, currentLevel) {
     super(new FlyingStrategy(enemy, currentLevel));
     this.x = enemy.x;

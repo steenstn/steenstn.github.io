@@ -1,10 +1,9 @@
-var TimedParticleFactory = (function () {
-    function TimedParticleFactory(image) {
+class TimedParticleFactory {
+    constructor(image) {
         this.particleLifetime = 50;
         this.particleImage = image;
     }
-    TimedParticleFactory.prototype.createParticle = function (x, y, lifetime) {
+    createParticle(x, y, lifetime) {
         return new TimedParticle(x, y + 25, -9 + 20 * Math.random(), -10 * Math.random(), this.particleImage, this.particleLifetime);
-    };
-    return TimedParticleFactory;
-}());
+    }
+}

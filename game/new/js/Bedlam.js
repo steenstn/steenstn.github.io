@@ -1,5 +1,5 @@
-var Bedlam = (function () {
-    function Bedlam() {
+class Bedlam {
+    constructor() {
         this.image = new Image();
         this.animCounter = 0;
         this.currentFrame = 0;
@@ -7,14 +7,14 @@ var Bedlam = (function () {
         this.y = -Viewport.y + 118;
         this.image.src = "bedlam.png";
     }
-    Bedlam.prototype.move = function (players) {
+    move(players) {
         this.animCounter++;
         if (this.animCounter > 4) {
             this.animCounter = 0;
             this.currentFrame = 1 - this.currentFrame;
         }
         this.x += 4;
-        for (var i = 0; i < players.length; i++) {
+        for (let i = 0; i < players.length; i++) {
             if (!players[i].inBucket && Math.abs(this.x - players[i].x) < 40) {
                 players[i].inBucket = true;
             }
@@ -23,12 +23,11 @@ var Bedlam = (function () {
                 players[i].y = this.y - 15;
             }
         }
-    };
-    Bedlam.prototype.isComplete = function () {
+    }
+    isComplete() {
         return this.x > -Viewport.x + Viewport.width + 60;
-    };
-    Bedlam.prototype.render = function (context) {
+    }
+    render(context) {
         context.drawImage(this.image, 0 + 90 * this.currentFrame, 0, 90, 183, Math.round(this.x + Viewport.x), Math.round(this.y + Viewport.y), 90, 183);
-    };
-    return Bedlam;
-}());
+    }
+}

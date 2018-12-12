@@ -1,31 +1,16 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
+class HealthParticle extends Particle {
+    constructor(x, y, xSpeed, ySpeed, image, target, targetToHeal) {
+        super(x, y, xSpeed, ySpeed, image);
+        this.xAcc = 0;
+        this.yAcc = 0;
+        this.movingState = 0;
+        this.lifetime = 20;
+        this.target = target;
+        this.targetToHeal = targetToHeal;
+        this.xFriction = 1.085;
     }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var HealthParticle = (function (_super) {
-    __extends(HealthParticle, _super);
-    function HealthParticle(x, y, xSpeed, ySpeed, image, target, targetToHeal) {
-        var _this = _super.call(this, x, y, xSpeed, ySpeed, image) || this;
-        _this.xAcc = 0;
-        _this.yAcc = 0;
-        _this.movingState = 0;
-        _this.lifetime = 20;
-        _this.target = target;
-        _this.targetToHeal = targetToHeal;
-        _this.xFriction = 1.085;
-        return _this;
-    }
-    HealthParticle.prototype.move = function () {
-        _super.prototype.move.call(this);
+    move() {
+        super.move();
         if (this.shouldBeDeleted) {
             return;
         }
@@ -37,7 +22,7 @@ var HealthParticle = (function (_super) {
             }
         }
         else {
-            var angle = Math.atan2(this.target.y + this.target.height / 2 - this.y, this.target.x + this.target.height / 2 - this.x);
+            let angle = Math.atan2(this.target.y + this.target.height / 2 - this.y, this.target.x + this.target.height / 2 - this.x);
             this.xAcc = Math.cos(angle);
             this.yAcc = Math.sin(angle);
             this.xSpeed += this.xAcc;
@@ -52,6 +37,5 @@ var HealthParticle = (function (_super) {
         }
         this.x += this.xSpeed;
         this.y += this.ySpeed;
-    };
-    return HealthParticle;
-}(Particle));
+    }
+}

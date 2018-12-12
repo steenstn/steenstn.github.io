@@ -1,5 +1,5 @@
-var MutantStrategy = (function () {
-    function MutantStrategy(enemy, currentLevel) {
+class MutantStrategy {
+    constructor(enemy, currentLevel) {
         this.enemy = enemy;
         this.currentLevel = currentLevel;
         this.mutantWidth = 88;
@@ -7,7 +7,7 @@ var MutantStrategy = (function () {
         this.idleTimer = 60;
         this.idle = false;
     }
-    MutantStrategy.prototype.move = function (enemy) {
+    move(enemy) {
         if (!this.idle) {
             enemy.x += enemy.speedx;
             enemy.idleAnimationCounter++;
@@ -27,8 +27,8 @@ var MutantStrategy = (function () {
                 enemy.idleAnimationCounter = 0;
             }
         }
-        var enemyWidth = typeof enemy.width == 'number' ? enemy.width : this.mutantWidth;
-        var enemyHeight = typeof enemy.height == 'number' ? enemy.height : this.mutantHeight;
+        let enemyWidth = typeof enemy.width == 'number' ? enemy.width : this.mutantWidth;
+        let enemyHeight = typeof enemy.height == 'number' ? enemy.height : this.mutantHeight;
         var arrayPos = Level.getBlockAt(enemy.x + 5, enemy.y + 5);
         var bottomArrayPos = Level.getBlockAt(enemy.x + enemyWidth / 2, enemy.y + enemyHeight);
         if (bottomArrayPos.type == ".") {
@@ -48,6 +48,5 @@ var MutantStrategy = (function () {
             this.idle = true;
             enemy.speedx = -enemy.speedx;
         }
-    };
-    return MutantStrategy;
-}());
+    }
+}

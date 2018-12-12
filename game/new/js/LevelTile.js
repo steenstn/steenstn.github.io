@@ -1,11 +1,11 @@
-var LevelTile = (function () {
-    function LevelTile(character, blocking, drawingOffsetx, drawingOffsety) {
+class LevelTile {
+    constructor(character, blocking, drawingOffsetx, drawingOffsety) {
         this.character = character;
         this.blocking = blocking;
         this.drawingOffsetx = drawingOffsetx;
         this.drawingOffsety = drawingOffsety;
     }
-    LevelTile.newFromCharacter = function (character) {
+    static newFromCharacter(character) {
         switch (character) {
             case ".":
                 return new LevelTile(".", false, 0, 0);
@@ -76,6 +76,5 @@ var LevelTile = (function () {
             case "s":
                 return new LevelTile("s", false, 64, 128);
         }
-    };
-    return LevelTile;
-}());
+    }
+}

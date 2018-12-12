@@ -1,5 +1,5 @@
-var Background = (function () {
-    function Background(context) {
+class Background {
+    constructor(context) {
         this.context = context;
         this.backgroundGradient = this.context.createLinearGradient(0, Viewport.height, 0, 0);
         this.backgroundGradient.addColorStop(0, "black");
@@ -9,7 +9,7 @@ var Background = (function () {
         this.backgroundGradient.addColorStop(0.60, "#3b8996");
         this.backgroundGradient.addColorStop(0.9, "#1b2d3b");
     }
-    Background.prototype.drawBackground = function () {
+    drawBackground() {
         this.context.fillStyle = this.backgroundGradient;
         this.context.fillRect(0, 0, Viewport.width, Viewport.height);
         this.context.strokeStyle = 'rgba(255, 255, 255, 0.3)';
@@ -64,6 +64,5 @@ var Background = (function () {
         this.context.beginPath();
         this.context.arc(Viewport.width * 0.65 + Viewport.x / 12, Viewport.height * 0.82, 30, 0, 2 * Math.PI);
         this.context.stroke();
-    };
-    return Background;
-}());
+    }
+}

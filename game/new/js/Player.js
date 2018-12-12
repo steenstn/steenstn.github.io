@@ -1,5 +1,5 @@
-var Player = (function () {
-    function Player(x, y, image) {
+class Player {
+    constructor(x, y, image) {
         this.x = x;
         this.y = y;
         this.image = image;
@@ -35,15 +35,15 @@ var Player = (function () {
         this.keyLeft = 0;
         this.keyRight = 0;
     }
-    Player.prototype.updateHurtZone = function () {
+    updateHurtZone() {
         this.hurtZonex = this.x + 3;
         this.hurtZoney = this.y + 5;
-    };
-    Player.prototype.updateKillZone = function () {
+    }
+    updateKillZone() {
         this.killZonex = this.x + 5;
         this.killZoney = this.y + this.height - 5;
-    };
-    Player.prototype.isFacingPosition = function (x) {
+    }
+    isFacingPosition(x) {
         if (this.x > x && this.goingLeft === 1) {
             return true;
         }
@@ -56,8 +56,8 @@ var Player = (function () {
         else {
             return true;
         }
-    };
-    Player.prototype.draw = function (context) {
+    }
+    draw(context) {
         if (this.animationCounter > this.animationSpeed) {
             this.animationCounter = 0;
             this.currentFrame = 1 - this.currentFrame;
@@ -79,20 +79,19 @@ var Player = (function () {
             context.drawImage(this.image, 0 + 20 * this.idleCurrentFrame, 30 * this.goingLeft, 20, 30, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y), this.width, this.height);
         }
         this.runningFromEnemy = 0;
-    };
-    Player.prototype.drawHurtZone = function (context) {
+    }
+    drawHurtZone(context) {
         context.fillStyle = '#FF0a00';
         context.beginPath();
         context.rect(this.hurtZonex + Viewport.x, this.hurtZoney + Viewport.y, this.hurtZoneWidth, this.hurtZoneHeight);
         context.closePath();
         context.fill();
-    };
-    Player.prototype.drawKillZone = function (context) {
+    }
+    drawKillZone(context) {
         context.fillStyle = '#0aDD00';
         context.beginPath();
         context.rect(this.killZonex + Viewport.x, this.killZoney + Viewport.y, this.killZoneWidth, this.killZoneHeight);
         context.closePath();
         context.fill();
-    };
-    return Player;
-}());
+    }
+}

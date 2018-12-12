@@ -1,9 +1,9 @@
-var GlidingStrategy = (function () {
-    function GlidingStrategy(enemy, currentLevel) {
+class GlidingStrategy {
+    constructor(enemy, currentLevel) {
         this.enemy = enemy;
         this.currentLevel = currentLevel;
     }
-    GlidingStrategy.prototype.move = function (enemy) {
+    move(enemy) {
         if (enemy.direction == 1) {
             var blockInFrontOfFace = Level.getBlockAt(enemy.x + 38, enemy.y + 20);
             if (blockInFrontOfFace.blocking == 1) {
@@ -26,6 +26,5 @@ var GlidingStrategy = (function () {
             enemy.speedx = -2;
         }
         enemy.x += enemy.speedx;
-    };
-    return GlidingStrategy;
-}());
+    }
+}

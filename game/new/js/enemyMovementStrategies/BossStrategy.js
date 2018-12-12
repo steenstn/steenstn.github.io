@@ -1,5 +1,5 @@
-var BossStrategy = (function () {
-    function BossStrategy(enemy, currentLevel) {
+class BossStrategy {
+    constructor(enemy, currentLevel) {
         this.enemy = enemy;
         this.currentLevel = currentLevel;
         this.chargingCounter = 60;
@@ -7,15 +7,15 @@ var BossStrategy = (function () {
         this.shootingCounter = 100;
         this.currentState = BossStrategy.JUMPING;
     }
-    BossStrategy.prototype.getCurrentState = function () {
+    getCurrentState() {
         return this.currentState;
-    };
-    BossStrategy.prototype.move = function (enemy) {
+    }
+    move(enemy) {
         enemy.breakingBlock = false;
         if (this.currentState === BossStrategy.JUMPING) {
             this.reloadCounter--;
-            var offsetx = enemy.speedx > 0 ? enemy.width + 5 : -5;
-            var offsety = enemy.height;
+            let offsetx = enemy.speedx > 0 ? enemy.width + 5 : -5;
+            let offsety = enemy.height;
             enemy.speedy += WorldConstants.gravity;
             if (Level.getBlockAt(enemy.x + offsetx, enemy.y) != "undefined" && Level.getBlockAt(enemy.x + offsetx, enemy.y).blocking === true || Level.getBlockAt(enemy.x + offsetx, enemy.y).type == 'h') {
                 enemy.speedx *= -1;
@@ -57,9 +57,8 @@ var BossStrategy = (function () {
                 enemy.firing = false;
             }
         }
-    };
-    BossStrategy.CHARGING = 0;
-    BossStrategy.SHOOTING = 1;
-    BossStrategy.JUMPING = 2;
-    return BossStrategy;
-}());
+    }
+}
+BossStrategy.CHARGING = 0;
+BossStrategy.SHOOTING = 1;
+BossStrategy.JUMPING = 2;

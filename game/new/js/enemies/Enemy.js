@@ -1,12 +1,11 @@
-var Enemy = (function () {
-    function Enemy(movementStrategy) {
+class Enemy {
+    constructor(movementStrategy) {
         this.hp = 1;
         this.movementStrategy = movementStrategy;
     }
-    Enemy.prototype.move = function () {
+    move() {
         this.movementStrategy.move(this);
-    };
-    Enemy.prototype.drawHp = function (context) {
-    };
-    return Enemy;
-}());
+    }
+    drawHp(context) {
+    }
+}

@@ -1,17 +1,17 @@
-var Jukebox = (function () {
-    function Jukebox(songs, finalSong) {
+class Jukebox {
+    constructor(songs, finalSong) {
         this.levelSongs = songs;
         this.finalSong = finalSong;
     }
-    Jukebox.prototype.selectSong = function (songNumber) {
+    selectSong(songNumber) {
         this.canPlay = false;
-        var songIsPlaying = this.currentSong && (!this.currentSong.paused || this.currentSong.currentTime);
+        let songIsPlaying = this.currentSong && (!this.currentSong.paused || this.currentSong.currentTime);
         if (songIsPlaying) {
             this.currentSong.pause();
         }
-        var indexInBounds = songNumber >= 0 && songNumber < this.levelSongs.length;
+        let indexInBounds = songNumber >= 0 && songNumber < this.levelSongs.length;
         if (indexInBounds) {
-            var songName = this.levelSongs[songNumber];
+            let songName = this.levelSongs[songNumber];
             this.currentSong = new Audio(songName);
         }
         else {
@@ -21,13 +21,13 @@ var Jukebox = (function () {
         this.currentSong.oncanplay = function () {
             _self.canPlay = true;
         };
-    };
-    Jukebox.prototype.playFinalSong = function () {
+    }
+    playFinalSong() {
         this.currentSong.pause();
         this.currentSong = new Audio(this.finalSong);
         this.currentSong.play();
-    };
-    Jukebox.prototype.playCurrentSong = function () {
+    }
+    playCurrentSong() {
         if (typeof this.currentSong.loop == 'boolean') {
             this.currentSong.loop = true;
         }
@@ -38,10 +38,9 @@ var Jukebox = (function () {
             }, false);
         }
         this.currentSong.play();
-    };
-    Jukebox.prototype.isSongReady = function () {
+    }
+    isSongReady() {
         return this.canPlay;
-    };
-    Jukebox.prototype.isSongPlaying = function () { return this.currentSong.currentTime > 0; };
-    return Jukebox;
-}());
+    }
+    isSongPlaying() { return this.currentSong.currentTime > 0; }
+}
