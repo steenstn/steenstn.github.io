@@ -108,6 +108,7 @@ var pathFinder;
 var goal;
 var rewardPath;
 var rewardPathLength = 0;
+var rewardPathInitialLength = 0;
 var Architect = neataptic.architect;
 var populationSize = 20;
 var elitism = 0.2
@@ -138,6 +139,7 @@ var neat = new neataptic.Neat(
       elitism: Math.round(elitism * populationSize),
       network: new Architect.Perceptron(
         264,
+        100,
         100,
         3
       )
@@ -980,6 +982,10 @@ var drawAllText = function() {
     ctx.fillStyle = vinylCollectedInLevel >= numVinylInLevel ? "#0f0" : "#fff";
     ctx.fillText(vinylCollectedInLevel + "/" + numVinylInLevel, 38, Viewport.height-13);
     
+    
+    ctx.font         = '10px Verdana';
+    ctx.fillText("(" + output[0].toFixed(3) + " " + output[1].toFixed(3) + " " + output[2].toFixed(3) + ")",Viewport.width-150,100);
+
     ctx.font         = '11px Verdana';
     playerKeys.forEach(p => p.forEach(key => ctx.fillText(key, Viewport.x+players[playerKeys.indexOf(p)].x-5+p.indexOf(key)*10,
      Viewport.y+players[playerKeys.indexOf(p)].y-5)));
@@ -1033,6 +1039,7 @@ currentGenome.score = 0;
 var distanceMoved = 0;
 var oldDistanceMoved = 0;
 
+
 var health = 40;
 function evolve() {
     console.log("generation " + neat.generation + " average score " + neat.getAverage());
@@ -1053,6 +1060,7 @@ function evolve() {
 }
 var input = [];
 var simSpeed = 1;
+var output;
 var GameLoop = function(){
   keysDown = {};
   numFramesSinceStart++;
@@ -1094,8 +1102,7 @@ var GameLoop = function(){
     input = Level.getInput(enemies, players);
     
     
-    
-    var output = currentGenome.activate(input);
+    output = currentGenome.activate(input);
     //console.log(output);
     if(output[0] > 0.5) {
       keysDown[37] = true;
@@ -1131,7 +1138,7 @@ var GameLoop = function(){
         health = health > 400 ? 400 : health+10;
       } else  {
         if(rewardPath.length > rewardPathLength){
-          currentGenome.score-=10;
+          currentGenome.score-=5;
         }
      }
     }  
