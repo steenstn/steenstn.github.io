@@ -623,7 +623,7 @@ var updateEnemies = function() {
 
         players[playerIndex].speedy=-0.25*WorldConstants.kickbackForce;
         players[0].hp-=2;
-        currentGenome.score-=60;
+        //currentGenome.score-=60;
         enemyIsInteracting = true;
   		} else if(enemyInKillZone) {
 
@@ -651,7 +651,7 @@ var updateEnemies = function() {
     			score+=100;
           scoreTimer = 10;
           enemyIsDead = true;
-          currentGenome.score+=100;
+          //currentGenome.score+=100;
           break;
         }
 
@@ -917,7 +917,7 @@ var loadLevel = function(levelNumber) {
     }
     if(done) break;
   }
-  console.log("start", startPos.x/Level.tileSize);
+  
   rewardPath = pathFinder.findPath(new Vector(Math.round(startPos.x/Level.tileSize), Math.round(startPos.y/Level.tileSize)), goal);
   rewardPathLength = rewardPath.length;
   jukeBox.playCurrentSong();
@@ -1131,7 +1131,7 @@ var GameLoop = function(){
         health = health > 400 ? 400 : health+10;
       } else  {
         if(rewardPath.length > rewardPathLength){
-          currentGenome.score-=5;
+          currentGenome.score-=10;
         }
      }
     }  
