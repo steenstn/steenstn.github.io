@@ -47,6 +47,7 @@
 </head>
 <body>
 
+<script src="js/GameState.js" type ="text/javascript"></script>
 <script src="js/Vector.js" type="text/javascript"></script>
 <script src="js/Level.js" type="text/javascript"></script>
 <script src="js/LevelTile.js" type="text/javascript"></script>
@@ -74,6 +75,7 @@
 <script src="js/enemies/Skull.js" type="text/javascript"></script>
 <script src="js/enemies/Jumper.js" type="text/javascript"></script>
 <script src="js/enemies/Boss.js" type="text/javascript"></script>
+<script src="js/EnemyManager.js" type="text/javascript"></script>
 
 <script src="js/Fly.js" type="text/javascript"></script>
 <script src="js/Bedlam.js" type="text/javascript"></script>
@@ -100,7 +102,6 @@ ctx = c.getContext('2d');
 c.width = Viewport.width;
 c.height = Viewport.height;
 
-var animating = 0;
 var lastLevel = 0;
 var levelNow = 1; // Number of current level
 
@@ -550,80 +551,24 @@ var updatePlayer = function(index) {
   }
 }
 
-var updateEnemies = function() {
+var updateEnemies = function(i) {
 
-	for(i=0;i<enemies.length;i++) {
-		enemies[i].oldx=enemies[i].x;
-		enemies[i].oldy=enemies[i].y;
-    var enemyIsInteracting = false;
-    var enemyIsDead = false;
-    for(var playerIndex = 0; playerIndex < players.length; playerIndex++) {
-
-      var enemyWidth = typeof enemies[i].width == 'number' ? enemies[i].width : 20;
-      var enemyHeight = typeof enemies[i].height == 'number' ? enemies[i].height : 20;
-      var offsetx = typeof enemies[i].offsetx == 'number' ? enemies[i].offsetx : 0;
-      var offsety = typeof enemies[i].offsety == 'number' ? enemies[i].offsety : 0;
-
-      var enemyInHurtZone = Helper.overlap(enemies[i].x+offsetx,enemies[i].y+offsety,enemyWidth,enemyHeight,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
-      var enemyInKillZone = Helper.overlap(enemies[i].x+offsetx,enemies[i].y+offsety,enemyWidth,enemyHeight,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);
-      
-
-  		if(enemyInHurtZone) { // 1 = right
-        var direction = enemies[i].speedx > 0 ? 1 : -1;
-        players[playerIndex].speedx=direction * WorldConstants.kickbackForce;
-        for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount; bloodIndex++) {
-          particles.push(bloodFactory.createBlood(players[playerIndex].x, players[playerIndex].y, direction));
-        }
-
-        players[playerIndex].speedy=-0.25*WorldConstants.kickbackForce;
-  			players[0].hp-=2;
-        enemyIsInteracting = true;
-  		} else if(enemyInKillZone) {
-
-        enemies[i].hp--;
-        if(enemies[i].type=="boss") {
-            players[playerIndex].speedy=-8;
-            enemies[i].speedy/=1.5;
-        } else {
-          players[playerIndex].speedy=-4;
-        }
-
-        if(enemies[i].hp <= 0) {
-          var bloodAmount = typeof enemies[i].width == 'number' ? (enemies[i].width + enemies[i].height)*2 : WorldConstants.bloodAmount;
-          for(var bloodIndex = 0; bloodIndex < bloodAmount; bloodIndex++) {
-            particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, 1));
-            particles.push(bloodFactory.createBlood(enemies[i].x, enemies[i].y, -1));
-          }
-          if(enemies[i].type == "boss") {
-            animating = 3;
-            bossKilled = true;
-
-          }
-          enemies.splice(i,1); // Remove the enemy from the array
-
-    			score+=100;
-          scoreTimer = 10;
-          enemyIsDead = true;
-          break;
-        }
-
-  		}
-
+		EnemyManager.updateEnemy(enemies[i], players, bloodFactory, particles);
+    if(!enemies[i].alive) {
+      enemies.splice(i,1);
     }
-    if(!enemyIsDead && !enemyIsInteracting) {
-        enemies[i].move();
-    }
-	}
+    bossKilled = GameState.bossKilled;
+    score = GameState.score;
+    scoreTimer = GameState.scoreTimer;
 
-  for(var j = 0 ; j < enemies.length; j++) {
-    if(enemies[j].type=="boss") {
-      if(enemies[j].breakingBlock) {
-        for(let i = 0; i < 80; i++) {
+    if(enemies[i] && enemies[i].type=="boss") {
+      if(enemies[i].breakingBlock) {
+        for(let j = 0; j < 80; j++) {
           
-          particles.push(dirtParticleFactory.createParticle(enemies[j].x+enemies[j].width/2, enemies[j].y+enemies[j].height,100));
+          particles.push(dirtParticleFactory.createParticle(enemies[i].x+enemies[i].width/2, enemies[i].y+enemies[i].height,100));
         }
       }
-      if(enemies[j].firing) {
+      if(enemies[i].firing) {
 
         for(var playerIndex = 0; playerIndex < players.length; playerIndex++) {
           var currentPlayer = players[playerIndex];
@@ -631,19 +576,19 @@ var updateEnemies = function() {
           var beamStartx;
           var beamStarty;
           var beamHeight;
-          if(enemies[j].speedx < 0) {
-            beamWidth = enemies[j].x;
+          if(enemies[i].speedx < 0) {
+            beamWidth = enemies[i].x;
             beamStartx = 0;
-            beamStarty = enemies[j].y
-            beamHeight = enemies[j].height;
+            beamStarty = enemies[i].y
+            beamHeight = enemies[i].height;
           } else {
             beamWidth  = Viewport.width;
-            beamStartx = enemies[j].x+enemies[j].width;
-            beamStarty = enemies[j].y
-            beamHeight = enemies[j].height;
+            beamStartx = enemies[i].x+enemies[i].width;
+            beamStarty = enemies[i].y
+            beamHeight = enemies[i].height;
           }
           if(Helper.overlap(currentPlayer.x, currentPlayer.y, currentPlayer.width, currentPlayer.height,beamStartx, beamStarty, beamWidth,beamHeight)) {
-            var direction = enemies[j].speedx > 0 ? 1 : -1;
+            var direction = enemies[i].speedx > 0 ? 1 : -1;
             currentPlayer.speedx=direction*WorldConstants.kickbackForce;
             for(var bloodIndex = 0; bloodIndex < WorldConstants.bloodAmount/4; bloodIndex++) {
               particles.push(bloodFactory.createBlood(currentPlayer.x, currentPlayer.y, direction));
@@ -654,7 +599,6 @@ var updateEnemies = function() {
         }
       }
     }
-  }
 }
 
 var updateParticles = function() {
@@ -686,7 +630,7 @@ var checkKeys = function (modifier) {
     if(players[i].drawingRightBrakingSmoke > 1) {
       players[i].drawingRightBrakingSmoke = 0;
     }
-		if (animating=== 0 && players[i].keyUp in keysDown) {
+		if (GameState.animating=== 0 && players[i].keyUp in keysDown) {
       playerKeys[i][1] = "";
 			if(players[i].jumping < WorldConstants.maxJump) {
 				players[i].jumping++;
@@ -694,12 +638,12 @@ var checkKeys = function (modifier) {
 				if(players[i].speedy>-WorldConstants.jumpStrength)
 				    players[i].speedy=-WorldConstants.jumpAcc;
         }
-		} else if(animating === 0 && players[i].speedy<0) {
+		} else if(GameState.animating === 0 && players[i].speedy<0) {
       players[i].jumping=WorldConstants.maxJump;
       players[i].speedy/=1.05;
     }
 
-		if (animating === 0 && players[i].keyLeft in keysDown) {
+		if (GameState.animating === 0 && players[i].keyLeft in keysDown) {
       playerKeys[i][0] = "";
 		players[i].goingLeft = 1;
 		players[i].animationCounter++;
@@ -709,7 +653,7 @@ var checkKeys = function (modifier) {
 			if(players[i].speedx>-WorldConstants.maxSpeedx)
 				players[i].speedx -= WorldConstants.playerAcc * modifier;
 		}
-		else if (animating === 0 && players[i].keyRight in keysDown) {
+		else if (GameState.animating === 0 && players[i].keyRight in keysDown) {
       playerKeys[i][2] = "";
 		players[i].goingLeft = 0;
 		players[i].animationCounter++;
@@ -917,6 +861,7 @@ var drawAllText = function() {
     
     if(scoreTimer>0) {
       scoreTimer--;
+      GameState.scoreTimer--;
     }
     if(outOfBoundsTimer >= 3 && numFramesSinceStart > 10) {
       var fadeOutFactor = outOfBoundsTimer/100;
@@ -973,20 +918,20 @@ var GameLoop = function(){
 		loadLevel(levelNow);
 
 		init();
-    animating = 1;
+    GameState.animating = 1;
 	}
-  if(animating===1) {
+  if(GameState.animating===1) {
     Viewport.moveTowardsCenter(startPos.x,startPos.y,startPos.x,startPos.y, 30);
     if(players[0].x + Viewport.x > -1*players[0].width+5 &&
        players[0].x + Viewport.x < Viewport.width -5 &&
        players[0].y + Viewport.y < Viewport.height - players[0].height+10 &&
        players[0].y + Viewport.y > 0) {
 
-       animating = 0;
+       GameState.animating = 0;
     }
   }
 
-	if(animating===0) {
+	if(GameState.animating===0) {
 		checkKeys(1);
 
     playerIsOutOfBounds = false;
@@ -1001,9 +946,11 @@ var GameLoop = function(){
 
 	}
   renderBackgroundContent();
-  if(animating === 0) {
+  if(GameState.animating === 0) {
     render();
-    updateEnemies();
+    for(var i = 0; i < enemies.length; i++) {
+      updateEnemies(i);
+    }
     updateParticles();
     for(var i = 0; i < flies.length; i++) {
       flies[i].move(players, flowers);
@@ -1021,7 +968,7 @@ var GameLoop = function(){
 
   renderForegroundContent();
 
-  if(animating===2) {
+  if(GameState.animating===2) {
     playerIsOutOfBounds = false;
     checkKeys(1);
     render();
@@ -1029,7 +976,7 @@ var GameLoop = function(){
     bedlam.render(ctx);
     if(bedlam.isComplete()) {
       bedlam = null;
-      animating = 0;
+      GameState.animating = 0;
       totalNumVinylCollected+=vinylCollectedInLevel;
       if(bossKilled) {
         jukeBox.playFinalSong();
@@ -1050,7 +997,7 @@ var GameLoop = function(){
     }
   }
 
-  if(animating===3) {
+  if(GameState.animating===3) {
     bossDeadTimer--;
     checkKeys(0);
     for(var i = 0; i < players.length; i++) {
@@ -1064,7 +1011,7 @@ var GameLoop = function(){
     updateParticles();
     if(bossDeadTimer<=0) {
       bedlam = new Bedlam();
-      animating = 2;
+      GameState.animating = 2;
     }
   }
 
@@ -1086,10 +1033,10 @@ var GameLoop = function(){
   var arrayPos1 = Level.getBlockAtPos(players[0].getCenter());
   var arrayPos2 = players[1] ? Level.getBlockAtPos(players[1].getCenter()) : arrayPos1;
 
-	if(animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
+	if(GameState.animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
 			levelNow++;
 			lastScore=score;
-      animating=2;
+      GameState.animating=2;
       bedlam = new Bedlam();
   }
 
