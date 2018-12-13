@@ -80,6 +80,9 @@ var Player = (function () {
         }
         this.runningFromEnemy = 0;
     };
+    Player.prototype.getCenter = function () {
+        return new Vector(this.x + this.width / 2, this.y + this.height / 2);
+    };
     Player.prototype.drawHurtZone = function (context) {
         context.fillStyle = '#FF0a00';
         context.beginPath();

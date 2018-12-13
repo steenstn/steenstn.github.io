@@ -75,17 +75,17 @@ class Player {
   	this.keyRight = 0;
   }
 
- updateHurtZone() {
+ updateHurtZone() : void {
    this.hurtZonex = this.x + 3;
    this.hurtZoney = this.y + 5;
  }
 
- updateKillZone() {
+ updateKillZone() : void {
    this.killZonex = this.x+5;
    this.killZoney = this.y + this.height - 5;
  }
 
- isFacingPosition(x: number) {
+ isFacingPosition(x: number) : boolean{
    if(this.x > x && this.goingLeft === 1) {
      return true;
    } else if(this.x < x && this.goingLeft === 1) {
@@ -97,7 +97,7 @@ class Player {
    }
  }
 
- draw(context) {
+ draw(context) : void {
    if(this.animationCounter>this.animationSpeed) {
      this.animationCounter=0;
      this.currentFrame=1-this.currentFrame;
@@ -126,19 +126,23 @@ class Player {
    this.runningFromEnemy=0
  }
 
-drawHurtZone(context) {
-  context.fillStyle = '#FF0a00';
-  context.beginPath();
-  context.rect(this.hurtZonex + Viewport.x, this.hurtZoney + Viewport.y,this.hurtZoneWidth, this.hurtZoneHeight);
-  context.closePath();
-  context.fill();
-}
+  getCenter() : Vector {
+    return new Vector(this.x + this.width/2, this.y + this.height/2);
+  }
 
-drawKillZone(context) {
-  context.fillStyle = '#0aDD00';
-  context.beginPath();
-  context.rect(this.killZonex + Viewport.x, this.killZoney + Viewport.y,this.killZoneWidth, this.killZoneHeight);
-  context.closePath();
-  context.fill();
-}
+  drawHurtZone(context) : void {
+    context.fillStyle = '#FF0a00';
+    context.beginPath();
+    context.rect(this.hurtZonex + Viewport.x, this.hurtZoney + Viewport.y,this.hurtZoneWidth, this.hurtZoneHeight);
+    context.closePath();
+    context.fill();
+  }
+
+  drawKillZone(context) : void {
+    context.fillStyle = '#0aDD00';
+    context.beginPath();
+    context.rect(this.killZonex + Viewport.x, this.killZoney + Viewport.y,this.killZoneWidth, this.killZoneHeight);
+    context.closePath();
+    context.fill();
+  }
 }

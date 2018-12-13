@@ -15,6 +15,10 @@ class Level {
   static getBlockAt(x: number, y:number) {
     let index = Math.floor(x/Level.tileSize)+Math.floor(y/Level.tileSize)*Level.width;
     return Level.currentLevel[index];
+	}
+	
+	static getBlockAtPos(position : Vector) {
+    return this.getBlockAt(position.x, position.y);
   }
 
   static getIndexAt(x: number, y: number) : number {

@@ -47,6 +47,7 @@
 </head>
 <body>
 
+<script src="js/Vector.js" type="text/javascript"></script>
 <script src="js/Level.js" type="text/javascript"></script>
 <script src="js/LevelTile.js" type="text/javascript"></script>
 <script src="js/Viewport.js" type="text/javascript"></script>
@@ -1080,8 +1081,8 @@ var GameLoop = function(){
     }
   }
 
-  var arrayPos1 = Level.getBlockAt(players[0].x + players[0].width/2, players[0].y + players[0].height/2);
-  var arrayPos2 = players[1] ? Level.getBlockAt(players[1].x + players[1].width/2, players[1].y + players[1].height/2) : arrayPos1;
+  var arrayPos1 = Level.getBlockAtPos(players[0].getCenter());
+  var arrayPos2 = players[1] ? Level.getBlockAtPos(players[1].getCenter()) : arrayPos1;
 
 	if(animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
 			levelNow++;
