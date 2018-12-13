@@ -156,7 +156,6 @@ var finalImage = new Image();
 finalImage.src = "studiofinal.png";
 
 var bossDeadTimer = 160;
-var bossKilled = false;
 var logoImage = new Image();
 logoImage.src = "logo2.png";
 
@@ -557,7 +556,6 @@ var updateEnemies = function(i) {
     if(!enemies[i].alive) {
       enemies.splice(i,1);
     }
-    bossKilled = GameState.bossKilled;
     score = GameState.score;
     scoreTimer = GameState.scoreTimer;
 
@@ -978,7 +976,7 @@ var GameLoop = function(){
       bedlam = null;
       GameState.animating = 0;
       totalNumVinylCollected+=vinylCollectedInLevel;
-      if(bossKilled) {
+      if(GameState.bossKilled) {
         jukeBox.playFinalSong();
         endScreen();
         return;
