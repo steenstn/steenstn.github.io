@@ -115,18 +115,12 @@ var totalVinylsInAllLevels = 0;
 
 var bloodImage = new Image();
 bloodImage.src = "particles/bloodpixel.png";
-bloodImage.width=1;
-bloodImage.height=1;
 
 var coinParticleImage=new Image();
 coinParticleImage.src = "particles/coinpixel.png";
-coinParticleImage.width=2;
-coinParticleImage.height=2;
 
 var dirtParticleImage=new Image();
 dirtParticleImage.src = "particles/dirtpixel.png";
-dirtParticleImage.width=2;
-dirtParticleImage.height=2;
 
 var healthParticleImage = new Image();
 healthParticleImage.src = "particles/greenpixel.png";
@@ -169,8 +163,6 @@ var effects = [];
 var bedlam;
 
 
-
-
 var image = new Image();
 image.src = "playersprite.png";
 image.width = 180;
@@ -180,37 +172,16 @@ var image2 = new Image();
 image2.src = "playersprite2.png";
 image2.width = 180;
 image2.height = 120;
-var players = [];//[new Player(2*Level.tileSize, 2*Level.tileSize, image), new Player(2*Level.tileSize,2*Level.tileSize,image2)];
-
+var players = [];
 var playerIsOutOfBounds = false;
 var outOfBoundsTimer = 0;
 var scoreTimer = 0;
 
 var playerKeys = [];
 
-// A - 65
-// D 68
-// W 87
-// S 83
-// 38 up 37 left 39 right
-/*
-players[0].keyLeft = 37
-players[0].keyUp = 38
-players[0].keyRight = 39
-if(players[1]) {
-  players[1].keyLeft = 65
-  players[1].keyRight = 68
-  players[1].keyUp = 87
-}*/
 
 var lastScore = 0;
 var startPos = {};
-var skurkImage = new Image();
-skurkImage.src = "skurkerister.png";
-skurkImage.width = 120;
-skurkImage.height = 30;
-
-Bouncer.image = skurkImage;
 
 var backgroundImage = new Image();
 backgroundImage.src = "background.png";
@@ -218,8 +189,9 @@ backgroundImage.src = "background.png";
 var background = new Background(ctx);
 var mutantSpecs;
 
-for(var i=0;i<Level.currentLevel.length;i++)
+for(var i=0;i<Level.currentLevel.length;i++) {
 	Level.currentLevel[i]=new Object();
+}
 
 var enemies={};
 var content = [];
@@ -260,9 +232,9 @@ var addPlayer = function(playerImage, keyLeft, keyUp, keyRight) {
 
 var setUpKeyMap = function() {
   playerKeys.push(["⇦", "⇧", "⇨"]);
-if(players[1]) {
-  playerKeys.push(["A", "W", "D"]);
-}
+  if(players[1]) {
+    playerKeys.push(["A", "W", "D"]);
+  }
 }
 
 
