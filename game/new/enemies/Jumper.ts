@@ -11,8 +11,8 @@ class Jumper extends Enemy {
   animationCounter = 0;
   currentFrame = 0;
 
-  constructor(enemy, currentLevel) {
-    super(new JumpingStrategy(enemy, currentLevel));
+  constructor(enemy) {
+    super(new JumpingStrategy(enemy));
     this.x = enemy.x;
     this.y = enemy.y;
     this.oldx = enemy.oldx;

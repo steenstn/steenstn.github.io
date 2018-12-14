@@ -9,8 +9,8 @@ class Mutant extends Enemy {
   idleCurrentFrame = 0;
   direction : number;
 
-  constructor(enemy, currentLevel) {
-    super(new MutantStrategy(enemy, currentLevel));
+  constructor(enemy) {
+    super(new MutantStrategy(enemy));
     this.x = enemy.x;
     this.y = enemy.y;
     this.oldx = enemy.oldx;

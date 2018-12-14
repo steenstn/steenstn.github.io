@@ -1,7 +1,6 @@
 var JumpingStrategy = (function () {
-    function JumpingStrategy(enemy, currentLevel) {
+    function JumpingStrategy(enemy) {
         this.enemy = enemy;
-        this.currentLevel = currentLevel;
     }
     JumpingStrategy.prototype.move = function (enemy) {
         enemy.animationCounter++;

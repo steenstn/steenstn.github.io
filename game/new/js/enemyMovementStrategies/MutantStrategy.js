@@ -1,7 +1,6 @@
 var MutantStrategy = (function () {
-    function MutantStrategy(enemy, currentLevel) {
+    function MutantStrategy(enemy) {
         this.enemy = enemy;
-        this.currentLevel = currentLevel;
         this.mutantWidth = 88;
         this.mutantHeight = 36;
         this.idleTimer = 60;

@@ -13,8 +13,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Boss = (function (_super) {
     __extends(Boss, _super);
-    function Boss(enemy, currentLevel) {
-        var _this = _super.call(this, new BossStrategy(enemy, currentLevel)) || this;
+    function Boss(enemy) {
+        var _this = _super.call(this, new BossStrategy(enemy)) || this;
         _this.speedx = 4.5;
         _this.speedy = 0;
         _this.width = 60;

@@ -1,7 +1,6 @@
 var FlyingStrategy = (function () {
-    function FlyingStrategy(enemy, currentLevel) {
+    function FlyingStrategy(enemy) {
         this.enemy = enemy;
-        this.currentLevel = currentLevel;
         this.animationCounter = 0;
     }
     FlyingStrategy.prototype.move = function (enemy) {

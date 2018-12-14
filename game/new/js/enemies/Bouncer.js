@@ -13,8 +13,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Bouncer = (function (_super) {
     __extends(Bouncer, _super);
-    function Bouncer(enemy, currentLevel) {
-        var _this = _super.call(this, new FlyingStrategy(enemy, currentLevel)) || this;
+    function Bouncer(enemy) {
+        var _this = _super.call(this, new FlyingStrategy(enemy)) || this;
         _this.currentFrame = 0;
         _this.x = enemy.x;
         _this.y = enemy.y;

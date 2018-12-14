@@ -57,6 +57,7 @@
 <script src="js/Background.js" type="text/javascript"></script>
 <script src="js/WorldConstants.js" type="text/javascript"></script>
 <script src="js/particles/Particle.js" type="text/javascript"></script>
+<script src="js/ParticleManager.js" type="text/javascript"></script>
 <script src="js/particles/BloodParticle.js" type="text/javascript"></script>
 <script src="js/particles/TimedParticle.js" type="text/javascript"></script>
 <script src="js/particles/HealthParticle.js" type="text/javascript"></script>
@@ -679,19 +680,19 @@ var loadContent = function(levelName) {
     switch(enemies[i].type) {
       case "skull":
       case "skurkerist": 
-          enemies[i]= new Skull(enemies[i], Level.currentLevel)
+          enemies[i]= new Skull(enemies[i])
         break;
       case "mutant":
-        enemies[i] = new Mutant(enemies[i], Level.currentLevel);
+        enemies[i] = new Mutant(enemies[i]);
         break;
       case "jumper": 
-        enemies[i] = new Jumper(enemies[i], Level.currentLevel);
+        enemies[i] = new Jumper(enemies[i]);
         break;
       case "bouncer": 
-        enemies[i] = new Bouncer(enemies[i], Level.currentLevel);
+        enemies[i] = new Bouncer(enemies[i]);
         break;
       case "boss":
-        enemies[i] = new Boss(enemies[i], Level.currentLevel);
+        enemies[i] = new Boss(enemies[i]);
         break;
     }
 

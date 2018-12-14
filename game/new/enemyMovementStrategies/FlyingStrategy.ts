@@ -1,7 +1,7 @@
 class FlyingStrategy{
 
   private animationCounter = 0;
-  constructor(public enemy, public currentLevel){
+  constructor(public enemy){
   }
 
   move(enemy : Bouncer) {

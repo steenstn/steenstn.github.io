@@ -1,7 +1,6 @@
 var BossStrategy = (function () {
-    function BossStrategy(enemy, currentLevel) {
+    function BossStrategy(enemy) {
         this.enemy = enemy;
-        this.currentLevel = currentLevel;
         this.chargingCounter = 60;
         this.reloadCounter = 500;
         this.shootingCounter = 100;

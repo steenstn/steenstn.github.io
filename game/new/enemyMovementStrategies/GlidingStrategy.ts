@@ -1,5 +1,5 @@
 class GlidingStrategy{
-  constructor(public enemy, public currentLevel) {
+  constructor(public enemy) {
 
   }
   move(enemy : Skull) {

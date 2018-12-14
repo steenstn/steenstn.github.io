@@ -13,8 +13,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Skull = (function (_super) {
     __extends(Skull, _super);
-    function Skull(enemy, currentLevel) {
-        var _this = _super.call(this, new GlidingStrategy(enemy, currentLevel)) || this;
+    function Skull(enemy) {
+        var _this = _super.call(this, new GlidingStrategy(enemy)) || this;
         _this.speedx = 0;
         _this.width = 28;
         _this.height = 35;

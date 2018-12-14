@@ -12,8 +12,8 @@ class Boss extends Enemy {
   firing : boolean;
   breakingBlock = false;
 
-  constructor(enemy, currentLevel) {
-    super(new BossStrategy(enemy, currentLevel));
+  constructor(enemy) {
+    super(new BossStrategy(enemy));
     this.x = enemy.x;
     this.y = enemy.y;
     this.hp = this.maxHp;

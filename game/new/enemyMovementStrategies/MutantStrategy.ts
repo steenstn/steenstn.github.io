@@ -3,7 +3,7 @@ class MutantStrategy implements IEnemyMovementStrategy {
   private mutantHeight = 36;
   private idleTimer = 60;
   private idle = false;
-  constructor(public enemy, public currentLevel) {
+  constructor(public enemy) {
 
   }
 

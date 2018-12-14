@@ -1,6 +1,6 @@
 class JumpingStrategy  {
 
-  constructor(public enemy, public currentLevel) {
+  constructor(public enemy) {
 
   }
 

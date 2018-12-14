@@ -13,8 +13,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Jumper = (function (_super) {
     __extends(Jumper, _super);
-    function Jumper(enemy, currentLevel) {
-        var _this = _super.call(this, new JumpingStrategy(enemy, currentLevel)) || this;
+    function Jumper(enemy) {
+        var _this = _super.call(this, new JumpingStrategy(enemy)) || this;
         _this.width = 10;
         _this.height = 20;
         _this.offsetx = 3;

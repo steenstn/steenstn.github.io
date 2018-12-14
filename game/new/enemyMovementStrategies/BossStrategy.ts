@@ -6,7 +6,7 @@ class BossStrategy{
   public static readonly SHOOTING = 1;
   public static readonly JUMPING = 2;
   public currentState : number;
-  constructor(public enemy, public currentLevel){
+  constructor(public enemy){
     this.currentState = BossStrategy.JUMPING;
   }
 

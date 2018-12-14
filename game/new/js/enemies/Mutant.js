@@ -13,8 +13,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Mutant = (function (_super) {
     __extends(Mutant, _super);
-    function Mutant(enemy, currentLevel) {
-        var _this = _super.call(this, new MutantStrategy(enemy, currentLevel)) || this;
+    function Mutant(enemy) {
+        var _this = _super.call(this, new MutantStrategy(enemy)) || this;
         _this.speedx = 3;
         _this.width = 80;
         _this.height = 36;

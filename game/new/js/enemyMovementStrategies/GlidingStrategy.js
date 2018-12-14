@@ -1,7 +1,6 @@
 var GlidingStrategy = (function () {
-    function GlidingStrategy(enemy, currentLevel) {
+    function GlidingStrategy(enemy) {
         this.enemy = enemy;
-        this.currentLevel = currentLevel;
     }
     GlidingStrategy.prototype.move = function (enemy) {
         if (enemy.direction == 1) {

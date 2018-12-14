@@ -6,8 +6,8 @@ class Skull extends Enemy {
   offsetx=3;
   acceleration;
   direction : number;
-  constructor(enemy, currentLevel) {
-    super(new GlidingStrategy(enemy, currentLevel));
+  constructor(enemy) {
+    super(new GlidingStrategy(enemy));
     this.x = enemy.x;
     this.y = enemy.y;
     this.oldx = enemy.oldx;
