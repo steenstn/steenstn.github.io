@@ -104,8 +104,6 @@ c.width = Viewport.width;
 c.height = Viewport.height;
 
 var lastLevel = 0;
-var levelNow = 1; // Number of current level
-
 var numDeaths = 0;
 var score = 0;
 var dead=0;
@@ -680,7 +678,7 @@ var loadContent = function(levelName) {
     switch(enemies[i].type) {
       case "skull":
       case "skurkerist": 
-          enemies[i]= new Skull(enemies[i])
+        enemies[i]= new Skull(enemies[i])
         break;
       case "mutant":
         enemies[i] = new Mutant(enemies[i]);
@@ -743,7 +741,7 @@ var loadLevel = function(levelNumber) {
   var txtFile = new XMLHttpRequest();
   ctx.textAlign = "left";
   drawText("Loading song...", 10,10);
-  jukeBox.selectSong(levelNow);
+  jukeBox.selectSong(GameState.currentLevel);
 
   drawText("Loading level...", 10, 20);
   txtFile.open("GET", "levels/" + levelName + ".txt", true);
@@ -914,7 +912,7 @@ var GameLoop = function(){
     numDeaths++;
     vinylCollectedInLevel = 0;
     flies= [];
-		loadLevel(levelNow);
+		loadLevel(GameState.currentLevel);
 
 		init();
     GameState.animating = 1;
@@ -983,7 +981,7 @@ var GameLoop = function(){
         return;
       } else {
 
-        loadLevel(levelNow);
+        loadLevel(GameState.currentLevel);
 
         init();
             
@@ -1033,7 +1031,7 @@ var GameLoop = function(){
   var arrayPos2 = players[1] ? Level.getBlockAtPos(players[1].getCenter()) : arrayPos1;
 
 	if(GameState.animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
-			levelNow++;
+    GameState.currentLevel++;
 			lastScore=score;
       GameState.animating=2;
       bedlam = new Bedlam();
@@ -1142,7 +1140,7 @@ var IntroScreen = function() {
         setUpKeyMap();
 
         stars = null;
-        loadLevel(levelNow);
+        loadLevel(GameState.currentLevel);
         GameLoop();
         var x2 = players[1] ? players[1].x : players[0].x;
         var y2 = players[1] ? players[1].y : players[0].y;
@@ -1154,8 +1152,8 @@ var IntroScreen = function() {
         addPlayer(image2,65,87,68);
         setUpKeyMap();
         stars = null;
-        levelNow = 0;
-        loadLevel(levelNow);
+        GameState.currentLevel = 0;
+        loadLevel(GameState.currentLevel);
         var x2 = players[1] ? players[1].x : players[0].x;
         var y2 = players[1] ? players[1].y : players[0].y;
         

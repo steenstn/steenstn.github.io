@@ -2,7 +2,6 @@ class Bedlam {
   private image = new Image();
   private x : number;
   private y : number;
-  private targetPlayer : any;
   private animCounter = 0;
   private currentFrame = 0;
   constructor() {
@@ -11,7 +10,7 @@ class Bedlam {
       this.image.src = "bedlam.png";
   }
 
-  move(players: any[]) {
+  move(players: Array<Player>) {
     this.animCounter++;
     if(this.animCounter>4) {
       this.animCounter = 0;
