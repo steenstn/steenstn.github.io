@@ -1,5 +1,5 @@
 var Fly = (function () {
-    function Fly(image, x, y) {
+    function Fly(x, y) {
         this.safePositionSet = false;
         this.homeAttacked = 0;
         this.x = x;
@@ -8,10 +8,10 @@ var Fly = (function () {
         this.targety = y;
         this.homex = x;
         this.homey = y;
-        this.image = image;
         this.state = Fly.SEARCHING;
         this.inDanger = false;
         this.nectarCollected = 0;
+        Fly.image.src = "fly.png";
     }
     Fly.prototype.move = function (players, flowers) {
         if (Helper.outOfBounds(this.x, this.y)) {
@@ -102,8 +102,9 @@ var Fly = (function () {
         this.y += ySpeed + sideSpeedY;
     };
     Fly.prototype.render = function (context) {
-        context.drawImage(this.image, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
+        context.drawImage(Fly.image, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
     };
+    Fly.image = new Image();
     Fly.GOING_HOME = 0;
     Fly.FLEEING = 1;
     Fly.SEARCHING = 2;

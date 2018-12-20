@@ -200,8 +200,6 @@ var foregroundContent = [];
 var particles = [];
 
 var flies = [];
-var flyImage = new Image();
-flyImage.src = "fly.png";
 
 Level.loadTileset();
 
@@ -790,7 +788,7 @@ var setUpContent = function() {
       case "flynest":
 
         for(var j = 0; j < content[i].numFlies; j++) {
-          flies.push(new Fly(flyImage, content[i].x, content[i].y));
+          flies.push(new Fly(content[i].x, content[i].y));
         }
         break;
       case "flower1":

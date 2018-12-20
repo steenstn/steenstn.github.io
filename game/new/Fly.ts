@@ -5,7 +5,6 @@ class Fly {
   private targety : number;
   private homex : number;
   private homey : number;
-  private image : any;
   private state : number;
   private oldState : number;
   private safex : number;
@@ -13,6 +12,7 @@ class Fly {
   private safePositionSet = false;
   private nectarCollected : number;
   private inDanger : boolean;
+  static image = new Image();
 
   private static GOING_HOME = 0;
   private static FLEEING = 1;
@@ -21,17 +21,17 @@ class Fly {
 
   private homeAttacked = 0;
 
-  constructor(image : any, x: number, y: number) {
+  constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
     this.targetx = x;
     this.targety = y;
     this.homex = x;
     this.homey = y;
-    this.image = image;
     this.state = Fly.SEARCHING;
     this.inDanger = false;
     this.nectarCollected = 0;
+    Fly.image.src = "fly.png";
   }
 
   move(players : any, flowers : any) {
@@ -136,7 +136,7 @@ class Fly {
   render(context) {
     //context.fillStyle = "#FFFFFF";
     //context.fillRect(Math.round(Viewport.x + this.targetx), Math.round(Viewport.y + this.targety), 2, 2);
-    context.drawImage(this.image, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
+    context.drawImage(Fly.image, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
     //context.fillText(index, Math.round(Viewport.x + this.x), Math.round(Viewport.y + this.y));
   }
 }
