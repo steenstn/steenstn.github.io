@@ -179,7 +179,6 @@ var scoreTimer = 0;
 
 var playerKeys = [];
 
-
 var lastScore = 0;
 var startPos = {};
 
@@ -187,7 +186,6 @@ var backgroundImage = new Image();
 backgroundImage.src = "background.png";
 
 var background = new Background(ctx);
-var mutantSpecs;
 
 for(var i=0;i<Level.currentLevel.length;i++) {
 	Level.currentLevel[i]=new Object();
@@ -234,7 +232,6 @@ var setUpKeyMap = function() {
     playerKeys.push(["A", "W", "D"]);
   }
 }
-
 
 var keysDown = {};
 
@@ -352,7 +349,6 @@ var renderContent = function(content) {
         break;
 
     }
-
 }
 
 var updatePlayer = function(index) {
@@ -757,7 +753,6 @@ var loadLevel = function(levelNumber) {
   txtFile.send(null);
 
   drawText("Loading enemies...", 10, 40);
-  mutantSpecs = Helper.loadJsonFile('enemies/mutant.json');
   content.length = 0;
   flies.length = 0;
   backgroundContent.length = 0;
@@ -786,7 +781,6 @@ var setUpContent = function() {
         startPos.y = content[i].y;
 	      break;
       case "flynest":
-
         for(var j = 0; j < content[i].numFlies; j++) {
           flies.push(new Fly(content[i].x, content[i].y));
         }
@@ -815,7 +809,6 @@ var drawAllText = function() {
     ctx.textBaseline = 'Top';
     ctx.textAlign = 'left';
     ctx.fillText  ("Score:", 4,20);
-    ctx.textAlign = 'left';
     ctx.font         = scoreFontSize + 'px Verdana';
     ctx.fillText  (score, 55,20);
     ctx.font         = '14px Verdana';
