@@ -5,7 +5,8 @@ var PlayerHealthBar = (function () {
             _this.counter++;
             var g = _this.player.hp * 2 + 29;
             var r = 250 - _this.player.hp * 2;
-            context.fillStyle = "rgb(" + r + "," + g + ",28)";
+            var b = 28;
+            context.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
             if (_this.player.hp > 20) {
                 context.fillRect(Viewport.width / 2 - 50, 16, Math.round(_this.player.hp), 8);
             }

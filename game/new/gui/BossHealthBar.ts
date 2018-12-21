@@ -8,6 +8,9 @@ class BossHealthBar implements GUIRenderable {
     }
 
     render = (context) => {
+        if(!this.boss || this.boss.hp < 1) {
+            return;
+        }
         context.fillStyle = this.boss.hp !== this.oldHp ? "#ffffff" : "#fa0000";
 
         context.fillRect(Viewport.width-50, Viewport.height-this.barSize*this.boss.hp-10, 30, this.barSize*this.boss.hp);

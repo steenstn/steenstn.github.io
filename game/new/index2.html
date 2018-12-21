@@ -549,12 +549,6 @@ var updateEnemies = function(i) {
     }
 }
 
-var updateParticles = function() {
-  for(var i = 0; i < particles.length; i++) {
-    particles[i].move();
-  }
-}
-
 var checkKeys = function (modifier) {
 
 //console.log(keysDown);
@@ -852,7 +846,8 @@ var GameLoop = function(){
 
 		init();
     GameState.animating = 1;
-	}
+  }
+  
   if(GameState.animating===1) {
     Viewport.moveTowardsCenter(startPos.x,startPos.y,startPos.x,startPos.y, 30);
     if(players[0].x + Viewport.x > -1*players[0].width+5 &&
@@ -870,7 +865,6 @@ var GameLoop = function(){
     playerIsOutOfBounds = false;
     for(var i = 0; i < players.length; i++) {
       updatePlayer(i);
-		
     }
     var x2 = players[1] ? players[1].x : players[0].x+(players[0].goingLeft ? -50 : 50)+10*players[0].speedx;
     var y2 = players[1] ? players[1].y : players[0].y;
@@ -885,7 +879,7 @@ var GameLoop = function(){
     for(var i = 0; i < enemies.length; i++) {
       updateEnemies(i);
     }
-    updateParticles();
+    particles.forEach((p) => p.move());
     for(var i = 0; i < flies.length; i++) {
       flies[i].move(players, flowers);
     }
@@ -943,7 +937,7 @@ var GameLoop = function(){
     var y2 = players[1] ? players[1].y : players[0].y;
     Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
     render();
-    updateParticles();
+    particles.forEach((p) => p.move());
     if(bossDeadTimer<=0) {
       bedlam = new Bedlam();
       GameState.animating = 2;
@@ -1033,7 +1027,6 @@ var IntroScreen = function() {
       }
       ctx.fillStyle    = '#FFF';
       ctx.textAlign = 'center';
-      ctx.font         = '12px Verdana';
       ctx.font         = '26px Verdana';
       ctx.fillText("-Back to the Studio-", 320, 170);
       ctx.font         = '10px Verdana';
