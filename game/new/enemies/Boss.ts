@@ -6,7 +6,7 @@ class Boss extends Enemy {
   height = 60;
   type = "boss";
   currentState = BossStrategy.JUMPING;
-  private maxHp = 30;
+  readonly maxHp = 30;
   private oldHp;
   private hurtAnimationCounter : number;
   firing : boolean;
@@ -22,7 +22,6 @@ class Boss extends Enemy {
     this.hurtAnimationCounter = 10;
     this.firing = false;
   }
-
 
   draw(context) {
     let offsetx;
@@ -60,16 +59,7 @@ class Boss extends Enemy {
     context.drawImage(Boss.image, offsetx, 60*offsety,60, 60, Math.round(this.x+Viewport.x), Math.round(this.y+Viewport.y), 60, 60);
 
     this.hurtAnimationCounter--;
-  }
-
-  drawHp(context) {
-    let barSize = 4;
-    context.fillStyle = this.hp !== this.oldHp ? "#ffffff" : "#fa0000";
-
-    context.fillRect(Viewport.width-50, Viewport.height-barSize*this.hp-10, 30, barSize*this.hp);
-
-    context.strokeStyle = "#ffffff";
-    context.strokeRect(Viewport.width-50, Viewport.height-barSize*this.maxHp-10, 30, barSize*this.maxHp);
     this.oldHp = this.hp;
   }
+
 }

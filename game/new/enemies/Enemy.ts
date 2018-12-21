@@ -21,8 +21,4 @@ class Enemy {
   move() {
     this.movementStrategy.move(this);
   }
-
-  drawHp(context) {
-    
-  }
 }

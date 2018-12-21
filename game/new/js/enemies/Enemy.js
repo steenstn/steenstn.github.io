@@ -7,7 +7,5 @@ var Enemy = (function () {
     Enemy.prototype.move = function () {
         this.movementStrategy.move(this);
     };
-    Enemy.prototype.drawHp = function (context) {
-    };
     return Enemy;
 }());

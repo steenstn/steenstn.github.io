@@ -51,6 +51,7 @@
 <script src="js/Vector.js" type="text/javascript"></script>
 <script src="js/GUIRenderable.js" type="text/javascript"></script>
 <script src="js/PlayerHealthBar.js" type="text/javascript"></script>
+<script src="js/BossHealthBar.js" type="text/javascript"></script>
 <script src="js/Level.js" type="text/javascript"></script>
 <script src="js/LevelTile.js" type="text/javascript"></script>
 <script src="js/Viewport.js" type="text/javascript"></script>
@@ -146,7 +147,7 @@ var healthParticleFactory = new HealthParticleFactory(healthParticleImage);
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
 var dirtParticleFactory = new TimedParticleFactory(dirtParticleImage);
 
-var playerHealthBar;
+var GUIRenderables = [];
 var finalImage = new Image();
 finalImage.src = "studiofinal.png";
 
@@ -222,9 +223,7 @@ var addPlayer = function(playerImage, keyLeft, keyUp, keyRight) {
   p.keyUp = keyUp;
   p.keyRight = keyRight;
   players.push(p);
-  if(!playerHealthBar) {
-    playerHealthBar = new PlayerHealthBar(p);
-  }
+  
 }
 
 var setUpKeyMap = function() {
@@ -658,6 +657,7 @@ var loadContent = function(levelName) {
         break;
       case "boss":
         enemies[i] = new Boss(enemies[i]);
+        GUIRenderables.push(new BossHealthBar(enemies[i]));
         break;
     }
 
@@ -848,9 +848,7 @@ var drawAllText = function() {
     }
 	ctx.strokeStyle = "black";
 	ctx.strokeRect(Viewport.width/2-51,15,102,10);
-	if(players[0].dead==0) {
-    playerHealthBar.render(ctx);
-	}
+	
 
 }
 
@@ -966,10 +964,8 @@ var GameLoop = function(){
       GameState.animating = 2;
     }
   }
+  flies.forEach((f) => f.render(ctx));
 
-  for(var i = 0; i < flies.length; i++) {
-    flies[i].render(ctx);
-  }
   if(numFramesSinceStart%50 === 0) {
     particleCleaner.cleanupBlood(particles);
     cleanSmoke();
@@ -992,9 +988,8 @@ var GameLoop = function(){
       bedlam = new Bedlam();
   }
 
-  for(var i = 0; i < enemies.length; i++) {
-    enemies[i].drawHp(ctx);
-  }
+  GUIRenderables.forEach((g) => g.render(ctx));
+
   ctx.drawImage(Level.tileset, 64, 128, 32, 32, 4, Viewport.height-35, 32, 32);
 	drawAllText();
 
@@ -1092,6 +1087,7 @@ var IntroScreen = function() {
           addPlayer(image,37,38,39);
           addPlayer(image2,65,87,68);
         }
+        GUIRenderables.push(new PlayerHealthBar(players[0]));
         setUpKeyMap();
 
         stars = null;
@@ -1105,6 +1101,7 @@ var IntroScreen = function() {
       } else if(77 in keysDown && 86 in keysDown) {
         addPlayer(image,37,38,39);
         addPlayer(image2,65,87,68);
+        GUIRenderables.push(new PlayerHealthBar(players[0]));
         setUpKeyMap();
         stars = null;
         GameState.currentLevel = 0;
