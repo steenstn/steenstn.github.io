@@ -283,10 +283,8 @@ var render = function(){
       players[i].drawKillZone(ctx);
     }
 
-	}
-  for(var i = 0; i < effects.length; i++) {
-    effects[i].draw(ctx);
   }
+  effects.forEach((e) => e.draw(ctx));
 };
 
 var renderEnemies = function()
@@ -306,18 +304,6 @@ var renderEnemies = function()
     }
     enemies[i].draw(ctx);
 	}
-}
-
-var renderBackgroundContent = function() {
-  for(var i = 0; i < backgroundContent.length; i++) {
-    renderContent(backgroundContent[i]);
-  }
-}
-
-var renderForegroundContent = function() {
-  for(var i = 0; i < foregroundContent.length; i++) {
-    renderContent(foregroundContent[i]);
-  }
 }
 
 var renderContent = function(content) {
@@ -895,7 +881,8 @@ var GameLoop = function(){
     Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
 
 	}
-  renderBackgroundContent();
+  backgroundContent.forEach((c) => renderContent(c));
+
   if(GameState.animating === 0) {
     render();
     for(var i = 0; i < enemies.length; i++) {
@@ -916,7 +903,8 @@ var GameLoop = function(){
     }
   }
 
-  renderForegroundContent();
+  foregroundContent.forEach((c) => renderContent(c));
+
 
   if(GameState.animating===2) {
     playerIsOutOfBounds = false;
