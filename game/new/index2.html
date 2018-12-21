@@ -128,34 +128,33 @@ var healthParticleImage = new Image();
 healthParticleImage.src = "particles/greenpixel.png";
 
 var rock1Image = new Image();
-rock1Image.src = "rock1.png";
+rock1Image.src = "images/rock1.png";
 
 var baguetterockImage = new Image();
-baguetterockImage.src = "baguetterock.png";
+baguetterockImage.src = "images/baguetterock.png";
 
 var tree1Image = new Image();
-tree1Image.src = "tree1.png";
+tree1Image.src = "images/tree1.png";
 
 var grassImage = new Image();
-grassImage.src = "grass.png";
+grassImage.src = "images/grass.png";
 var flower1Image = new Image();
-flower1Image.src = "flower1.png";
+flower1Image.src = "images/flower1.png";
 var vines1Image = new Image();
-vines1Image.src = "vines1.png";
+vines1Image.src = "images/vines1.png";
 
 var healthParticleFactory = new HealthParticleFactory(healthParticleImage);
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
 var dirtParticleFactory = new TimedParticleFactory(dirtParticleImage);
 
-var GUIRenderables = [];
 var finalImage = new Image();
-finalImage.src = "studiofinal.png";
+finalImage.src = "images/studiofinal.png";
 
 var bossDeadTimer = 160;
 var logoImage = new Image();
-logoImage.src = "logo2.png";
+logoImage.src = "images/logo2.png";
 
-var jukeBox = new Jukebox(["roulette_dares.mp3","teflon.mp3", "eriatarka.mp3", "vermicide.mp3", "televators.mp3", "cotopaxi.mp3"], "inertiaticesp.mp3");
+var jukeBox = new Jukebox(["songs/roulette_dares.mp3","songs/teflon.mp3", "songs/eriatarka.mp3", "songs/vermicide.mp3", "songs/televators.mp3", "songs/cotopaxi.mp3"], "songs/inertiaticesp.mp3");
 var bloodFactory = new BloodFactory(bloodImage);
 
 var particleCleaner = new ParticleCleaner();
@@ -167,10 +166,10 @@ var bedlam;
 
 
 var image = new Image();
-image.src = "playersprite.png";
+image.src = "images/playersprite.png";
 
 var image2 = new Image();
-image2.src = "playersprite2.png";
+image2.src = "images/playersprite2.png";
 var players = [];
 var playerIsOutOfBounds = false;
 var outOfBoundsTimer = 0;
@@ -182,7 +181,7 @@ var lastScore = 0;
 var startPos = {};
 
 var backgroundImage = new Image();
-backgroundImage.src = "background.png";
+backgroundImage.src = "images/background.png";
 
 var background = new Background(ctx);
 
@@ -195,6 +194,7 @@ var content = [];
 var backgroundContent = [];
 var foregroundContent = [];
 var particles = [];
+var GUIRenderables = [];
 
 var flies = [];
 
@@ -223,7 +223,6 @@ var addPlayer = function(playerImage, keyLeft, keyUp, keyRight) {
   p.keyUp = keyUp;
   p.keyRight = keyRight;
   players.push(p);
-  
 }
 
 var setUpKeyMap = function() {
@@ -834,8 +833,6 @@ var drawAllText = function() {
     }
 	ctx.strokeStyle = "black";
 	ctx.strokeRect(Viewport.width/2-51,15,102,10);
-	
-
 }
 
 var GameLoop = function(){
@@ -1102,7 +1099,7 @@ var IntroScreen = function() {
         return;
       } 
     }
-    gLoop = setTimeout(IntroScreen, 1000 / 50);
+    gLoop = setTimeout(IntroScreen, 20);
 }
 
 var endScreen = function() {
@@ -1120,7 +1117,7 @@ var endScreen = function() {
   ctx.fillText("Final score: " + score, 50, 220);
   ctx.fillText("Vinyls collected: " + totalNumVinylCollected + "/" + totalVinylsInAllLevels, 50, 245);
   ctx.fillText("Number of deaths: " + numDeaths, 50, 270);
-  gLoop = setTimeout(endScreen, 1000 / 50);
+  gLoop = setTimeout(endScreen, 20);
 }
 jukeBox.selectSong(0);
 ctx.fillStyle = "#f00";

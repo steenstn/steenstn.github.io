@@ -18,7 +18,7 @@ class Boss extends Enemy {
     this.y = enemy.y;
     this.hp = this.maxHp;
     this.oldHp = this.hp;
-    Boss.image.src = "deloused.png";
+    Boss.image.src = "images/deloused.png";
     this.hurtAnimationCounter = 10;
     this.firing = false;
   }

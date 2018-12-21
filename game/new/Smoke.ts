@@ -8,7 +8,7 @@ class Smoke {
   static readonly RightSmoke = 2;
 
   constructor(private x: number, private y: number,private mode: number) {
-    Smoke.image.src="smoke.png";
+    Smoke.image.src="images/smoke.png";
     this.animationTimer = 0;
     this.done = false;
   }

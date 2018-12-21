@@ -27,7 +27,7 @@ var Mutant = (function (_super) {
         _this.oldx = enemy.oldx;
         _this.oldy = enemy.oldy;
         _this.direction = enemy.direction;
-        Mutant.image.src = "mutant.png";
+        Mutant.image.src = "images/mutant.png";
         Mutant.image.width = 88;
         Mutant.image.height = 36;
         return _this;

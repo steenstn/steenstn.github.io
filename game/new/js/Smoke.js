@@ -4,7 +4,7 @@ var Smoke = (function () {
         this.y = y;
         this.mode = mode;
         this.numFrames = 7;
-        Smoke.image.src = "smoke.png";
+        Smoke.image.src = "images/smoke.png";
         this.animationTimer = 0;
         this.done = false;
     }

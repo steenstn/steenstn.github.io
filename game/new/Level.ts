@@ -9,7 +9,7 @@ class Level {
 
   static loadTileset() {
       Level.tileset = new Image();
-      Level.tileset.src = "tileset.png";
+      Level.tileset.src = "images/tileset.png";
   }
 
   static getBlockAt(x: number, y:number) {

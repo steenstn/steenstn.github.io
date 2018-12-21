@@ -25,7 +25,7 @@ var Skull = (function (_super) {
         _this.oldy = enemy.oldy;
         _this.direction = enemy.direction;
         _this.acceleration = _this.direction > 0 ? 0.5 : -0.5;
-        Skull.image.src = "skull.png";
+        Skull.image.src = "images/skull.png";
         Skull.image.width = 40;
         Skull.image.height = 50;
         return _this;

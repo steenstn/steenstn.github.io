@@ -11,7 +11,7 @@ var Fly = (function () {
         this.state = Fly.SEARCHING;
         this.inDanger = false;
         this.nectarCollected = 0;
-        Fly.image.src = "fly.png";
+        Fly.image.src = "images/fly.png";
     }
     Fly.prototype.move = function (players, flowers) {
         if (Helper.outOfBounds(this.x, this.y)) {

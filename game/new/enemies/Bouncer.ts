@@ -11,7 +11,7 @@ class Bouncer extends Enemy {
     this.oldy = enemy.oldy;
     this.speedx = enemy.speedx;
     this.speedy = enemy.speedy;
-    Bouncer.image.src = "hand.png";
+    Bouncer.image.src = "images/hand.png";
   }
 
   draw(context) {

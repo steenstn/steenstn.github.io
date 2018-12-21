@@ -17,7 +17,7 @@ class Mutant extends Enemy {
     this.oldy = enemy.oldy;
     this.direction = enemy.direction;
 
-    Mutant.image.src = "mutant.png";
+    Mutant.image.src = "images/mutant.png";
     Mutant.image.width = 88;
     Mutant.image.height = 36;
 

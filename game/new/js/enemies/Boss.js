@@ -27,7 +27,7 @@ var Boss = (function (_super) {
         _this.y = enemy.y;
         _this.hp = _this.maxHp;
         _this.oldHp = _this.hp;
-        Boss.image.src = "deloused.png";
+        Boss.image.src = "images/deloused.png";
         _this.hurtAnimationCounter = 10;
         _this.firing = false;
         return _this;

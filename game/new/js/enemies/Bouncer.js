@@ -22,7 +22,7 @@ var Bouncer = (function (_super) {
         _this.oldy = enemy.oldy;
         _this.speedx = enemy.speedx;
         _this.speedy = enemy.speedy;
-        Bouncer.image.src = "hand.png";
+        Bouncer.image.src = "images/hand.png";
         return _this;
     }
     Bouncer.prototype.draw = function (context) {

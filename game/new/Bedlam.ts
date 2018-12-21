@@ -7,7 +7,7 @@ class Bedlam {
   constructor() {
     this.x = -Viewport.x-70;
     this.y = -Viewport.y+118;
-    this.image.src = "bedlam.png";
+    this.image.src = "images/bedlam.png";
   }
 
   move(players: Array<Player>) {
