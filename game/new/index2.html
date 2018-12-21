@@ -165,13 +165,9 @@ var bedlam;
 
 var image = new Image();
 image.src = "playersprite.png";
-image.width = 180;
-image.height = 120;
 
 var image2 = new Image();
 image2.src = "playersprite2.png";
-image2.width = 180;
-image2.height = 120;
 var players = [];
 var playerIsOutOfBounds = false;
 var outOfBoundsTimer = 0;
@@ -291,7 +287,7 @@ var render = function(){
 
 var renderEnemies = function()
 {
-	for(i=0;i<enemies.length;i++)
+	for(var i=0;i<enemies.length;i++)
 	{
     var enemyWidth = typeof enemies[i].width == 'number' ? enemies[i].width : 20;
     var enemyHeight = typeof enemies[i].height == 'number' ? enemies[i].height : 20;
