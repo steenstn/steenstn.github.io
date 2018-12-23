@@ -16,6 +16,8 @@ var PlayerHealthBar = (function () {
                     context.fillRect(Viewport.width / 2 - 50, 16, Math.round(value), 8);
                 }
             }
+            context.strokeStyle = "black";
+            context.strokeRect(Viewport.width / 2 - 51, 15, 102, 10);
         };
         this.counter = 0;
         this.getValueMethod = getValueMethod;
