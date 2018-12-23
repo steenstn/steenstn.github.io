@@ -11,26 +11,13 @@ var Player = (function () {
             _this.oldy = _this.y;
             _this.handleViewportEdges();
             _this.x += _this.speedx;
-            if (_this.speedx < 0) {
-                var arrayPos = Level.getBlockAt(_this.x, _this.y + _this.height / 2 + 5);
-                if (arrayPos.blocking == 1) {
-                    _this.x = _this.oldx;
-                    _this.speedx *= -0.5;
-                }
-            }
-            else {
-                var arrayPos = Level.getBlockAt(_this.x + _this.width, _this.y + _this.height / 2 + 5);
-                if (arrayPos && arrayPos.blocking == 1) {
-                    _this.x = _this.oldx;
-                    _this.speedx *= -0.5;
-                }
-            }
+            _this.handleLeftAndRight();
             if (_this.speedy < WorldConstants.maxSpeedy) {
                 _this.speedy += WorldConstants.gravity;
             }
             _this.y += _this.speedy;
             if (_this.speedy < 0) {
-                arrayPos = Math.floor((_this.x + _this.width - 8) / Level.tileSize) + Math.floor((_this.y + 5) / Level.tileSize) * Level.width;
+                var arrayPos = Math.floor((_this.x + _this.width - 8) / Level.tileSize) + Math.floor((_this.y + 5) / Level.tileSize) * Level.width;
                 var leftCollisionPoint = Math.floor((_this.x + 8) / Level.tileSize) + Math.floor((_this.y + 5) / (Level.tileSize)) * Level.width;
                 var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking == 1;
                 var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking == 1;
@@ -41,7 +28,7 @@ var Player = (function () {
                 }
             }
             else if (_this.speedy > 0) {
-                arrayPos = Math.floor((_this.x + _this.width - 8) / Level.tileSize) + Math.floor((_this.y + _this.height) / (Level.tileSize)) * Level.width;
+                var arrayPos = Math.floor((_this.x + _this.width - 8) / Level.tileSize) + Math.floor((_this.y + _this.height) / (Level.tileSize)) * Level.width;
                 var leftCollisionPoint = Math.floor((_this.x + 8) / Level.tileSize) + Math.floor((_this.y + _this.height) / (Level.tileSize)) * Level.width;
                 var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking == 1;
                 var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking == 1;
@@ -59,7 +46,8 @@ var Player = (function () {
                     _this.drawingSmoke = 0;
                 }
             }
-            if (typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].type == "g")
+            var arrayPosBottom = Math.floor((_this.x + _this.width - 8) / Level.tileSize) + Math.floor((_this.y + _this.height + 3) / (Level.tileSize)) * Level.width;
+            if (typeof Level.currentLevel[arrayPosBottom] != "undefined" && Level.currentLevel[arrayPosBottom].type == "g")
                 _this.friction = 1;
             else
                 _this.friction = WorldConstants.normalFriction;
@@ -78,6 +66,22 @@ var Player = (function () {
             if (_this.y + Viewport.y > Viewport.height - _this.height + 10) {
                 _this.speedy = -1 * WorldConstants.kickbackForce;
                 GameState.outOfBoundsTimer = 100;
+            }
+        };
+        this.handleLeftAndRight = function () {
+            if (_this.speedx < 0) {
+                var arrayPos = Level.getBlockAt(_this.x, _this.y + _this.height / 2 + 5);
+                if (arrayPos.blocking == 1) {
+                    _this.x = _this.oldx;
+                    _this.speedx *= -0.5;
+                }
+            }
+            else {
+                var arrayPos = Level.getBlockAt(_this.x + _this.width, _this.y + _this.height / 2 + 5);
+                if (arrayPos && arrayPos.blocking == 1) {
+                    _this.x = _this.oldx;
+                    _this.speedx *= -0.5;
+                }
             }
         };
         this.getHp = function () {

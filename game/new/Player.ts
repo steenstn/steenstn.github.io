@@ -84,24 +84,7 @@ class Player {
 
     this.x += this.speedx;
 
-    // Check to the left if going left and stop the player if he collides with a blocking tile
-    if(this.speedx < 0) {
-      var arrayPos=Level.getBlockAt(this.x, this.y + this.height/2+5);
-
-      if(arrayPos.blocking==1) {
-        this.x = this.oldx;
-        this.speedx *=-0.5;
-      }
-    } else {// Check to the right
-
-      var arrayPos=Level.getBlockAt(this.x + this.width, this.y + this.height/2+5);
-
-
-      if(arrayPos && arrayPos.blocking==1) {
-        this.x = this.oldx;
-        this.speedx *= -0.5;
-      }
-    }
+    this.handleLeftAndRight();
 
     if(this.speedy < WorldConstants.maxSpeedy) {
       this.speedy += WorldConstants.gravity;
@@ -112,10 +95,9 @@ class Player {
     
     // If going up, check for blocking tiles
     if(this.speedy < 0) {
-      arrayPos=Math.floor((this.x+this.width-8)/Level.tileSize)+Math.floor((this.y+5)/Level.tileSize)*Level.width;
+      let arrayPos=Math.floor((this.x+this.width-8)/Level.tileSize)+Math.floor((this.y+5)/Level.tileSize)*Level.width;
       var leftCollisionPoint = Math.floor((this.x+8)/Level.tileSize)+Math.floor((this.y+5)/(Level.tileSize))*Level.width;
-      // If the player lands on a blocking tile, iteratively move him upwards until he is free from the
-      // tile. This will remove bouncing when landing in high speed
+      
       var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1;
       var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking==1;
 
@@ -126,16 +108,17 @@ class Player {
       }
     } else if(this.speedy > 0) { // Going down, check for blocking tiles
 
-      arrayPos=Math.floor((this.x+this.width-8)/Level.tileSize)+Math.floor((this.y+this.height)/(Level.tileSize))*Level.width;
+      let arrayPos=Math.floor((this.x+this.width-8)/Level.tileSize)+Math.floor((this.y+this.height)/(Level.tileSize))*Level.width;
       var leftCollisionPoint = Math.floor((this.x+8)/Level.tileSize)+Math.floor((this.y+this.height)/(Level.tileSize))*Level.width;
-      // If the player lands on a blocking tile, iteratively move him upwards until he is free from the
-      // tile. This will remove bouncing when landing in high speed
-      var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1;
+       var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1;
       var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking==1;
 
       if(rightCollisionPointCollided || leftCollisionPointCollided) {
         this.jumping = 0;
         this.drawingSmoke++;
+
+        // If the player lands on a blocking tile, iteratively move him upwards until he is free from the
+        // tile. This will remove bouncing when landing in high speed
         while(typeof Level.currentLevel[arrayPos] != "undefined" && Level.getBlockAt(this.x+this.width-8, this.y+this.height).blocking==1
           || Level.currentLevel[leftCollisionPoint] != "undefined" && Level.getBlockAt(this.x+8, this.y+this.height).blocking==1) {
             this.y-=0.2;
@@ -146,14 +129,15 @@ class Player {
         this.jumping=WorldConstants.maxJump;
         this.drawingSmoke = 0;
       }
+
     }
+    let arrayPosBottom=Math.floor((this.x+this.width-8)/Level.tileSize)+Math.floor((this.y+this.height+3)/(Level.tileSize))*Level.width;
+     
   
-  
-    if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].type=="g") // Ice block
+    if(typeof Level.currentLevel[arrayPosBottom] != "undefined" && Level.currentLevel[arrayPosBottom].type=="g") // Ice block
       this.friction=1; // No friction
     else
       this.friction=WorldConstants.normalFriction;
-
 
     this.updateKillZone();
     this.updateHurtZone();
@@ -173,6 +157,24 @@ class Player {
       this.speedy = -1*WorldConstants.kickbackForce;
       GameState.outOfBoundsTimer = 100;
     } 
+  }
+
+  private handleLeftAndRight = () => {
+    if(this.speedx < 0) {
+      var arrayPos=Level.getBlockAt(this.x, this.y + this.height/2+5);
+
+      if(arrayPos.blocking==1) {
+        this.x = this.oldx;
+        this.speedx *=-0.5;
+      }
+    } else {
+      var arrayPos=Level.getBlockAt(this.x + this.width, this.y + this.height/2+5);
+
+      if(arrayPos && arrayPos.blocking==1) {
+        this.x = this.oldx;
+        this.speedx *= -0.5;
+      }
+    }
   }
 
   updateHurtZone() : void {

@@ -107,7 +107,6 @@ c.height = Viewport.height;
 
 var lastLevel = 0;
 var numDeaths = 0;
-var score = 0;
 var dead=0;
 var totalNumVinylCollected = 0;
 
@@ -164,7 +163,6 @@ var effects = [];
 
 var bedlam;
 
-
 var image = new Image();
 image.src = "images/playersprite.png";
 
@@ -172,11 +170,8 @@ var image2 = new Image();
 image2.src = "images/playersprite2.png";
 var players = [];
 
-var scoreTimer = 0;
-
 var playerKeys = [];
 
-var lastScore = 0;
 var startPos = {};
 
 var backgroundImage = new Image();
@@ -209,7 +204,7 @@ var init = function() {
   	players[i].y = players[i].oldy;
     players[i].speedx = 0;
     players[i].speedy = 0;
-  	score=lastScore;
+  	GameState.score=GameState.lastScore;
   	players[i].hp=100;
     players[i].inBucket = false;
   }
@@ -331,7 +326,6 @@ var renderContent = function(content) {
         }
         ctx.drawImage(grassImage, offset*50, yFrame*50, 50, 50, Math.round(content.x + Viewport.x), Math.round(content.y + Viewport.y), 50, 50);
         break;
-
     }
 }
 
@@ -374,12 +368,12 @@ var updatePlayer = function(index) {
       particles.push(healthParticleFactory.createParticle(players[index].x, players[index].y, players[index], players[0]));
       
     }
-    score += 10;
+    GameState.score += 10;
 	}
 	if(Level.currentLevel[arrayPos].type=="s") // Coins
 	{
-		score+=20;
-    scoreTimer=10;
+		GameState.score+=20;
+    GameState.scoreTimer=10;
     vinylCollectedInLevel++;
 		Level.currentLevel[arrayPos].type=".";
     for(let i = 0; i < 30; i++) {
@@ -388,8 +382,8 @@ var updatePlayer = function(index) {
 	}
 	if(Level.currentLevel[arrayPos].type=="l" || Level.currentLevel[arrayPos].type=="m" || Level.currentLevel[arrayPos].type=="n" || Level.currentLevel[arrayPos].type=="o") // Phadderist
 	{
-		score+=50;
-    scoreTimer=10;
+		GameState.score+=50;
+    GameState.scoreTimer=10;
 		Level.currentLevel[arrayPos].type=".";
   }
   
@@ -401,8 +395,6 @@ var updateEnemies = function(i) {
     if(!enemies[i].alive) {
       enemies.splice(i,1);
     }
-    score = GameState.score;
-    scoreTimer = GameState.scoreTimer;
 
     if(enemies[i] && enemies[i].type=="boss") {
       if(enemies[i].breakingBlock) {
@@ -445,8 +437,6 @@ var updateEnemies = function(i) {
 }
 
 var checkKeys = function (modifier) {
-
-//console.log(keysDown);
   if(79 in keysDown) { // o
     keyHeldDown++;
     if(keyHeldDown === 1) {
@@ -482,8 +472,8 @@ var checkKeys = function (modifier) {
 
 		if (GameState.animating === 0 && players[i].keyLeft in keysDown) {
       playerKeys[i][0] = "";
-		players[i].goingLeft = 1;
-		players[i].animationCounter++;
+		  players[i].goingLeft = 1;
+		  players[i].animationCounter++;
     if(players[i].speedx> WorldConstants.maxSpeedx-1) {
       players[i].drawingRightBrakingSmoke++;
     }
@@ -510,9 +500,7 @@ var checkKeys = function (modifier) {
 
 }
 
-
 var loadContent = function(levelName) {
-
 	enemies = Helper.loadJsonFile("levels/" + levelName+'enemies.json');
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
@@ -534,8 +522,6 @@ var loadContent = function(levelName) {
         GUIRenderables.push(new BossHealthBar(enemies[i].getHp));
         break;
     }
-
-
   }
 	var tempContent = Helper.loadJsonFile("levels/" + levelName+'content.json');
 
@@ -590,32 +576,31 @@ var loadLevel = function(levelNumber) {
     if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
       if (txtFile.status === 200 || txtFile.status == 0) {  // Makes sure it's found the file.
         allText = txtFile.responseText;
-  	  allText = allText.replace(/(\r\n|\n|\r)/gm,"");
-       drawText("Parsing level...", 10,30);
+  	    allText = allText.replace(/(\r\n|\n|\r)/gm,"");
+        drawText("Parsing level...", 10,30);
 
-      var loadingBarMaxWidth = 600;
+        var loadingBarMaxWidth = 600;
 
-  		for(var y=0;y<Level.height;y++) {
-        var progress = (y/Level.height) * loadingBarMaxWidth;
-        ctx.beginPath();
+        for(var y=0;y<Level.height;y++) {
+          var progress = (y/Level.height) * loadingBarMaxWidth;
+          ctx.beginPath();
 
-        ctx.rect(30, 60, progress, 2);
-        ctx.closePath();
-        ctx.fill();
+          ctx.rect(30, 60, progress, 2);
+          ctx.closePath();
+          ctx.fill();
 
-  			for(var x=0;x<Level.width;x++) {
-  				var arrayPos = x+y*Level.width;
-  				Level.currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
-          var tile = LevelTile.newFromCharacter(Level.currentLevel[arrayPos].type);
-          Level.currentLevel[arrayPos].blocking=tile.blocking; // Blocking tile
-          Level.currentLevel[arrayPos].tileOffsetx=tile.drawingOffsetx; // Where in the tileset the tile is
-          Level.currentLevel[arrayPos].tileOffsety=tile.drawingOffsety;
-          if(allText[arrayPos]==='s') {
-            numVinylInLevel++;
+          for(var x=0;x<Level.width;x++) {
+            var arrayPos = x+y*Level.width;
+            Level.currentLevel[arrayPos].type=allText[arrayPos]; // What kind of block is it?
+            var tile = LevelTile.newFromCharacter(Level.currentLevel[arrayPos].type);
+            Level.currentLevel[arrayPos].blocking=tile.blocking; // Blocking tile
+            Level.currentLevel[arrayPos].tileOffsetx=tile.drawingOffsetx; // Where in the tileset the tile is
+            Level.currentLevel[arrayPos].tileOffsety=tile.drawingOffsety;
+            if(allText[arrayPos]==='s') {
+              numVinylInLevel++;
+            }
           }
-
-  			}
-  		}
+        }
 
         if(lastLevel<levelNumber) {
           totalVinylsInAllLevels+=numVinylInLevel;
@@ -635,7 +620,6 @@ var loadLevel = function(levelNumber) {
   flowers.length = 0;
   loadContent(levelName);
   setUpContent();
-
   jukeBox.playCurrentSong();
 }
 
@@ -650,7 +634,6 @@ var setUpContent = function() {
         if(players[1]) {
           players[1].x = players[1].oldx = content[i].x + offset;
           players[1].y = players[1].oldy = content[i].y;
-				
         }
         startPos.x = content[i].x;
         startPos.y = content[i].y;
@@ -665,10 +648,7 @@ var setUpContent = function() {
         break;
 		}
 	}
-
-
 }
-
 
 var drawText = function(textToDraw, x, y) {
   ctx.fillStyle    = '#F00';
@@ -678,14 +658,14 @@ var drawText = function(textToDraw, x, y) {
 }
 
 var drawAllText = function() {
-    var scoreFontSize = 14 + scoreTimer/2;
+    var scoreFontSize = 14 + GameState.scoreTimer/2;
 	  ctx.fillStyle    = '#FFF';
     ctx.font         = '14px Verdana';
     ctx.textBaseline = 'Top';
     ctx.textAlign = 'left';
     ctx.fillText  ("Score:", 4,20);
     ctx.font         = scoreFontSize + 'px Verdana';
-    ctx.fillText  (score, 55,20);
+    ctx.fillText  (GameState.score, 55,20);
     ctx.font         = '14px Verdana';
     ctx.fillStyle = vinylCollectedInLevel >= numVinylInLevel ? "#0f0" : "#fff";
     ctx.fillText(vinylCollectedInLevel + "/" + numVinylInLevel, 38, Viewport.height-13);
@@ -694,8 +674,7 @@ var drawAllText = function() {
     playerKeys.forEach(p => p.forEach(key => ctx.fillText(key, Viewport.x+players[playerKeys.indexOf(p)].x-5+p.indexOf(key)*10,
      Viewport.y+players[playerKeys.indexOf(p)].y-5)));
     
-    if(scoreTimer>0) {
-      scoreTimer--;
+    if(GameState.scoreTimer>0) {
       GameState.scoreTimer--;
     }
     if(GameState.outOfBoundsTimer >= 3 && numFramesSinceStart > 10) {
@@ -733,7 +712,7 @@ var GameLoop = function(){
     if(players[1]) {
       players[1].hp=0;
     }
-		score=lastScore;
+		GameState.score=GameState.lastScore;
     numDeaths++;
     vinylCollectedInLevel = 0;
     flies= [];
@@ -790,7 +769,6 @@ var GameLoop = function(){
 
   foregroundContent.forEach((c) => renderContent(c));
 
-
   if(GameState.animating===2) {
     checkKeys(1);
     render();
@@ -805,9 +783,7 @@ var GameLoop = function(){
         endScreen();
         return;
       } else {
-
         loadLevel(GameState.currentLevel);
-
         init();
             
         var x2 = players[1] ? players[1].x : players[0].x;
@@ -842,7 +818,6 @@ var GameLoop = function(){
     particleCleaner.cleanupBlood(particles);
     cleanSmoke();
   } else if(numFramesSinceStart%20 === 0) {
-
     for(var i = 0; i < particles.length; i++) {
       if(particles[i].shouldBeDeleted) {
         particles.splice(i,1);
@@ -855,7 +830,7 @@ var GameLoop = function(){
 
 	if(GameState.animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
     GameState.currentLevel++;
-			lastScore=score;
+			GameState.lastScore=GameState.score;
       GameState.animating=2;
       bedlam = new Bedlam();
   }
@@ -1000,7 +975,7 @@ var endScreen = function() {
   drawText("Hopefully they won't need to wait for too long...", 50, 95);
 
   ctx.font = '20px Verdana';
-  ctx.fillText("Final score: " + score, 50, 220);
+  ctx.fillText("Final score: " + GameState.score, 50, 220);
   ctx.fillText("Vinyls collected: " + totalNumVinylCollected + "/" + totalVinylsInAllLevels, 50, 245);
   ctx.fillText("Number of deaths: " + numDeaths, 50, 270);
   gLoop = setTimeout(endScreen, 20);
