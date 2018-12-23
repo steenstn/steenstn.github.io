@@ -1,19 +1,21 @@
 var BossHealthBar = (function () {
-    function BossHealthBar(boss) {
+    function BossHealthBar(getValueMethod) {
         var _this = this;
         this.barSize = 4;
         this.render = function (context) {
-            if (!_this.boss || _this.boss.hp < 1) {
+            var value = _this.getValueMethod();
+            if (!value || value < 1) {
                 return;
             }
-            context.fillStyle = _this.boss.hp !== _this.oldHp ? "#ffffff" : "#fa0000";
-            context.fillRect(Viewport.width - 50, Viewport.height - _this.barSize * _this.boss.hp - 10, 30, _this.barSize * _this.boss.hp);
+            context.fillStyle = value !== _this.oldValue ? "#ffffff" : "#fa0000";
+            context.fillRect(Viewport.width - 50, Viewport.height - _this.barSize * value - 10, 30, _this.barSize * value);
             context.strokeStyle = "#ffffff";
-            context.strokeRect(Viewport.width - 50, Viewport.height - _this.barSize * _this.boss.maxHp - 10, 30, _this.barSize * _this.boss.maxHp);
-            _this.oldHp = _this.boss.hp;
+            context.strokeRect(Viewport.width - 50, Viewport.height - _this.barSize * _this.barMaxValue - 10, 30, _this.barSize * _this.barMaxValue);
+            _this.oldValue = value;
         };
-        this.boss = boss;
-        this.oldHp = boss.hp;
+        this.getValueMethod = getValueMethod;
+        this.oldValue = this.getValueMethod();
+        this.barMaxValue = this.oldValue;
     }
     return BossHealthBar;
 }());

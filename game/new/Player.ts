@@ -84,6 +84,9 @@ class Player {
    this.killZonex = this.x+5;
    this.killZoney = this.y + this.height - 5;
  }
+ getHp = () : number => {
+   return this.hp;
+ }
 
  isFacingPosition(x: number) : boolean{
    if(this.x > x && this.goingLeft === 1) {

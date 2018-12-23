@@ -636,7 +636,7 @@ var loadContent = function(levelName) {
         break;
       case "boss":
         enemies[i] = new Boss(enemies[i]);
-        GUIRenderables.push(new BossHealthBar(enemies[i]));
+        GUIRenderables.push(new BossHealthBar(enemies[i].getHp));
         break;
     }
 
@@ -1065,7 +1065,7 @@ var IntroScreen = function() {
           addPlayer(image,37,38,39);
           addPlayer(image2,65,87,68);
         }
-        GUIRenderables.push(new PlayerHealthBar(players[0]));
+        GUIRenderables.push(new PlayerHealthBar(players[0].getHp));
         setUpKeyMap();
 
         stars = null;

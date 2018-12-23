@@ -1,10 +1,14 @@
 var Player = (function () {
     function Player(x, y, image) {
+        var _this = this;
         this.x = x;
         this.y = y;
         this.image = image;
         this.friction = WorldConstants.normalFriction;
         this.animationSpeed = 3;
+        this.getHp = function () {
+            return _this.hp;
+        };
         this.x = x;
         this.y = y;
         this.image = image;

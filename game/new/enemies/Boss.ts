@@ -23,6 +23,10 @@ class Boss extends Enemy {
     this.firing = false;
   }
 
+  getHp = () : number => {
+    return this.hp;
+  }
+
   draw(context) {
     let offsetx;
     if(this.hp !== this.oldHp) {

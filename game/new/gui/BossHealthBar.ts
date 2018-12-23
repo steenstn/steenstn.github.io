@@ -1,22 +1,27 @@
 class BossHealthBar implements GUIRenderable {
-    private boss : Boss;
-    private oldHp : number;
+    private getValueMethod : () => number;
+    private oldValue : number;
     private barSize = 4;
-    constructor(boss : Boss) {
-        this.boss = boss;
-        this.oldHp = boss.hp;
+    private barMaxValue : number;
+
+    constructor(getValueMethod : () => number) {
+        this.getValueMethod = getValueMethod;
+        this.oldValue = this.getValueMethod();
+        this.barMaxValue = this.oldValue;
     }
 
     render = (context) => {
-        if(!this.boss || this.boss.hp < 1) {
+        let value = this.getValueMethod();
+
+        if(!value || value < 1) {
             return;
         }
-        context.fillStyle = this.boss.hp !== this.oldHp ? "#ffffff" : "#fa0000";
+        context.fillStyle = value !== this.oldValue ? "#ffffff" : "#fa0000";
 
-        context.fillRect(Viewport.width-50, Viewport.height-this.barSize*this.boss.hp-10, 30, this.barSize*this.boss.hp);
+        context.fillRect(Viewport.width-50, Viewport.height-this.barSize*value-10, 30, this.barSize*value);
 
         context.strokeStyle = "#ffffff";
-        context.strokeRect(Viewport.width-50, Viewport.height-this.barSize*this.boss.maxHp-10, 30, this.barSize*this.boss.maxHp);
-        this.oldHp = this.boss.hp;
+        context.strokeRect(Viewport.width-50, Viewport.height-this.barSize*this.barMaxValue-10, 30, this.barSize*this.barMaxValue);
+        this.oldValue = value;
     }
 }
