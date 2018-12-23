@@ -97,7 +97,6 @@ var Player = (function () {
         this.width = 20;
         this.height = 30;
         this.hp = 100;
-        this.dead = 0;
         this.runningFromEnemy = 0;
         this.updateKillZone();
         this.killZoneWidth = this.width - 10;

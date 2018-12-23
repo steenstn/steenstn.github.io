@@ -5,7 +5,6 @@ class Player {
   width : number;
   height : number;
   hp : number;
-  dead : number;
 
   // Zone that kills enemies
   killZonex : number;
@@ -50,7 +49,6 @@ class Player {
   	this.width = 20;
   	this.height = 30;
   	this.hp = 100;
-  	this.dead = 0;
     this.runningFromEnemy = 0;
 
     this.updateKillZone();

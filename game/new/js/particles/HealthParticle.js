@@ -18,10 +18,14 @@ var HealthParticle = (function (_super) {
         _this.xAcc = 0;
         _this.yAcc = 0;
         _this.movingState = 0;
-        _this.lifetime = 20;
+        _this.trailLength = 3;
         _this.target = target;
         _this.targetToHeal = targetToHeal;
         _this.xFriction = 1.085;
+        _this.oldPosition = [];
+        for (var i = 0; i < _this.trailLength; i++) {
+            _this.oldPosition.push(new Vector(x, y));
+        }
         return _this;
     }
     HealthParticle.prototype.move = function () {
@@ -50,8 +54,27 @@ var HealthParticle = (function (_super) {
                 this.shouldBeDeleted = true;
             }
         }
+        for (var i = this.oldPosition.length - 1; i > 0; i--) {
+            this.oldPosition[i] = new Vector(this.oldPosition[i - 1].x, this.oldPosition[i - 1].y);
+        }
+        this.oldPosition[0] = new Vector(this.x, this.y);
         this.x += this.xSpeed;
         this.y += this.ySpeed;
+    };
+    HealthParticle.prototype.render = function (context) {
+        var _this = this;
+        _super.prototype.render.call(this, context);
+        context.beginPath();
+        context.moveTo(Math.round(this.x + Viewport.x), Math.round(this.y + Viewport.y));
+        var oldLineWidth = context.lineWidth;
+        context.lineWidth = 2;
+        this.oldPosition.forEach(function (p, index) {
+            var r = Math.floor(Math.random() * 255);
+            context.strokeStyle = "rgba(" + r + ",255,80," + index / (_this.oldPosition.length * 2) + ")";
+            context.lineTo(Math.round(p.x + Viewport.x), Math.round(p.y + Viewport.y));
+            context.stroke();
+        });
+        context.lineWidth = oldLineWidth;
     };
     return HealthParticle;
 }(Particle));

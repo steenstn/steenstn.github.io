@@ -105,9 +105,6 @@ ctx = c.getContext('2d');
 c.width = Viewport.width;
 c.height = Viewport.height;
 
-var lastLevel = 0;
-var numDeaths = 0;
-var dead=0;
 var totalNumVinylCollected = 0;
 
 var vinylCollectedInLevel = 0;
@@ -480,11 +477,11 @@ var checkKeys = function (modifier) {
 		}
 		else if (GameState.animating === 0 && players[i].keyRight in keysDown) {
       playerKeys[i][2] = "";
-		players[i].goingLeft = 0;
-		players[i].animationCounter++;
-    if(players[i].speedx< -WorldConstants.maxSpeedx+1) {
-      players[i].drawingLeftBrakingSmoke++;
-    }
+      players[i].goingLeft = 0;
+      players[i].animationCounter++;
+      if(players[i].speedx< -WorldConstants.maxSpeedx+1) {
+        players[i].drawingLeftBrakingSmoke++;
+      }
 			if(players[i].speedx<WorldConstants.maxSpeedx)
 				players[i].speedx += WorldConstants.playerAcc * modifier;
 		}
@@ -600,9 +597,9 @@ var loadLevel = function(levelNumber) {
           }
         }
 
-        if(lastLevel<levelNumber) {
+        if(GameState.lastLevel<levelNumber) {
           totalVinylsInAllLevels+=numVinylInLevel;
-          lastLevel = levelNumber;
+          GameState.lastLevel = levelNumber;
         }
       }
 
@@ -709,7 +706,7 @@ var GameLoop = function(){
       players[1].hp=0;
     }
 		GameState.score=GameState.lastScore;
-    numDeaths++;
+    GameState.numDeaths++;
     vinylCollectedInLevel = 0;
     flies= [];
 		loadLevel(GameState.currentLevel);
@@ -971,7 +968,7 @@ var endScreen = function() {
   ctx.font = '20px Verdana';
   ctx.fillText("Final score: " + GameState.score, 50, 220);
   ctx.fillText("Vinyls collected: " + totalNumVinylCollected + "/" + totalVinylsInAllLevels, 50, 245);
-  ctx.fillText("Number of deaths: " + numDeaths, 50, 270);
+  ctx.fillText("Number of deaths: " + GameState.numDeaths, 50, 270);
   gLoop = setTimeout(endScreen, 20);
 }
 jukeBox.selectSong(0);

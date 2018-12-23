@@ -4,20 +4,29 @@ class HealthParticle extends Particle {
   private movingState = 0;
   private target : any;
   private targetToHeal : any;
-  private lifetime = 20;
+  private oldPosition : Array<Vector>;
+  private trailLength = 3;
 
   constructor(x: number, y:number, xSpeed: number, ySpeed: number, image: any, target: any, targetToHeal: any) {
     super(x, y, xSpeed, ySpeed, image);
     this.target = target;
     this.targetToHeal = targetToHeal;
     this.xFriction = 1.085;
+    this.oldPosition = [];
+    
+    for(let i = 0; i < this.trailLength; i++) {
+      this.oldPosition.push(new Vector(x,y));
+    }
+    
   }
 
   move() {
     super.move();
+
     if(this.shouldBeDeleted) {
       return;
     }
+
     if(this.movingState===0) {
       this.xSpeed/=this.xFriction;
       this.ySpeed/=this.xFriction;
@@ -39,8 +48,28 @@ class HealthParticle extends Particle {
         this.shouldBeDeleted = true;
       }
     }
-
+    for(let i = this.oldPosition.length-1; i >0; i--) {
+      this.oldPosition[i] = new Vector(this.oldPosition[i-1].x, this.oldPosition[i-1].y);
+    }
+    this.oldPosition[0] = new Vector(this.x, this.y);
     this.x+=this.xSpeed;
     this.y+=this.ySpeed;
+
+    
+  }
+
+  render(context) {
+    super.render(context);
+    context.beginPath();
+    context.moveTo(Math.round(this.x + Viewport.x), Math.round(this.y+Viewport.y));
+    let oldLineWidth = context.lineWidth;
+    context.lineWidth = 2;
+    this.oldPosition.forEach((p, index) => {
+      let r = Math.floor(Math.random()*255);
+      context.strokeStyle = "rgba("+r+",255,80,"+index/(this.oldPosition.length*2) + ")";
+      context.lineTo(Math.round(p.x + Viewport.x), Math.round(p.y + Viewport.y))
+      context.stroke();
+    });
+    context.lineWidth = oldLineWidth;
   }
 }

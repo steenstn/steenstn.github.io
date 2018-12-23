@@ -6,4 +6,6 @@ class GameState {
     static lastScore : number = 0;
     static currentLevel : number = 1;
     static outOfBoundsTimer : number = 0;
+    static lastLevel : number = 0;
+    static numDeaths : number = 0;
 }
