@@ -241,7 +241,6 @@ var canvas = document.getElementById('c');
 var clear = function(){
   if(pixelBackground) {
   ctx.drawImage(backgroundImage,0,0);
-
   } else {
     background.drawBackground();
   }
@@ -692,10 +691,10 @@ var drawAllText = function() {
         if(particles[i].shouldBeDeleted) particlesThatShouldBeDeleted++;
       }
       ctx.font = "10px Verdana";
-      ctx.fillText  ("particles: " + particles.length, 4,60);
-      ctx.fillText  ("particlesThatShouldBeDeleted: " + particlesThatShouldBeDeleted, 4,70);
-      ctx.fillText  ("numFramesSinceStart: " + numFramesSinceStart, 4,80);
-      ctx.fillText  ("Player 1 coordinates: " + Math.round(players[0].x) + " - " + Math.round(players[0].y), 4,90);
+      ctx.fillText("particles: " + particles.length, 4,60);
+      ctx.fillText("particlesThatShouldBeDeleted: " + particlesThatShouldBeDeleted, 4,70);
+      ctx.fillText("numFramesSinceStart: " + numFramesSinceStart, 4,80);
+      ctx.fillText("Player 1 coordinates: " + Math.round(players[0].x) + " - " + Math.round(players[0].y), 4,90);
       ctx.fillText("effects: " + effects.length, 4, 100);
     }
 }
@@ -730,6 +729,7 @@ var GameLoop = function(){
     }
   }
 
+  backgroundContent.forEach((c) => renderContent(c));
 	if(GameState.animating===0) {
 		checkKeys(1);
 
@@ -741,10 +741,6 @@ var GameLoop = function(){
     
     Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
 
-	}
-  backgroundContent.forEach((c) => renderContent(c));
-
-  if(GameState.animating === 0) {
     render();
     for(var i = 0; i < enemies.length; i++) {
       updateEnemies(i);
@@ -768,6 +764,7 @@ var GameLoop = function(){
 
   if(GameState.animating===2) {
     checkKeys(1);
+    
     render();
     bedlam.move(players);
     bedlam.render(ctx);

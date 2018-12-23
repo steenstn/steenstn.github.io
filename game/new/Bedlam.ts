@@ -34,6 +34,5 @@ class Bedlam {
 
   render(context) {
     context.drawImage(this.image, 0+90*this.currentFrame,0, 90, 183, Math.round(this.x+Viewport.x), Math.round(this.y+Viewport.y), 90, 183);
-
   }
 }
