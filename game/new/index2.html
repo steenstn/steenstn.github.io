@@ -726,7 +726,6 @@ var GameLoop = function(){
     }
   }
 
-  backgroundContent.forEach((c) => renderContent(c));
 	if(GameState.animating===0) {
 		checkKeys(1);
 
@@ -737,7 +736,12 @@ var GameLoop = function(){
     var y2 = players[1] ? players[1].y : players[0].y;
     
     Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
+  }
 
+  // Draw background content after moving viewport to prevent sliding content
+  backgroundContent.forEach((c) => renderContent(c)); 
+  
+  if(GameState.animating===0) {
     render();
     for(var i = 0; i < enemies.length; i++) {
       updateEnemies(i);
