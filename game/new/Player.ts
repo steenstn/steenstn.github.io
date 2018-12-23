@@ -177,30 +177,31 @@ class Player {
     }
   }
 
-  updateHurtZone() : void {
+  private updateHurtZone() : void {
    this.hurtZonex = this.x + 3;
    this.hurtZoney = this.y + 5;
   }
 
- updateKillZone() : void {
-   this.killZonex = this.x+5;
-   this.killZoney = this.y + this.height - 5;
- }
- getHp = () : number => {
-   return this.hp;
- }
+  private updateKillZone() : void {
+    this.killZonex = this.x+5;
+    this.killZoney = this.y + this.height - 5;
+  }
 
- isFacingPosition(x: number) : boolean{
-   if(this.x > x && this.goingLeft === 1) {
-     return true;
-   } else if(this.x < x && this.goingLeft === 1) {
-     return false;
-   } else if(this.x > x && this.goingLeft === 0) {
-     return false;
-   } else {
-     return true;
-   }
- }
+  getHp = () : number => {
+    return this.hp;
+  }
+
+  isFacingPosition(x: number) : boolean{
+    if(this.x > x && this.goingLeft === 1) {
+      return true;
+    } else if(this.x < x && this.goingLeft === 1) {
+      return false;
+    } else if(this.x > x && this.goingLeft === 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
  draw(context) : void {
    if(this.animationCounter>this.animationSpeed) {

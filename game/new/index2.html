@@ -390,7 +390,6 @@ var updatePlayer = function(index) {
 }
 
 var updateEnemies = function(i) {
-
 		EnemyManager.updateEnemy(enemies[i], players, bloodFactory, particles);
     if(!enemies[i].alive) {
       enemies.splice(i,1);
@@ -850,7 +849,7 @@ for(var i = 0; i < 300; i++) {
   var yadd = Math.sin(randomAngle);
   var startx = Viewport.width*Math.random();
   var starty = Viewport.height*Math.random();
-  stars.push(new Particle(320, 100, xadd*5*Math.random(), yadd*5*Math.random(), logoImage));
+  stars.push(new Particle(320, 100, xadd*5*Math.random(), yadd*5*Math.random(), null));
 }
 
 var cleanSmoke = function() {
