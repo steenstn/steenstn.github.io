@@ -6,6 +6,80 @@ var Player = (function () {
         this.image = image;
         this.friction = WorldConstants.normalFriction;
         this.animationSpeed = 3;
+        this.update = function () {
+            _this.oldx = _this.x;
+            _this.oldy = _this.y;
+            _this.handleViewportEdges();
+            _this.x += _this.speedx;
+            if (_this.speedx < 0) {
+                var arrayPos = Level.getBlockAt(_this.x, _this.y + _this.height / 2 + 5);
+                if (arrayPos.blocking == 1) {
+                    _this.x = _this.oldx;
+                    _this.speedx *= -0.5;
+                }
+            }
+            else {
+                var arrayPos = Level.getBlockAt(_this.x + _this.width, _this.y + _this.height / 2 + 5);
+                if (arrayPos && arrayPos.blocking == 1) {
+                    _this.x = _this.oldx;
+                    _this.speedx *= -0.5;
+                }
+            }
+            if (_this.speedy < WorldConstants.maxSpeedy) {
+                _this.speedy += WorldConstants.gravity;
+            }
+            _this.y += _this.speedy;
+            if (_this.speedy < 0) {
+                arrayPos = Math.floor((_this.x + _this.width - 8) / Level.tileSize) + Math.floor((_this.y + 5) / Level.tileSize) * Level.width;
+                var leftCollisionPoint = Math.floor((_this.x + 8) / Level.tileSize) + Math.floor((_this.y + 5) / (Level.tileSize)) * Level.width;
+                var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking == 1;
+                var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking == 1;
+                if (rightCollisionPointCollided || leftCollisionPointCollided) {
+                    _this.y = _this.oldy;
+                    _this.speedy = 0;
+                    _this.jumping = WorldConstants.maxJump;
+                }
+            }
+            else if (_this.speedy > 0) {
+                arrayPos = Math.floor((_this.x + _this.width - 8) / Level.tileSize) + Math.floor((_this.y + _this.height) / (Level.tileSize)) * Level.width;
+                var leftCollisionPoint = Math.floor((_this.x + 8) / Level.tileSize) + Math.floor((_this.y + _this.height) / (Level.tileSize)) * Level.width;
+                var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking == 1;
+                var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking == 1;
+                if (rightCollisionPointCollided || leftCollisionPointCollided) {
+                    _this.jumping = 0;
+                    _this.drawingSmoke++;
+                    while (typeof Level.currentLevel[arrayPos] != "undefined" && Level.getBlockAt(_this.x + _this.width - 8, _this.y + _this.height).blocking == 1
+                        || Level.currentLevel[leftCollisionPoint] != "undefined" && Level.getBlockAt(_this.x + 8, _this.y + _this.height).blocking == 1) {
+                        _this.y -= 0.2;
+                    }
+                    _this.speedy = 0;
+                }
+                if (!rightCollisionPointCollided && !leftCollisionPointCollided) {
+                    _this.jumping = WorldConstants.maxJump;
+                    _this.drawingSmoke = 0;
+                }
+            }
+            if (typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].type == "g")
+                _this.friction = 1;
+            else
+                _this.friction = WorldConstants.normalFriction;
+            _this.updateKillZone();
+            _this.updateHurtZone();
+        };
+        this.handleViewportEdges = function () {
+            if (_this.x + Viewport.x < -1 * _this.width + 5) {
+                _this.speedx = WorldConstants.kickbackForce;
+                GameState.outOfBoundsTimer = 100;
+            }
+            if (_this.x + Viewport.x > Viewport.width - 5) {
+                _this.speedx = -1 * WorldConstants.kickbackForce;
+                GameState.outOfBoundsTimer = 100;
+            }
+            if (_this.y + Viewport.y > Viewport.height - _this.height + 10) {
+                _this.speedy = -1 * WorldConstants.kickbackForce;
+                GameState.outOfBoundsTimer = 100;
+            }
+        };
         this.getHp = function () {
             return _this.hp;
         };

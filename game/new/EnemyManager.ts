@@ -10,6 +10,15 @@ class EnemyManager {
             var enemyHeight = typeof enemy.height == 'number' ? enemy.height : 20;
             var offsetx = typeof enemy.offsetx == 'number' ? enemy.offsetx : 0;
             var offsety = typeof enemy.offsety == 'number' ? enemy.offsety : 0;
+            let dangerWidth = 60;
+            let dangerHeight = 20;
+            
+            var enemyInDangerZone = Helper.overlap(enemy.x-dangerWidth, enemy.y-dangerHeight,2*dangerWidth+enemyWidth, 2*dangerHeight+enemyHeight, players[playerIndex].x, players[playerIndex].y, players[playerIndex].width, players[playerIndex].height) &&
+            !players[playerIndex].isFacingPosition(enemy.x)
+
+            if(enemyInDangerZone) {
+                players[playerIndex].runningFromEnemy = 1;
+            }
 
             var enemyInHurtZone = Helper.overlap(enemy.x+offsetx,enemy.y+offsety,enemyWidth,enemyHeight,players[playerIndex].hurtZonex,players[playerIndex].hurtZoney,players[playerIndex].hurtZoneWidth,players[playerIndex].hurtZoneHeight);
             var enemyInKillZone = Helper.overlap(enemy.x+offsetx,enemy.y+offsety,enemyWidth,enemyHeight,players[playerIndex].killZonex,players[playerIndex].killZoney,players[playerIndex].killZoneWidth,players[playerIndex].killZoneHeight);

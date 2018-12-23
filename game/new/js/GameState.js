@@ -6,5 +6,6 @@ var GameState = (function () {
     GameState.score = 0;
     GameState.scoreTimer = 0;
     GameState.currentLevel = 1;
+    GameState.outOfBoundsTimer = 0;
     return GameState;
 }());

@@ -75,10 +75,110 @@ class Player {
   	this.keyRight = 0;
   }
 
- updateHurtZone() : void {
+  update = () => {
+
+    this.oldx = this.x;
+    this.oldy = this.y;
+
+    this.handleViewportEdges();
+
+    this.x += this.speedx;
+
+    // Check to the left if going left and stop the player if he collides with a blocking tile
+    if(this.speedx < 0) {
+      var arrayPos=Level.getBlockAt(this.x, this.y + this.height/2+5);
+
+      if(arrayPos.blocking==1) {
+        this.x = this.oldx;
+        this.speedx *=-0.5;
+      }
+    } else {// Check to the right
+
+      var arrayPos=Level.getBlockAt(this.x + this.width, this.y + this.height/2+5);
+
+
+      if(arrayPos && arrayPos.blocking==1) {
+        this.x = this.oldx;
+        this.speedx *= -0.5;
+      }
+    }
+
+    if(this.speedy < WorldConstants.maxSpeedy) {
+      this.speedy += WorldConstants.gravity;
+    }
+
+    this.y += this.speedy;
+
+    
+    // If going up, check for blocking tiles
+    if(this.speedy < 0) {
+      arrayPos=Math.floor((this.x+this.width-8)/Level.tileSize)+Math.floor((this.y+5)/Level.tileSize)*Level.width;
+      var leftCollisionPoint = Math.floor((this.x+8)/Level.tileSize)+Math.floor((this.y+5)/(Level.tileSize))*Level.width;
+      // If the player lands on a blocking tile, iteratively move him upwards until he is free from the
+      // tile. This will remove bouncing when landing in high speed
+      var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1;
+      var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking==1;
+
+      if(rightCollisionPointCollided || leftCollisionPointCollided) {
+        this.y = this.oldy;
+        this.speedy = 0;
+        this.jumping=WorldConstants.maxJump;
+      }
+    } else if(this.speedy > 0) { // Going down, check for blocking tiles
+
+      arrayPos=Math.floor((this.x+this.width-8)/Level.tileSize)+Math.floor((this.y+this.height)/(Level.tileSize))*Level.width;
+      var leftCollisionPoint = Math.floor((this.x+8)/Level.tileSize)+Math.floor((this.y+this.height)/(Level.tileSize))*Level.width;
+      // If the player lands on a blocking tile, iteratively move him upwards until he is free from the
+      // tile. This will remove bouncing when landing in high speed
+      var rightCollisionPointCollided = typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].blocking==1;
+      var leftCollisionPointCollided = typeof Level.currentLevel[leftCollisionPoint] != "undefined" && Level.currentLevel[leftCollisionPoint].blocking==1;
+
+      if(rightCollisionPointCollided || leftCollisionPointCollided) {
+        this.jumping = 0;
+        this.drawingSmoke++;
+        while(typeof Level.currentLevel[arrayPos] != "undefined" && Level.getBlockAt(this.x+this.width-8, this.y+this.height).blocking==1
+          || Level.currentLevel[leftCollisionPoint] != "undefined" && Level.getBlockAt(this.x+8, this.y+this.height).blocking==1) {
+            this.y-=0.2;
+        }
+        this.speedy=0;
+      }
+      if(!rightCollisionPointCollided && !leftCollisionPointCollided) { // Disable jumping when in mid-air
+        this.jumping=WorldConstants.maxJump;
+        this.drawingSmoke = 0;
+      }
+    }
+  
+  
+    if(typeof Level.currentLevel[arrayPos] != "undefined" && Level.currentLevel[arrayPos].type=="g") // Ice block
+      this.friction=1; // No friction
+    else
+      this.friction=WorldConstants.normalFriction;
+
+
+    this.updateKillZone();
+    this.updateHurtZone();
+  
+  }
+
+  private handleViewportEdges = () => {
+    if(this.x + Viewport.x < -1*this.width+5) {
+      this.speedx = WorldConstants.kickbackForce;
+      GameState.outOfBoundsTimer = 100;
+    }
+    if(this.x + Viewport.x > Viewport.width -5) {
+      this.speedx = -1*WorldConstants.kickbackForce;
+      GameState.outOfBoundsTimer = 100;
+    }
+    if(this.y + Viewport.y > Viewport.height - this.height+10) {
+      this.speedy = -1*WorldConstants.kickbackForce;
+      GameState.outOfBoundsTimer = 100;
+    } 
+  }
+
+  updateHurtZone() : void {
    this.hurtZonex = this.x + 3;
    this.hurtZoney = this.y + 5;
- }
+  }
 
  updateKillZone() : void {
    this.killZonex = this.x+5;
