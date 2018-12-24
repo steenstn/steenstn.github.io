@@ -19,7 +19,7 @@ class Jumper extends Enemy {
     this.oldy = enemy.oldy;
     this.direction = enemy.direction;
 
-    Jumper.image.src = "images/frances.png";
+    Jumper.image.src = GameState.christmasMode ? "images/francesxmas.png" : "images/frances.png";
     Jumper.image.width = 32;
     Jumper.image.height = 60;
   }

@@ -10,5 +10,6 @@ var GameState = (function () {
     GameState.outOfBoundsTimer = 0;
     GameState.lastLevel = 0;
     GameState.numDeaths = 0;
+    GameState.christmasMode = false;
     return GameState;
 }());

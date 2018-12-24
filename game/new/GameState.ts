@@ -8,4 +8,5 @@ class GameState {
     static outOfBoundsTimer : number = 0;
     static lastLevel : number = 0;
     static numDeaths : number = 0;
+    static christmasMode : boolean = false;
 }

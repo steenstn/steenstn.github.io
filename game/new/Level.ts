@@ -9,7 +9,7 @@ class Level {
 
   static loadTileset() {
       Level.tileset = new Image();
-      Level.tileset.src = "images/tileset.png";
+      Level.tileset.src = GameState.christmasMode ? "images/tilesetxmas.png" : "images/tileset.png";
   }
 
   static getBlockAt(x: number, y:number) {

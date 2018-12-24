@@ -3,7 +3,7 @@ var Level = (function () {
     }
     Level.loadTileset = function () {
         Level.tileset = new Image();
-        Level.tileset.src = "images/tileset.png";
+        Level.tileset.src = GameState.christmasMode ? "images/tilesetxmas.png" : "images/tileset.png";
     };
     Level.getBlockAt = function (x, y) {
         var index = Math.floor(x / Level.tileSize) + Math.floor(y / Level.tileSize) * Level.width;

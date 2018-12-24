@@ -5,7 +5,7 @@ var Bedlam = (function () {
         this.currentFrame = 0;
         this.x = -Viewport.x - 70;
         this.y = -Viewport.y + 118;
-        this.image.src = "images/bedlam.png";
+        this.image.src = GameState.christmasMode ? "images/bedlamxmas.png" : "images/bedlam.png";
     }
     Bedlam.prototype.move = function (players) {
         this.animCounter++;

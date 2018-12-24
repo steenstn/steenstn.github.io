@@ -48,6 +48,11 @@
 <body>
 
 <script src="js/GameState.js" type ="text/javascript"></script>
+<script>
+var d = new Date();
+var isDecember = d.getMonth() === 11;
+GameState.christmasMode = isDecember ? true : false;
+</script>
 <script src="js/Vector.js" type="text/javascript"></script>
 <script src="js/gui/GUIRenderable.js" type="text/javascript"></script>
 <script src="js/gui/PlayerHealthBar.js" type="text/javascript"></script>
@@ -60,6 +65,7 @@
 <script src="js/Background.js" type="text/javascript"></script>
 <script src="js/WorldConstants.js" type="text/javascript"></script>
 <script src ="js/particles/Snowflake.js" type="text/javascript"></script>
+<script src ="js/particles/IntroStar.js" type="text/javascript"></script>
 <script src="js/particles/Particle.js" type="text/javascript"></script>
 <script src="js/particles/BloodParticle.js" type="text/javascript"></script>
 <script src="js/particles/TimedParticle.js" type="text/javascript"></script>
@@ -125,20 +131,20 @@ var healthParticleImage = new Image();
 healthParticleImage.src = "particles/greenpixel.png";
 
 var rock1Image = new Image();
-rock1Image.src = "images/rock1.png";
+rock1Image.src = GameState.christmasMode ? "images/rock1xmas.png" : "images/rock1.png";
 
 var baguetterockImage = new Image();
 baguetterockImage.src = "images/baguetterock.png";
 
 var tree1Image = new Image();
-tree1Image.src = "images/tree1.png";
+tree1Image.src = GameState.christmasMode ? "images/tree1xmas.png" : "images/tree1.png";
 
 var grassImage = new Image();
-grassImage.src = "images/grass.png";
+grassImage.src = GameState.christmasMode ? "images/grassxmas.png" : "images/grass.png";
 var flower1Image = new Image();
 flower1Image.src = "images/flower1.png";
 var vines1Image = new Image();
-vines1Image.src = "images/vines1.png";
+vines1Image.src = GameState.christmasMode ? "images/vines1xmas.png" : "images/vines1.png";
 
 var healthParticleFactory = new HealthParticleFactory(healthParticleImage);
 var coinParticleFactory = new TimedParticleFactory(coinParticleImage);
@@ -162,10 +168,10 @@ var effects = [];
 var bedlam;
 
 var image = new Image();
-image.src = "images/playersprite.png";
+image.src = GameState.christmasMode ? "images/playerspritexmas.png" : "images/playersprite.png";
 
 var image2 = new Image();
-image2.src = "images/playersprite2.png";
+image2.src = GameState.christmasMode ? "images/playersprite2xmas.png" : "images/playersprite2.png";
 var players = [];
 
 var playerKeys = [];
@@ -655,7 +661,7 @@ var drawText = function(textToDraw, x, y) {
 
 var drawAllText = function() {
     var scoreFontSize = 14 + GameState.scoreTimer/2;
-	  ctx.fillStyle    = '#000';
+	  ctx.fillStyle    = GameState.christmasMode ? '#000' : '#fff';
     ctx.font         = '14px Verdana';
     ctx.textBaseline = 'Top';
     ctx.textAlign = 'left';
@@ -845,7 +851,12 @@ var GameLoop = function(){
 
 var stars = [];
 for(var i = 0; i < 300; i++) {
-  stars.push(new Snowflake());
+  if(GameState.christmasMode) {
+    stars.push(new Snowflake());
+  } else {
+    stars.push(new IntroStar());
+  }
+  
 }
 
 var cleanSmoke = function() {
@@ -921,7 +932,10 @@ var IntroScreen = function() {
         }
         GUIRenderables.push(new PlayerHealthBar(players[0].getHp));
         setUpKeyMap();
-
+        if(!GameState.christmasMode) {
+          stars = [];
+        }
+        
         loadLevel(GameState.currentLevel);
         GameLoop();
         var x2 = players[1] ? players[1].x : players[0].x;
@@ -933,6 +947,9 @@ var IntroScreen = function() {
         addPlayer(image,37,38,39);
         addPlayer(image2,65,87,68);
         GUIRenderables.push(new PlayerHealthBar(players[0].getHp));
+        if(!GameState.christmasMode) {
+          stars = [];
+        }
         setUpKeyMap();
         GameState.currentLevel = 0;
         loadLevel(GameState.currentLevel);
