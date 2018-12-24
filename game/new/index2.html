@@ -59,6 +59,7 @@
 <script src="js/Jukebox.js" type="text/javascript"></script>
 <script src="js/Background.js" type="text/javascript"></script>
 <script src="js/WorldConstants.js" type="text/javascript"></script>
+<script src ="js/particles/Snowflake.js" type="text/javascript"></script>
 <script src="js/particles/Particle.js" type="text/javascript"></script>
 <script src="js/particles/BloodParticle.js" type="text/javascript"></script>
 <script src="js/particles/TimedParticle.js" type="text/javascript"></script>
@@ -654,7 +655,7 @@ var drawText = function(textToDraw, x, y) {
 
 var drawAllText = function() {
     var scoreFontSize = 14 + GameState.scoreTimer/2;
-	  ctx.fillStyle    = '#FFF';
+	  ctx.fillStyle    = '#000';
     ctx.font         = '14px Verdana';
     ctx.textBaseline = 'Top';
     ctx.textAlign = 'left';
@@ -753,6 +754,10 @@ var GameLoop = function(){
   }
 
   renderEnemies();
+  for(var i = 0; i < stars.length; i++) {
+        stars[i].move();
+        stars[i].render(ctx);
+  }
   Level.render(ctx);
 
   for(var i = 0; i < particles.length; i++) {
@@ -829,7 +834,7 @@ var GameLoop = function(){
       GameState.animating=2;
       bedlam = new Bedlam();
   }
-
+  
   GUIRenderables.forEach((g) => g.render(ctx));
 
   ctx.drawImage(Level.tileset, 64, 128, 32, 32, 4, Viewport.height-35, 32, 32);
@@ -840,12 +845,7 @@ var GameLoop = function(){
 
 var stars = [];
 for(var i = 0; i < 300; i++) {
-  var randomAngle = Math.random()*360;
-  var xadd = Math.cos(randomAngle);
-  var yadd = Math.sin(randomAngle);
-  var startx = Viewport.width*Math.random();
-  var starty = Viewport.height*Math.random();
-  stars.push(new Particle(320, 100, xadd*5*Math.random(), yadd*5*Math.random(), null));
+  stars.push(new Snowflake());
 }
 
 var cleanSmoke = function() {
@@ -876,17 +876,8 @@ var IntroScreen = function() {
       ctx.drawImage(logoImage,220,20);
       ctx.fillStyle    = '#FFF';
       for(var i = 0; i < stars.length; i++) {
-        stars[i].x+=stars[i].xSpeed;
-        stars[i].y+=stars[i].ySpeed;
-        var starIsOutsideOfScreen = stars[i].x < 0
-        || stars[i].y < 0
-        || stars[i].x > Viewport.width
-        || stars[i].y > Viewport.height;
-        if(starIsOutsideOfScreen) {
-          stars[i].x = 320;
-          stars[i].y = 80;
-        }
-        ctx.fillRect(Math.round(stars[i].x),Math.round(stars[i].y), 2, 2 );
+        stars[i].move();
+        stars[i].render(ctx);
       }
       ctx.fillStyle    = '#FFF';
       ctx.textAlign = 'center';
@@ -931,7 +922,6 @@ var IntroScreen = function() {
         GUIRenderables.push(new PlayerHealthBar(players[0].getHp));
         setUpKeyMap();
 
-        stars = null;
         loadLevel(GameState.currentLevel);
         GameLoop();
         var x2 = players[1] ? players[1].x : players[0].x;
@@ -944,7 +934,6 @@ var IntroScreen = function() {
         addPlayer(image2,65,87,68);
         GUIRenderables.push(new PlayerHealthBar(players[0].getHp));
         setUpKeyMap();
-        stars = null;
         GameState.currentLevel = 0;
         loadLevel(GameState.currentLevel);
         var x2 = players[1] ? players[1].x : players[0].x;
