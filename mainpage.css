@@ -11,6 +11,11 @@ body {
 	margin-top:0px;
 	padding-top:0px;
 }
+
+.soundcloud {
+	margin:4px; 
+}
+
 li {
 	text-align:left;
 }

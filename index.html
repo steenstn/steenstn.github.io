@@ -5,20 +5,22 @@
 <link rel="stylesheet" type="text/css" href="mainpage.css"/>
 </head>
 <body>
-<br /><br />
-
+<div class="soundcloud"><a href="https://soundcloud.com/schteen-1">I also make music sometimes.</a></div>
 <br />
+
+<p class="contact">Contact: alest849@gmail.com</p>
+
 <div class="background leftbackground">
 	<div class="project leftproject">
 		<h1>
-			<a class="mainLink" href="game/new/index2.html">Back to the Studio - The Mars Volta Adventure</a><br />
+			<a class="mainLink" href="https://steenstn.github.io/themarsvolta/">Back to the Studio - The Mars Volta Adventure</a><br />
 		</h1>
 		<img class="center" src="mv.png" />
 		<h4>Description</h4>
 		<p>2D platformer game for one or two players. Help The Mars Volta get back to the studio to record a new album.<br />
 		Written in Javascript/Typescript.<br />
-		<a href="https://github.com/steenstn/steenstn.github.io">Source code</a><br />
-		<a href="game/new/levelcreator.html">Level editor</a></p>
+		<a href="https://github.com/steenstn/themarsvolta">Source code</a><br />
+		<a href="https://steenstn.github.io/themarsvolta/levelcreator.html">Level editor</a></p>
 		
 		<h4>Credits</h4>
 		<p>Original music by The Mars Volta. Made into 8bit by <a href="https://www.youtube.com/user/Mhztransmission">Mhztransmission</a>, <a href="https://www.youtube.com/channel/UCk5SQk7TYP3bKgXM5PE9Jpg">taxIN7</a></p>
@@ -102,7 +104,7 @@ var HttpClient = function() {
     }
 }
 var client = new HttpClient();
-client.get('https://api.github.com/repos/steenstn/steenstn.github.io/commits', function(response) {
+client.get('https://api.github.com/repos/steenstn/themarsvolta/commits', function(response) {
 	var json = JSON.parse(response);
 	var lastCommitMessage = json[0].commit.message;
 	var lastCommitDate = json[0].commit.author.date;
@@ -115,6 +117,5 @@ client.get('https://api.github.com/repos/steenstn/achtung/commits', function(res
     document.getElementById("lastCommitAchtungGame").innerHTML = "Last commit " + lastCommitDate.substring(0,10) + ": " + lastCommitMessage;
 });
 </script>
-<p class="contact">Contact: alest849@gmail.com</p>
 </body>
 </html>
