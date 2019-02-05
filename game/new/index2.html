@@ -120,26 +120,25 @@ var neat = new neataptic.Neat(
     null,
     {
       mutation: [
-        neataptic.methods.mutation.ADD_NODE,
+       /* neataptic.methods.mutation.ADD_NODE,
         neataptic.methods.mutation.SUB_NODE,
         neataptic.methods.mutation.ADD_CONN,
-        neataptic.methods.mutation.SUB_CONN,
+        neataptic.methods.mutation.SUB_CONN,*/
         neataptic.methods.mutation.MOD_WEIGHT,
         neataptic.methods.mutation.MOD_BIAS,
-        neataptic.methods.mutation.MOD_ACTIVATION,
+        neataptic.methods.mutation.MOD_ACTIVATION,/*
         neataptic.methods.mutation.ADD_GATE,
         neataptic.methods.mutation.SUB_GATE,
         neataptic.methods.mutation.ADD_SELF_CONN,
         neataptic.methods.mutation.SUB_SELF_CONN,
         neataptic.methods.mutation.ADD_BACK_CONN,
-        neataptic.methods.mutation.SUB_BACK_CONN
+        neataptic.methods.mutation.SUB_BACK_CONN*/
       ],
       popsize: populationSize,
       mutationRate: mutationRate,
       elitism: Math.round(elitism * populationSize),
       network: new Architect.Perceptron(
         264,
-        100,
         100,
         3
       )
@@ -1061,6 +1060,7 @@ function evolve() {
 var input = [];
 var simSpeed = 1;
 var output;
+var r = Math.random();
 var GameLoop = function(){
   keysDown = {};
   numFramesSinceStart++;
@@ -1103,16 +1103,32 @@ var GameLoop = function(){
     
     
     output = currentGenome.activate(input);
-    //console.log(output);
-    if(output[0] > 0.5) {
+    var softmaxOutput = softmax(output);
+   
+    if(numFramesSinceStart%10===0) {
+      r = Math.random();
+    }
+    
+    if(softmaxOutput[0] < r) {
       keysDown[37] = true;
     }
-    if(output[1] > 0.5) {
+    if(softmaxOutput[1] < r) {
       keysDown[38] = true;
     }
-    if(output[2] > 0.5) {
+    if(softmaxOutput[2] < r) {
       keysDown[39] = true;
     }
+    
+    /*if(output[0] > 0.7) {
+      keysDown[37] = true;
+    }
+    if(output[1] > 0.7) {
+      keysDown[38] = true;
+    }
+    if(output[2] > 0.7) {
+      keysDown[39] = true;
+    }*/
+    
     /*if(output[3] > 0.5) {
       keysDown[65] = true;
     }
@@ -1138,12 +1154,16 @@ var GameLoop = function(){
         health = health > 400 ? 400 : health+10;
       } else  {
         if(rewardPath.length > rewardPathLength){
-          currentGenome.score-=5;
+          currentGenome.score-=2;
         }
      }
     }  
      if (Math.abs(players[0].speedx) < 2){
           health--;
+          if(numFramesSinceStart%20===0) {
+            currentGenome.score--;  
+          }
+          
      }
     
     
@@ -1307,7 +1327,13 @@ var cleanSmoke = function() {
 }
 
 var selectedOption = 0;
-
+function softmax(arr) {
+    const C = Math.max(...arr);
+    const d = arr.map((y) => Math.exp(y - C)).reduce((a, b) => a + b);
+    return arr.map((value, index) => { 
+        return Math.exp(value - C) / d;
+    })
+}
 var IntroScreen = function() {
     numFramesSinceStart++;
     clearBlack();
