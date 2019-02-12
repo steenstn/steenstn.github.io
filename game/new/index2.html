@@ -96,7 +96,7 @@ var debug = 0;
 var pixelBackground = 0;
 var keyHeldDown = 0;
 var numFramesSinceStart = 0;
-
+var maxFitness = 0;
 var gLoop,
 c = document.getElementById('c'),
 ctx = c.getContext('2d');
@@ -110,36 +110,37 @@ var rewardPath;
 var rewardPathLength = 0;
 var rewardPathInitialLength = 0;
 var Architect = neataptic.architect;
-var populationSize = 20;
+var populationSize = 50;
 var elitism = 0.2
 var mutationRate = 0.3;
 
 var neat = new neataptic.Neat(
-    264,
+    200,
     3,
     null,
     {
       mutation: [
-       /* neataptic.methods.mutation.ADD_NODE,
+        neataptic.methods.mutation.ADD_NODE,
         neataptic.methods.mutation.SUB_NODE,
         neataptic.methods.mutation.ADD_CONN,
-        neataptic.methods.mutation.SUB_CONN,*/
+        neataptic.methods.mutation.SUB_CONN,
         neataptic.methods.mutation.MOD_WEIGHT,
         neataptic.methods.mutation.MOD_BIAS,
-        neataptic.methods.mutation.MOD_ACTIVATION,/*
+        neataptic.methods.mutation.MOD_ACTIVATION,
         neataptic.methods.mutation.ADD_GATE,
         neataptic.methods.mutation.SUB_GATE,
         neataptic.methods.mutation.ADD_SELF_CONN,
         neataptic.methods.mutation.SUB_SELF_CONN,
         neataptic.methods.mutation.ADD_BACK_CONN,
-        neataptic.methods.mutation.SUB_BACK_CONN*/
+        neataptic.methods.mutation.SUB_BACK_CONN
       ],
       popsize: populationSize,
       mutationRate: mutationRate,
       elitism: Math.round(elitism * populationSize),
       network: new Architect.Perceptron(
-        264,
-        100,
+        200,
+        50,
+        50,
         3
       )
     }
@@ -1042,9 +1043,13 @@ var oldDistanceMoved = 0;
 var health = 40;
 function evolve() {
     console.log("generation " + neat.generation + " average score " + neat.getAverage());
-   
+    
     neat.sort();
     var newPopulation = [];
+    if(neat.population[0].score > maxFitness) {
+      maxFitness = neat.population[0].score;
+    }
+    console.log("maxFitness: " + maxFitness);
     for(var i = 0; i < neat.elitism; i++) {
         newPopulation.push(neat.population[i]);
     }
@@ -1109,15 +1114,16 @@ var GameLoop = function(){
       r = Math.random();
     }
     
-    if(softmaxOutput[0] < r) {
+    if(1-softmaxOutput[0] < r) {
       keysDown[37] = true;
     }
-    if(softmaxOutput[1] < r) {
+    if(1-softmaxOutput[1] < r) {
       keysDown[38] = true;
     }
-    if(softmaxOutput[2] < r) {
+    if(1-softmaxOutput[2] < r) {
       keysDown[39] = true;
     }
+
     
     /*if(output[0] > 0.7) {
       keysDown[37] = true;
@@ -1160,9 +1166,9 @@ var GameLoop = function(){
     }  
      if (Math.abs(players[0].speedx) < 2){
           health--;
-          if(numFramesSinceStart%20===0) {
+          /*if(numFramesSinceStart%20===0) {
             currentGenome.score--;  
-          }
+          }*/
           
      }
     
@@ -1265,7 +1271,7 @@ var GameLoop = function(){
   var arrayPos2 = players[1] ? Level.getBlockAt(players[1].x + players[1].width/2, players[1].y + players[1].height/2) : arrayPos1;
 
 	if(animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
-			levelNow++;
+		//	levelNow++;
 			lastScore=score;
       animating=2;
       bedlam = new Bedlam();
@@ -1295,10 +1301,12 @@ var GameLoop = function(){
   }
 
     ctx.fillStyle = "#4f4";
-  for(var i = 0; i < rewardPath.length; i++) {
-    
-    ctx.fillRect(Viewport.x+rewardPath[i].x*Level.tileSize+10, Viewport.y+rewardPath[i].y*Level.tileSize+10, 5, 5);
-  }
+    if(debug) {
+      for(var i = 0; i < rewardPath.length; i++) {
+        
+        ctx.fillRect(Viewport.x+rewardPath[i].x*Level.tileSize+10, Viewport.y+rewardPath[i].y*Level.tileSize+10, 5, 5);
+      }
+    }
   
 	gLoop = setTimeout(GameLoop, simSpeed);
 }
