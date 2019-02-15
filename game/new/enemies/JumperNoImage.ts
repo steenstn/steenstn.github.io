@@ -1,5 +1,4 @@
-class Jumper extends Enemy {
-  static image = new Image();
+class JumperNoImage extends Enemy {
   width=10;
   height=20;
   offsetx=3;
@@ -19,12 +18,9 @@ class Jumper extends Enemy {
     this.oldy = enemy.oldy;
     this.direction = enemy.direction;
 
-    Jumper.image.src = "frances.png";
-    Jumper.image.width = 32;
-    Jumper.image.height = 60;
   }
 
   draw(context) {
-    context.drawImage(Jumper.image,16*this.currentFrame,30-30*this.direction,16,30,Math.round(Viewport.x+this.x),Math.round(Viewport.y+this.y), 16, 30);
+    
   }
 }

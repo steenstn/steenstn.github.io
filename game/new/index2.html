@@ -120,26 +120,25 @@ var neat = new neataptic.Neat(
     null,
     {
       mutation: [
-        neataptic.methods.mutation.ADD_NODE,
+        /*neataptic.methods.mutation.ADD_NODE,
         neataptic.methods.mutation.SUB_NODE,
         neataptic.methods.mutation.ADD_CONN,
-        neataptic.methods.mutation.SUB_CONN,
+        neataptic.methods.mutation.SUB_CONN,*/
         neataptic.methods.mutation.MOD_WEIGHT,
         neataptic.methods.mutation.MOD_BIAS,
         neataptic.methods.mutation.MOD_ACTIVATION,
-        neataptic.methods.mutation.ADD_GATE,
+        /*neataptic.methods.mutation.ADD_GATE,
         neataptic.methods.mutation.SUB_GATE,
         neataptic.methods.mutation.ADD_SELF_CONN,
         neataptic.methods.mutation.SUB_SELF_CONN,
         neataptic.methods.mutation.ADD_BACK_CONN,
-        neataptic.methods.mutation.SUB_BACK_CONN
+        neataptic.methods.mutation.SUB_BACK_CONN*/
       ],
       popsize: populationSize,
       mutationRate: mutationRate,
       elitism: Math.round(elitism * populationSize),
       network: new Architect.Perceptron(
         200,
-        50,
         50,
         3
       )
@@ -716,6 +715,7 @@ var updateParticles = function() {
 var checkKeys = function (modifier) {
 
 //console.log(keysDown);
+
   if(79 in keysDown) { // o
     keyHeldDown++;
     if(keyHeldDown === 1) {
@@ -1066,7 +1066,31 @@ var input = [];
 var simSpeed = 1;
 var output;
 var r = Math.random();
+var worker
+var turboMode = function() {
+ // keysDown = {};
+  if(32 in keysDown) {
+    keysDown = {};
+    //worker.postMessage([false]);
+    setTimeout(GameLoop, 0);
+    return;
+  }
+  setTimeout(turboMode, 1);
+}
+
+worker = new Worker('webworker.js');
+worker.addEventListener('message', function(e) {
+      console.log("Worker", e.data);
+     // neat = e.data;
+    }, false);
+
 var GameLoop = function(){
+  if(32 in keysDown) {
+    keysDown = {};
+    worker.postMessage([true, neat.export()]);
+    setTimeout(turboMode, 0);
+    return;
+  }
   keysDown = {};
   numFramesSinceStart++;
 	clear();
@@ -1114,13 +1138,16 @@ var GameLoop = function(){
       r = Math.random();
     }
     
-    if(1-softmaxOutput[0] < r) {
+    let buttonLeft = 37;
+    let buttonRight = 39;
+
+    if(softmaxOutput[0] > r) {
       keysDown[37] = true;
     }
-    if(1-softmaxOutput[1] < r) {
+    if(softmaxOutput[1] > r) {
       keysDown[38] = true;
     }
-    if(1-softmaxOutput[2] < r) {
+    if(softmaxOutput[2] > r) {
       keysDown[39] = true;
     }
 
@@ -1157,14 +1184,14 @@ var GameLoop = function(){
       if(rewardPath.length < rewardPathLength) {
         rewardPathLength = rewardPath.length;
         currentGenome.score+=10;
-        health = health > 400 ? 400 : health+10;
+        health = health > 800 ? 800 : health+30;
       } else  {
         if(rewardPath.length > rewardPathLength){
           currentGenome.score-=2;
         }
      }
     }  
-     if (Math.abs(players[0].speedx) < 2){
+     if (Math.abs(players[0].speedx) < 1){
           health--;
           /*if(numFramesSinceStart%20===0) {
             currentGenome.score--;  
@@ -1308,7 +1335,7 @@ var GameLoop = function(){
       }
     }
   
-	gLoop = setTimeout(GameLoop, simSpeed);
+	gLoop = setTimeout(GameLoop, 0);
 }
 
 var stars = [];
