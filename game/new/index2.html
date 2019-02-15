@@ -66,6 +66,7 @@
 <script src="js/particles/BloodFactory.js" type="text/javascript"></script>
 <script src="js/particles/TimedParticleFactory.js" type="text/javascript"></script>
 <script src="js/particles/HealthParticleFactory.js" type="text/javascript"></script>
+<script src="js/Original.js" type="text/javascript"></script>
 
 <script src="js/Helper.js" type="text/javascript"></script>
 <script src="js/Smoke.js" type="text/javascript"></script>
@@ -782,7 +783,8 @@ var checkKeys = function (modifier) {
 
 var loadContent = function(levelName) {
 
-	enemies = Helper.loadJsonFile("levels/" + levelName+'enemies.json');
+  enemies = Helper.loadJsonFile("levels/" + levelName+'enemies.json');
+  Original.enemies = enemies;
   for(var i = 0; i < enemies.length; i++) {
     switch(enemies[i].type) {
       case "skull":
@@ -806,7 +808,7 @@ var loadContent = function(levelName) {
 
   }
 	var tempContent = Helper.loadJsonFile("levels/" + levelName+'content.json');//JSON.parse(jsonTexto);
-
+  Original.content = tempContent;
   for(var i = 0; i < tempContent.length; i++) {
     if(tempContent[i].type=="vines1") {
       var numTypes = 3;
@@ -843,7 +845,7 @@ var loadLevel = function(levelNumber) {
 
   var levelName = "level"+levelNumber;
    Level.currentLevel = new Array(Level.width*Level.height);
-
+   Original.level = Level.currentLevel;
   for(var i=0;i<Level.currentLevel.length;i++) { // set up an object for all tiles
   	Level.currentLevel[i]=new Object();
   }
@@ -1067,28 +1069,36 @@ var simSpeed = 1;
 var output;
 var r = Math.random();
 var worker
+var paused = false;
 var turboMode = function() {
  // keysDown = {};
-  if(32 in keysDown) {
+  if(32 in keysDown && paused) {
     keysDown = {};
-    //worker.postMessage([false]);
-    setTimeout(GameLoop, 0);
+    worker.postMessage([false]);
+    worker.terminate();
+    worker = undefined;
+    setTimeout(GameLoop, 1);
+    paused = false;
     return;
   }
-  setTimeout(turboMode, 1);
+  setTimeout(turboMode, 500);
 }
 
-worker = new Worker('webworker.js');
-worker.addEventListener('message', function(e) {
-      console.log("Worker", e.data);
-     // neat = e.data;
-    }, false);
 
 var GameLoop = function(){
-  if(32 in keysDown) {
+  if(32 in keysDown && !paused) {
     keysDown = {};
-    worker.postMessage([true, neat.export()]);
-    setTimeout(turboMode, 0);
+    console.log("woop woop");
+    paused = true;
+    if(!worker) {
+      worker = new Worker('webworker.js')
+      worker.addEventListener('message', function(e) {
+        console.log("Worker", e.data);
+      // neat = e.data;
+      }, false);
+    }
+    worker.postMessage([true, Original.enemies, Original.content, Original.level, neat.export()]);
+    setTimeout(turboMode, 1);
     return;
   }
   keysDown = {};

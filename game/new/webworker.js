@@ -1,4 +1,4 @@
-importScripts("https://wagenaartje.github.io/neataptic/cdn/1.4.7/neataptic.js","js/Vector.js","js/TinyQueue.js","js/PathFinder.js","js/Level.js","js/LevelTile.js","js/Viewport.js","js/Player.js","js/Jukebox.js","js/Background.js","js/WorldConstants.js","js/particles/Particle.js","js/particles/BloodParticle.js","js/particles/TimedParticle.js","js/particles/HealthParticle.js","js/particles/BloodFactory.js","js/particles/TimedParticleFactory.js","js/particles/HealthParticleFactory.js","js/Helper.js","js/particles/ParticleCleaner.js","js/enemies/Enemy.js","js/enemies/MutantNoImage.js","js/enemies/BouncerNoImage.js","js/enemies/SkullNoImage.js","js/enemies/JumperNoImage.js","js/enemies/BossNoImage.js","js/Fly.js","js/Bedlam.js","js/enemyMovementStrategies/GlidingStrategy.js","js/enemyMovementStrategies/JumpingStrategy.js","js/enemyMovementStrategies/FlyingStrategy.js","js/enemyMovementStrategies/MutantStrategy.js","js/enemyMovementStrategies/BossStrategy.js")
+importScripts("https://wagenaartje.github.io/neataptic/cdn/1.4.7/neataptic.js","js/Original.js", "js/Vector.js","js/TinyQueue.js","js/PathFinder.js","js/Level.js","js/LevelTile.js","js/Viewport.js","js/Player.js","js/Jukebox.js","js/Background.js","js/WorldConstants.js","js/particles/Particle.js","js/particles/BloodParticle.js","js/particles/TimedParticle.js","js/particles/HealthParticle.js","js/particles/BloodFactory.js","js/particles/TimedParticleFactory.js","js/particles/HealthParticleFactory.js","js/Helper.js","js/particles/ParticleCleaner.js","js/enemies/Enemy.js","js/enemies/MutantNoImage.js","js/enemies/BouncerNoImage.js","js/enemies/SkullNoImage.js","js/enemies/JumperNoImage.js","js/enemies/BossNoImage.js","js/Fly.js","js/Bedlam.js","js/enemyMovementStrategies/GlidingStrategy.js","js/enemyMovementStrategies/JumpingStrategy.js","js/enemyMovementStrategies/FlyingStrategy.js","js/enemyMovementStrategies/MutantStrategy.js","js/enemyMovementStrategies/BossStrategy.js")
 
 
 
@@ -208,7 +208,7 @@ var updatePlayer = function(index) {
 
 	// Check to the left if going left and stop the player if he collides with a blocking tile
 	if(players[index].speedx < 0) {
-        postMessage(Level.currentLevel);
+       
 		var arrayPos=Level.getBlockAt(players[index].x, players[index].y + players[index].height/2+5);
 
 		if(arrayPos.blocking==1) {
@@ -370,9 +370,9 @@ var updateEnemies = function() {
   		}
 
     }
-    if(!enemyIsDead && !enemyIsInteracting) {
-        enemies[i].move();
-    }
+        if(!enemyIsDead && !enemyIsInteracting) {
+            enemies[i].move();
+        }
 	}
 
   for(var j = 0 ; j < enemies.length; j++) {
@@ -484,9 +484,9 @@ var checkKeys = function (modifier) {
 
 var loadContent = function(levelName) {
 
-	enemies = Helper.loadJsonFile("levels/" + levelName+'enemies.json');
+	enemies = [];
   for(var i = 0; i < enemies.length; i++) {
-    switch(enemies[i].type) {
+    switch(Original.enemies[i].type) {
       case "skull":
       case "skurkerist": // Flies back and forth, no gravity
           enemies[i]= new SkullNoImage(enemies[i], Level.currentLevel)
@@ -507,7 +507,7 @@ var loadContent = function(levelName) {
 
 
   }
-	var tempContent = Helper.loadJsonFile("levels/" + levelName+'content.json');//JSON.parse(jsonTexto);
+	var tempContent = Original.content;
 
   for(var i = 0; i < tempContent.length; i++) {
     if(tempContent[i].type=="vines1") {
@@ -541,10 +541,9 @@ var loadContent = function(levelName) {
 var loadLevel = function(levelNumber) {
   numVinylInLevel = 0;
   vinylCollectedInLevel = 0;
-  //postMessage("loading level");
+  
+    Level.currentLevel = Original.level;
 /*
-    Level.currentLevel = new Array(Level.width*Level.height);
-
     for(var i=0;i<Level.currentLevel.length;i++) { // set up an object for all tiles
         Level.currentLevel[i]=new Object();
     }
@@ -565,13 +564,12 @@ var loadLevel = function(levelNumber) {
         }
    }*/
 
-  mutantSpecs = Helper.loadJsonFile('enemies/mutant.json');
   content.length = 0;
   flies.length = 0;
   backgroundContent.length = 0;
   foregroundContent.length = 0;
   flowers.length = 0;
-  loadContent(levelName);
+  loadContent("levelName");
   setUpContent();
   pathFinder = new Pathfinder(Level.currentLevel, Level.width, Level.height);
   var done = false;
@@ -611,9 +609,6 @@ var setUpContent = function() {
 	      break;
       case "flynest":
 
-        for(var j = 0; j < content[i].numFlies; j++) {
-          flies.push(new Fly(flyImage, content[i].x, content[i].y));
-        }
         break;
       case "flower1":
         flowers.push(content[i]);
@@ -635,12 +630,13 @@ var oldDistanceMoved = 0;
 var health = 40;
 function evolve() {
     //console.log("generation " + neat.generation + " average score " + neat.getAverage());
-    postMessage("Generation " + neat.generation);
     neat.sort();
     var newPopulation = [];
     if(neat.population[0].score > maxFitness) {
       maxFitness = neat.population[0].score;
     }
+    
+    postMessage("Generation " + neat.generation + " max fitness " + neat.population[0].score);
    // console.log("maxFitness: " + maxFitness);
     for(var i = 0; i < neat.elitism; i++) {
         newPopulation.push(neat.population[i]);
@@ -660,7 +656,11 @@ var output;
 var r = Math.random();
 
 self.addEventListener('message', function(e) {
+
     if(e.data[0] === true) {
+        Original.enemies = e.data[1];
+        Original.content = e.data[2];
+        Original.level = e.data[3];
         addPlayer(null, 37, 38, 39)
        // originalLevel = Level.currentLevel.slice();
        // postMessage(originalLevel);
@@ -696,8 +696,8 @@ self.addEventListener('message', function(e) {
             }
           );
         
-        neat.import(e.data[1]);
-        postMessage(neat.export());
+        neat.import(e.data[4]);
+       // postMessage(neat.export());
         currentGenome = neat.population[genomeIndex];
         currentGenome.score = 0;
         running = true;
@@ -709,178 +709,200 @@ self.addEventListener('message', function(e) {
 });
 
 var GameLoop = function(){
+    postMessage("Starting game loop");
   while(running) {
-     // postMessage("running");
-  keysDown = {};
-  numFramesSinceStart++;
-	clear();
-
-	if(players[0].hp<1) {
-		players[0].hp=0;
+    keysDown = {};
+    numFramesSinceStart++;
+      clear();
+  
+      if(players[0].hp<1) {
+        players[0].hp=0;
         if(players[1]) {
-        players[1].hp=0;
+            players[1].hp=0;
         }
-        score=lastScore;
+            score=lastScore;
         numDeaths++;
         vinylCollectedInLevel = 0;
         flies= [];
-        loadLevel(levelNow);
+            loadLevel(levelNow);
         genomeIndex++;
-        
         if(genomeIndex >= populationSize) {
             evolve();
+            
             genomeIndex = 0;
         }
         currentGenome = neat.population[genomeIndex];
         currentGenome.score = 0;
             init();
-        animating = 1;
-	}
-  if(animating===1) {
-    Viewport.moveTowardsCenter(startPos.x,startPos.y,startPos.x,startPos.y, 30);
-    if(players[0].x + Viewport.x > -1*players[0].width+5 &&
-       players[0].x + Viewport.x < Viewport.width -5 &&
-       players[0].y + Viewport.y < Viewport.height - players[0].height+10 &&
-       players[0].y + Viewport.y > 0) {
-
-       animating = 0;
-    }
-  }
-
-	if(animating===0) {
-    input = [];
-    input = Level.getInput(enemies, players);
-    
-    
-    output = currentGenome.activate(input);
-    var softmaxOutput = softmax(output);
-   
-    if(numFramesSinceStart%10===0) {
-      r = Math.random();
-    }
-    
-    let buttonLeft = 37;
-    let buttonRight = 39;
-
-    if(softmaxOutput[0] > r) {
-      keysDown[37] = true;
-    }
-    if(softmaxOutput[1] > r) {
-      keysDown[38] = true;
-    }
-    if(softmaxOutput[2] > r) {
-      keysDown[39] = true;
-    }
-        checkKeys(1);
-
-    playerIsOutOfBounds = false;
-    for(var i = 0; i < players.length; i++) {
-      updatePlayer(i);
-		
-    }
-    if(numFramesSinceStart%10===0) {
-      rewardPath = pathFinder.findPath(new Vector(Math.round(players[0].x/Level.tileSize), Math.round(players[0].y/Level.tileSize)), goal);
-      if(rewardPath.length < rewardPathLength) {
-        rewardPathLength = rewardPath.length;
-        currentGenome.score+=10;
-        health = health > 800 ? 800 : health+30;
-      } else  {
-        if(rewardPath.length > rewardPathLength){
-          currentGenome.score-=2;
-        }
-     }
-    }  
-     if (Math.abs(players[0].speedx) < 1){
-          health--;
-          /*if(numFramesSinceStart%20===0) {
-            currentGenome.score--;  
-          }*/
-          
-     }
-    
-    
-
-    if(health<=0) {
-      players[0].hp = 0;
-    }
-
-    var x2 = players[1] ? players[1].x : players[0].x+(players[0].goingLeft ? -50 : 50)+10*players[0].speedx;
-    var y2 = players[1] ? players[1].y : players[0].y;
-    
-    Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
-
-    }
-    
-  if(animating === 0) {
-    updateEnemies();
-  }
-
-  if(animating===2) {
-    playerIsOutOfBounds = false;
-    checkKeys(1);
-    bedlam.move(players);
-    if(bedlam.isComplete()) {
-      bedlam = null;
-      animating = 0;
-      totalNumVinylCollected+=vinylCollectedInLevel;
-      if(bossKilled) {
-        jukeBox.playFinalSong();
-        endScreen();
-        return;
-      } else {
-        loadLevel(levelNow);
-        init();
             
-        var x2 = players[1] ? players[1].x : players[0].x;
-        var y2 = players[1] ? players[1].y : players[0].y;
-        Viewport.moveToCenter(players[0].x, players[0].y, x2, y2);
-
+        animating = 1;
       }
-
-    }
-  }
-
-  if(animating===3) {
-    bossDeadTimer--;
-    checkKeys(0);
-    for(var i = 0; i < players.length; i++) {
-      updatePlayer(i);
-		}
-
-    var x2 = players[1] ? players[1].x : players[0].x;
-    var y2 = players[1] ? players[1].y : players[0].y;
-    Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
-
-   // updateParticles();
-    if(bossDeadTimer<=0) {
-      bedlam = new Bedlam();
-      animating = 2;
-    }
-  }
-
-  if(numFramesSinceStart%50 === 0) {
-    particleCleaner.cleanupBlood(particles);
-    cleanSmoke();
-  } else if(numFramesSinceStart%20 === 0) {
-
-    for(var i = 0; i < particles.length; i++) {
-      if(particles[i].shouldBeDeleted) {
-        particles.splice(i,1);
+    if(animating===1) {
+        
+      
+      Viewport.moveToCenter(startPos.x,startPos.y,startPos.x,startPos.y, 30);
+      if(players[0].x + Viewport.x > -1*players[0].width+5 &&
+         players[0].x + Viewport.x < Viewport.width -5 &&
+         players[0].y + Viewport.y < Viewport.height - players[0].height+10 &&
+         players[0].y + Viewport.y > 0) {
+  
+         animating = 0;
       }
     }
-  }
-
-  var arrayPos1 = Level.getBlockAt(players[0].x + players[0].width/2, players[0].y + players[0].height/2);
-  var arrayPos2 = players[1] ? Level.getBlockAt(players[1].x + players[1].width/2, players[1].y + players[1].height/2) : arrayPos1;
-
-    if(animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
-        //	levelNow++;
-            lastScore=score;
+  
+      if(animating===0) {
+      input = [];
+      input = Level.getInput(enemies, players);
+      
+      
+      output = currentGenome.activate(input);
+      var softmaxOutput = softmax(output);
+     
+      if(numFramesSinceStart%10===0) {
+         
+        r = Math.random();
+      }
+      
+      let buttonLeft = 37;
+      let buttonRight = 39;
+  
+      if(softmaxOutput[0] > r) {
+        keysDown[37] = true;
+      }
+      if(softmaxOutput[1] > r) {
+        keysDown[38] = true;
+      }
+      if(softmaxOutput[2] > r) {
+        keysDown[39] = true;
+      }
+  
+      
+      
+          checkKeys(1);
+  
+      playerIsOutOfBounds = false;
+      for(var i = 0; i < players.length; i++) {
+        updatePlayer(i);
+          
+      }
+      if(numFramesSinceStart%10===0) {
+        rewardPath = pathFinder.findPath(new Vector(Math.round(players[0].x/Level.tileSize), Math.round(players[0].y/Level.tileSize)), goal);
+        if(rewardPath.length < rewardPathLength) {
+          rewardPathLength = rewardPath.length;
+          currentGenome.score+=10;
+          health = health > 800 ? 800 : health+30;
+        } else  {
+          if(rewardPath.length > rewardPathLength){
+            currentGenome.score-=2;
+          }
+       }
+      }  
+       if (Math.abs(players[0].speedx) < 1){
+            health--;
+            /*if(numFramesSinceStart%20===0) {
+              currentGenome.score--;  
+            }*/
+            
+       }
+      
+      
+  
+      if(health<=0) {
+        players[0].hp = 0;
+      }
+  
+      var x2 = players[1] ? players[1].x : players[0].x+(players[0].goingLeft ? -50 : 50)+10*players[0].speedx;
+      var y2 = players[1] ? players[1].y : players[0].y;
+      
+      Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
+  
+      }
+    //renderBackgroundContent();
+    if(animating === 0) {
+      //render();
+      updateEnemies();
+      updateParticles();
+      for(var i = 0; i < flies.length; i++) {
+        flies[i].move(players, flowers);
+      }
+    }
+  
+    //renderEnemies();
+   // Level.render(ctx);
+  
+  
+    //renderForegroundContent();
+  
+    if(animating===2) {
+      playerIsOutOfBounds = false;
+      checkKeys(1);
+     // render();
+      bedlam.move(players);
+      bedlam.render(ctx);
+      if(bedlam.isComplete()) {
+        bedlam = null;
+        animating = 0;
+        totalNumVinylCollected+=vinylCollectedInLevel;
+        if(bossKilled) {
+          //jukeBox.playFinalSong();
+          endScreen();
+          return;
+        } else {
+  
+          loadLevel(levelNow);
+  
+          init();
+              
+          var x2 = players[1] ? players[1].x : players[0].x;
+          var y2 = players[1] ? players[1].y : players[0].y;
+          Viewport.moveToCenter(players[0].x, players[0].y, x2, y2);
+  
+        }
+  
+      }
+    }
+  
+    if(animating===3) {
+      bossDeadTimer--;
+      checkKeys(0);
+      for(var i = 0; i < players.length; i++) {
+        updatePlayer(i);
+    }
+  
+      var x2 = players[1] ? players[1].x : players[0].x;
+      var y2 = players[1] ? players[1].y : players[0].y;
+      Viewport.moveTowardsCenter(players[0].x, players[0].y, x2, y2);
+     // render();
+      updateParticles();
+      if(bossDeadTimer<=0) {
+        bedlam = new Bedlam();
+        animating = 2;
+      }
+    }
+  
+    if(numFramesSinceStart%50 === 0) {
+      particleCleaner.cleanupBlood(particles);
+      cleanSmoke();
+    } else if(numFramesSinceStart%20 === 0) {
+  
+      for(var i = 0; i < particles.length; i++) {
+        if(particles[i].shouldBeDeleted) {
+          particles.splice(i,1);
+        }
+      }
+    }
+  
+    var arrayPos1 = Level.getBlockAt(players[0].x + players[0].width/2, players[0].y + players[0].height/2);
+    var arrayPos2 = players[1] ? Level.getBlockAt(players[1].x + players[1].width/2, players[1].y + players[1].height/2) : arrayPos1;
+  
+      if(animating===0 && (arrayPos1.type=="k" || arrayPos2.type=="k")) {
+          //	levelNow++;
+              lastScore=score;
         animating=2;
         bedlam = new Bedlam();
     }
-
-    gLoop = setTimeout(GameLoop, 0);
+  
+  
     
  }
 }
