@@ -697,13 +697,13 @@ self.addEventListener('message', function(e) {
           );
         
         neat.import(e.data[4]);
-       // postMessage(neat.export());
         currentGenome = neat.population[genomeIndex];
         currentGenome.score = 0;
         running = true;
         GameLoop();
     } else {
         running = false;
+        postMessage([false, neat.export(), neat.generation]);
     }
     
 });

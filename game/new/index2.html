@@ -1093,7 +1093,46 @@ var GameLoop = function(){
     if(!worker) {
       worker = new Worker('webworker.js')
       worker.addEventListener('message', function(e) {
-        console.log("Worker", e.data);
+        if(e.data[0]) {
+          console.log("Worker", e.data);
+        } else {
+          neat = new neataptic.Neat(
+            200,
+            3,
+            null,
+            {
+              mutation: [
+                neataptic.methods.mutation.ADD_NODE,
+                neataptic.methods.mutation.SUB_NODE,
+                neataptic.methods.mutation.ADD_CONN,
+                neataptic.methods.mutation.SUB_CONN,
+                neataptic.methods.mutation.MOD_WEIGHT,
+                neataptic.methods.mutation.MOD_BIAS,
+                neataptic.methods.mutation.MOD_ACTIVATION,
+                neataptic.methods.mutation.ADD_GATE,
+                neataptic.methods.mutation.SUB_GATE,
+                neataptic.methods.mutation.ADD_SELF_CONN,
+                neataptic.methods.mutation.SUB_SELF_CONN,
+                neataptic.methods.mutation.ADD_BACK_CONN,
+                neataptic.methods.mutation.SUB_BACK_CONN
+              ],
+              popsize: populationSize,
+              mutationRate: mutationRate,
+              elitism: Math.round(elitism * populationSize),
+              network: new Architect.Perceptron(
+                200,
+                50,
+                3
+              )
+            }
+          );
+        
+        neat.import(e.data[1]);
+        neat.generation = e.date[2];
+        currentGenome = neat.population[genomeIndex];
+        currentGenome.score = 0;
+        }
+        
       // neat = e.data;
       }, false);
     }
