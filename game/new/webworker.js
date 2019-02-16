@@ -649,6 +649,8 @@ function evolve() {
     neat.population = newPopulation;
     neat.mutate();
     neat.generation++;
+    
+    postMessage(['new', neat.export(), neat.generation]);
 }
 var input = [];
 var simSpeed = 1;
@@ -697,13 +699,14 @@ self.addEventListener('message', function(e) {
           );
         
         neat.import(e.data[4]);
+        
         currentGenome = neat.population[genomeIndex];
         currentGenome.score = 0;
+        neat.generation = e.data[5];
         running = true;
         GameLoop();
     } else {
         running = false;
-        postMessage([false, neat.export(), neat.generation]);
     }
     
 });

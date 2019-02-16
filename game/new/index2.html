@@ -121,19 +121,19 @@ var neat = new neataptic.Neat(
     null,
     {
       mutation: [
-        /*neataptic.methods.mutation.ADD_NODE,
+        neataptic.methods.mutation.ADD_NODE,
         neataptic.methods.mutation.SUB_NODE,
         neataptic.methods.mutation.ADD_CONN,
-        neataptic.methods.mutation.SUB_CONN,*/
+        neataptic.methods.mutation.SUB_CONN,
         neataptic.methods.mutation.MOD_WEIGHT,
         neataptic.methods.mutation.MOD_BIAS,
         neataptic.methods.mutation.MOD_ACTIVATION,
-        /*neataptic.methods.mutation.ADD_GATE,
+        neataptic.methods.mutation.ADD_GATE,
         neataptic.methods.mutation.SUB_GATE,
         neataptic.methods.mutation.ADD_SELF_CONN,
         neataptic.methods.mutation.SUB_SELF_CONN,
         neataptic.methods.mutation.ADD_BACK_CONN,
-        neataptic.methods.mutation.SUB_BACK_CONN*/
+        neataptic.methods.mutation.SUB_BACK_CONN
       ],
       popsize: populationSize,
       mutationRate: mutationRate,
@@ -1089,23 +1089,25 @@ var GameLoop = function(){
   if(32 in keysDown && !paused) {
     keysDown = {};
     console.log("woop woop");
+    
     paused = true;
     if(!worker) {
       worker = new Worker('webworker.js')
       worker.addEventListener('message', function(e) {
-        if(e.data[0]) {
+        if(e.data[0] && e.data[0]!='new') {
           console.log("Worker", e.data);
         } else {    
-        neat.import(e.data[1]);
-        neat.generation = e.data[2];
-        currentGenome = neat.population[genomeIndex];
-        currentGenome.score = 0;
+          console.log("updating neat");
+          neat.import(e.data[1]);
+          neat.generation = e.data[2];
+          currentGenome = neat.population[genomeIndex];
+          currentGenome.score = 0;
         }
         
       // neat = e.data;
       }, false);
     }
-    worker.postMessage([true, Original.enemies, Original.content, Original.level, neat.export()]);
+    worker.postMessage([true, Original.enemies, Original.content, Original.level, neat.export(), neat.generation]);
     setTimeout(turboMode, 1);
     return;
   }
