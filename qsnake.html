@@ -35,8 +35,13 @@ var Neuron = synaptic.Neuron,
 
 var inputLayer = new Layer(levelWidth*levelHeight);
 var hiddenLayer = new Layer(levelWidth*levelHeight);
+hiddenLayer.set({
+        squash: synaptic.Neuron.squash.RELU,
+      });
 var outputLayer = new Layer(4);
-
+outputLayer.set({
+      squash: synaptic.Neuron.squash.IDENTITY,
+    });
 inputLayer.project(hiddenLayer);
 hiddenLayer.project(outputLayer);
 var myNetwork = new Network({
@@ -55,17 +60,6 @@ var resetLevel = function() {
 	level = [];
 	for(var i = 0; i < levelWidth*levelHeight; i++) {
 		var tile = 0;
-		/*if(i<levelWidth) {
-			tile = 1;
-		} else if (i>levelWidth*levelHeight-levelWidth-1) {
-			tile = 1;
-		} else if(i%levelWidth===0) {
-			tile = 1;
-		} else if(i%levelWidth===levelWidth-1) {
-			tile = 1;
-		} else if(i > 124 && i < 135) {
-		//	tile = 1;
-		}*/
 		level.push(tile);
 	}
 }
@@ -185,8 +179,8 @@ var resetGame = function() {
 	}
 	score = 0;
 	
-	apple.x = Math.floor((Math.random()*(levelWidth-3)+2));
-	apple.y = Math.floor((Math.random()*(levelWidth-3)+2));
+	apple.x = 3;//Math.floor((Math.random()*(levelWidth-3)+2));
+	apple.y = 3;//Math.floor((Math.random()*(levelWidth-3)+2));
 
 	
 }
@@ -229,35 +223,14 @@ var rewardFunction = function(position, currentDistance) {
 	} 
 	if(snake.x === apple.x && snake.y === apple.y) {
 		reward = 1;
-	//	console.log("apple");
-	}//
-	//console.log(reward);
+	}
 	return reward;
 }
-function sigmoid(x) {
-  return 1 / (1 + Math.exp(-x)); 
-}
 
-function sampleArray(arr, size) {
-    var shuffled = arr.slice(0), i = arr.length, min = i - size, temp, index;
-    while (i-- > min) {
-        index = Math.floor((i + 1) * Math.random());
-        temp = shuffled[index];
-        shuffled[index] = shuffled[i];
-        shuffled[i] = temp;
-    }
-    return shuffled.slice(min);
-}
-
-var actionArray = [[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]]; // Up, left, down, right
 var discount = 0.9;
 var epsilon = 0.1;
 var maxEpsilon = 0.9;
-var replayMemorySize = 50;
-var replayMemoryPointer = 0;
-var replayMemory = [];
-var replayBatchSize = 20;
-var bestDirection = [];
+let learningRate = 0.3;
 
 var GameLoop = function() {
 	
@@ -267,22 +240,25 @@ var GameLoop = function() {
 	  return;
   }
 
-	var input = level.slice();
-	input[snake.x+snake.y*levelWidth] = 1;
-	input[apple.x+apple.y*levelWidth] = 0.5;
+	var oldState = level.slice();
+
+	// Put the snake and apple into the input vector
+	oldState[snake.x+snake.y*levelWidth] = 1;
+	oldState[apple.x+apple.y*levelWidth] = 0.5;
 	
-	
+	let directionTaken;
+
+	let oldQs = myNetwork.activate(oldState);
 	var randomMove = Math.random() > epsilon;
+
+	// Epsilon greedy, random move or optimal move
 	if(randomMove) {
 		var randomDirection = Math.floor(Math.random()*4);
+		directionTaken = randomDirection;
 		snake.setDirection(randomDirection);
 	} else {
-		var input2 = level.slice();
-		input2[snake.x+snake.y*levelWidth] = 1;
-		
-		input2[apple.x+apple.y*levelWidth] = 0.5;
-		var allQs = myNetwork.activate(input2);
-		snake.setDirection(indexOfMax(allQs));
+		snake.setDirection(indexOfMax(oldQs));
+		directionTaken = indexOfMax(oldQs);
 	}
 	
 	var currentDistance = distance(snake.x, snake.y, apple.x, apple.y);
@@ -290,35 +266,42 @@ var GameLoop = function() {
 	snake.move();
   	
 	var r = rewardFunction(snake.getPosition(), currentDistance);
+	
 	var newState = level.slice();
 	newState[snake.x+snake.y*levelWidth] = 1;
 	newState[apple.x+apple.y*levelWidth] = 0.5;
 	
-	// Update Q-network
+	// Q values for new state
+	var newQs = myNetwork.activate(newState);
 
-	var allQs = myNetwork.activate(newState);
+	
+  var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
+	let takenApple = (snake.x === apple.x && snake.y === apple.y);
+	let finalState = takenApple ||snakeOutOfBounds;
+	
+	let updatedQ;
+	if(finalState) {
+		updatedQ = r;
+	} else {
+		updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*(r + discount * newQs[indexOfMax(newQs)]);
+	}
 
-	//console.log(allQs);
+	oldQs[directionTaken] = updatedQ;
 	
-	
-	var updatedQ = r + discount * allQs[indexOfMax(allQs)];
-	var update = myNetwork.activate(newState);
-	update[indexOfMax(allQs)] = updatedQ;
-	update = update.map(u => u = sigmoid(u));
-	//console.log(update);
-//	console.log(update);
-	myNetwork.activate(input); // Current Q-value for input before moving
-	myNetwork.propagate(0.1, update); // Backpropagate with new Q value
-	
+	console.log(oldQs);
+	myNetwork.activate(oldState); // Current Q-value for input before moving
+	myNetwork.propagate(0.1, oldQs); // Backpropagate with new Q value
+		
 	
 	epsilon = epsilon > maxEpsilon ? maxEpsilon : epsilon+0.0001;
+
 	if(snake.x === apple.x && snake.y === apple.y) {
 		score++;
 		resetGame();
 		apples++;
  	}
   
-  var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
+  snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
   if(snakeOutOfBounds || level[snake.x+snake.y*levelWidth]===1) {
 		resetGame();
 		deaths++;
@@ -334,15 +317,9 @@ var GameLoop = function() {
   
   ctx.fillStyle = "#000";
   ctx.font = "9px Verdana";
-  for(var i = 0; i < levelWidth; i++) {
-	for(var j = 0; j < levelHeight; j++) {
-	  ctx.fillText(bestDirection[i+j*levelHeight] ? bestDirection[i+j*levelHeight] : "", i*20+5, j*20+15);
-	}
-  }
-  
+    
   ctx.fillText("Percent: " + (apples/(deaths+apples)).toFixed(2),10,c.height-15);
 	
-  //ctx.fillText("High score: " + highScore,c.width-200,c.height-15);
   ctx.fillText("Deaths: " + deaths + " Apples: " + apples,100,c.height-15);
   
   gLoop = setTimeout(GameLoop, speed);
