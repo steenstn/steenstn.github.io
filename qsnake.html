@@ -179,8 +179,8 @@ var resetGame = function() {
 	}
 	score = 0;
 	
-	apple.x = Math.floor((Math.random()*(levelWidth-3)+2));
-	apple.y = Math.floor((Math.random()*(levelWidth-3)+2));
+	apple.x = 1;//Math.floor((Math.random()*(levelWidth-3)+2));
+	apple.y = 1;//Math.floor((Math.random()*(levelWidth-3)+2));
 
 	
 }
@@ -211,7 +211,7 @@ var rewardFunction = function(position, currentDistance) {
 	var y = position.y;
 	var reward = 0;
 	
-	var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
+	var snakeOutOfBounds = snake.x < 0 || snake.x >= levelWidth || snake.y <0 || snake.y >= levelHeight;
 	if(snakeOutOfBounds) {
 		reward = -1;
 	} else if(level[x+y*levelWidth]===0) {
@@ -275,7 +275,7 @@ var GameLoop = function() {
 	var newQs = myNetwork.activate(newState);
 
 	
-  var snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
+  var snakeOutOfBounds = snake.x < 0 || snake.x >= levelWidth || snake.y < 0 || snake.y >= levelHeight;
 	let takenApple = (snake.x === apple.x && snake.y === apple.y);
 	let finalState = takenApple ||snakeOutOfBounds;
 	
@@ -285,7 +285,6 @@ var GameLoop = function() {
 	} else {
 		updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*(r +discount * newQs[indexOfMax(newQs)]);
 	}
-	updatedQ = clamp(updatedQ, -1, 1);
 	oldQs[directionTaken] = updatedQ;
 	
 	console.log(oldQs);
@@ -301,7 +300,7 @@ var GameLoop = function() {
 		apples++;
  	}
   
-  snakeOutOfBounds = snake.x < 1 || snake.x >= levelWidth-1 || snake.y < 1 || snake.y >= levelHeight-1;
+  snakeOutOfBounds = snake.x < 0 || snake.x >= levelWidth || snake.y < 0 || snake.y >= levelHeight;
   if(snakeOutOfBounds || level[snake.x+snake.y*levelWidth]===1) {
 		resetGame();
 		deaths++;
@@ -318,9 +317,10 @@ var GameLoop = function() {
   ctx.fillStyle = "#000";
   ctx.font = "9px Verdana";
     
-  ctx.fillText("Percent: " + (apples/(deaths+apples)).toFixed(2),10,c.height-15);
+  ctx.fillText("Percent: " + (apples/(deaths+apples)).toFixed(2),10,c.height-30);
 	
-  ctx.fillText("Deaths: " + deaths + " Apples: " + apples,100,c.height-15);
+  ctx.fillText("Deaths: " + deaths,10,c.height-15);
+	ctx.fillText("Apples: " + apples,10,c.height-2);
   
   gLoop = setTimeout(GameLoop, speed);
   return;
