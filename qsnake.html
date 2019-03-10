@@ -36,8 +36,8 @@ var Neuron = synaptic.Neuron,
 var inputLayer = new Layer(levelWidth*levelHeight);
 var hiddenLayer = new Layer(20);
 hiddenLayer.set({
-        squash: synaptic.Neuron.squash.RELU,
-      });
+	squash: synaptic.Neuron.squash.RELU,
+});
 var outputLayer = new Layer(4);
 outputLayer.set({
       squash: synaptic.Neuron.squash.IDENTITY,
@@ -49,6 +49,27 @@ var myNetwork = new Network({
  hidden: [hiddenLayer],
  output: outputLayer
 });
+
+var targetNetwork = Network.fromJSON(myNetwork.toJSON());
+
+var replayMemory = [];
+var replayMemoryPointer = 0;
+var replayMemoryMax = 600;
+
+let targetNetworkUpdateRate = replayMemoryMax*4;
+
+var replayMemoryBatchSize = 400;
+
+function sampleArray(arr, size) {
+    var shuffled = arr.slice(0), i = arr.length, min = i - size, temp, index;
+    while (i-- > min) {
+        index = Math.floor((i + 1) * Math.random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+    }
+    return shuffled.slice(min);
+}
 
 var deaths = 0;
 var apples = 0;
@@ -146,6 +167,7 @@ var apple = {
 	y: 0
 }
 
+let debugOutput = true;
 var paused = false;
 var keyHit = 0;
 var speed = 100;
@@ -155,6 +177,17 @@ var checkKeys = function () {
 		speed = speed < 1 ? 1 : speed-10;
 	} else if(40 in keysDown) {
 		speed = speed > 500 ? 500 : speed+10;
+	} else if(82 in keysDown) {
+		keyHit++;
+		if(keyHit === 1) {
+			apples = 0;
+			deaths = 0;
+		}
+	} else if(79 in keysDown) {
+		keyHit++;
+		if(keyHit === 1) {
+			debugOutput = !debugOutput;
+		}
 	} else if (32 in keysDown) {
 		keyHit++;
 		if(keyHit === 1) {
@@ -179,8 +212,8 @@ var resetGame = function() {
 	}
 	score = 0;
 	
-	apple.x = 1;//Math.floor((Math.random()*(levelWidth-3)+2));
-	apple.y = 1;//Math.floor((Math.random()*(levelWidth-3)+2));
+	apple.x = Math.floor((Math.random()*(levelWidth-3)+2));
+	apple.y = Math.floor((Math.random()*(levelWidth-3)+2));
 
 	
 }
@@ -215,7 +248,11 @@ var rewardFunction = function(position, currentDistance) {
 	if(snakeOutOfBounds) {
 		reward = -1;
 	} else if(level[x+y*levelWidth]===0) {
-			reward=-0.01;
+		if(distance(x,y,apple.x,apple.y) < currentDistance) {
+			reward=0.1;
+		} else {
+			reward=-0.2;
+		}
 	} 
 	if(snake.x === apple.x && snake.y === apple.y) {
 		reward = 1;
@@ -225,15 +262,15 @@ var rewardFunction = function(position, currentDistance) {
 
 var discount = 0.9;
 var epsilon = 0.1;
-var maxEpsilon = 0.9;
-let learningRate = 0.3;
-
+var maxEpsilon = 0.8;
+let learningRate = 0.1;
+let targetNetworkCounter = 0;
 var clamp = (input, min, max) => {
 	return input < min ? min : input > max ? max : input;
 }
 
 var GameLoop = function() {
-	
+	targetNetworkCounter++;
   checkKeys();
   if(paused) {
 	  setTimeout(GameLoop,speed);
@@ -249,6 +286,9 @@ var GameLoop = function() {
 	let directionTaken;
 
 	let oldQs = myNetwork.activate(oldState);
+	if(debugOutput) {
+		console.log(oldQs);
+	}
 	var randomMove = Math.random() > epsilon;
 
 	// Epsilon greedy, random move or optimal move
@@ -271,8 +311,36 @@ var GameLoop = function() {
 	newState[snake.x+snake.y*levelWidth] = 1;
 	newState[apple.x+apple.y*levelWidth] = 0.5;
 	
+	
+	replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState};
+	
+	if(replayMemoryPointer > replayMemoryMax) {
+		let batch = sampleArray(replayMemory, replayMemoryBatchSize);
+		console.log("training");
+		for(let i = 0; i < batch.length;i++) {
+			let r = batch[i].reward;
+			let directionTaken = batch[i].action;
+			
+			let newQs = targetNetwork.activate(batch[i].newState);
+			let oldQs = targetNetwork.activate(batch[i].oldState);
+			let updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQs)],-1,1);
+			
+			
+			oldQs[directionTaken] = updatedQ;
+			myNetwork.activate(batch[i].oldState);
+			myNetwork.propagate(0.1, oldQs);
+		}
+
+		replayMemoryPointer = 0;
+	}
+
+	if(targetNetworkCounter > targetNetworkUpdateRate) {
+		targetNetworkCounter = 0;
+		targetNetwork = Network.fromJSON(myNetwork.toJSON());
+		console.log("updating target network");
+	}
 	// Q values for new state
-	var newQs = myNetwork.activate(newState);
+/*	var newQs = myNetwork.activate(newState);
 
 	
   var snakeOutOfBounds = snake.x < 0 || snake.x >= levelWidth || snake.y < 0 || snake.y >= levelHeight;
@@ -291,13 +359,15 @@ var GameLoop = function() {
 	myNetwork.activate(oldState); // Current Q-value for input before moving
 	myNetwork.propagate(0.1, oldQs); // Backpropagate with new Q value
 		
-	
+	*/
 	epsilon = epsilon > maxEpsilon ? maxEpsilon : epsilon+0.00001;
 
 	if(snake.x === apple.x && snake.y === apple.y) {
 		score++;
-		resetGame();
+		//resetGame();
 		apples++;
+		apple.x = Math.floor((Math.random()*(levelWidth-3)+2));
+		apple.y = Math.floor((Math.random()*(levelWidth-3)+2));
  	}
   
   snakeOutOfBounds = snake.x < 0 || snake.x >= levelWidth || snake.y < 0 || snake.y >= levelHeight;
