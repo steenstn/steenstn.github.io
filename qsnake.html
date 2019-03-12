@@ -126,6 +126,7 @@ var snake = {
 		return {x:this.x, y:this.y};
 	},
 	turnUp: function() {
+
 		this.direction = 0;
 	},
 	turnLeft: function() {
@@ -330,11 +331,13 @@ var GameLoop = function() {
 	// Epsilon greedy, random move or optimal move
 	if(randomMove) {
 		var randomDirection = Math.floor(Math.random()*4);
-		directionTaken = randomDirection;
-		snake.setDirection(randomDirection);
+		let directionAllowed = Math.abs(randomDirection - snake.direction) != 2;
+		directionTaken = directionAllowed? randomDirection : snake.direction;
+		snake.setDirection(directionTaken);
 	} else {
-		snake.setDirection(indexOfMax(oldQs));
-		directionTaken = indexOfMax(oldQs);
+		let directionAllowed = Math.abs(indexOfMax(oldQs) - snake.direction) != 2;
+		let directionTaken = directionAllowed ? indexOfMax(oldQs) : snake.direction
+		snake.setDirection(directionTaken);
 	}
 	
 	var currentDistance = distance(snake.x, snake.y, apple.x, apple.y);
