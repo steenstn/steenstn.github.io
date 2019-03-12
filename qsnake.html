@@ -292,6 +292,7 @@ var clamp = (input, min, max) => {
 var loadTrainedNetwork = function() {
 	myNetwork = Network.fromJSON(trainedNetwork);
 	targetNetwork =  Network.fromJSON(trainedNetwork);
+	epsilon = maxEpsilon;
 	console.log("Loaded pretrained network");
 }
 var GameLoop = function() {
