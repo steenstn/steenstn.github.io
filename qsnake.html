@@ -400,7 +400,7 @@ var GameLoop = function() {
 
 	if(snake.x === apple.x && snake.y === apple.y) {
 		score++;
-		resetGame();
+		//resetGame();
 		apples++;
 		do {
 			apple.x = Math.floor((Math.random()*(levelWidth-3)+2));
