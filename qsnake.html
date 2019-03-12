@@ -57,7 +57,7 @@ var targetNetwork = Network.fromJSON(myNetwork.toJSON());
 
 var replayMemory = [];
 var replayMemoryPointer = 0;
-var replayMemoryMax = 2000;
+var replayMemoryMax = 800;
 
 let training = true;
 let targetNetworkUpdateRate = replayMemoryMax*5;
@@ -292,7 +292,7 @@ var rewardFunction = function(position, currentDistance) {
 var discount = 0.9;
 var epsilon = 0.01;
 var maxEpsilon = 0.8;
-let learningRate = 0.01;
+let learningRate = 0.1;
 let targetNetworkCounter = 0;
 var clamp = (input, min, max) => {
 	return input < min ? min : input > max ? max : input;
@@ -370,7 +370,7 @@ var GameLoop = function() {
 			let r = batch[i].reward;
 			let directionTaken = batch[i].action;
 			
-			let newQsMyNetwork = myNetwork.activate(batch[i].newState);
+			
 			let newQs = targetNetwork.activate(batch[i].newState);
 			let oldQs = targetNetwork.activate(batch[i].oldState);
 			let updatedQ;
@@ -378,7 +378,7 @@ var GameLoop = function() {
 				updatedQ = r;
 			}
 			else { 
-				updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQsMyNetwork)],-1,1);
+				updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQs)],-1,1);
 			}
 			
 			updatedQ = clamp(updatedQ,-1,1);
@@ -395,32 +395,12 @@ var GameLoop = function() {
 		targetNetwork = Network.fromJSON(myNetwork.toJSON());
 		console.log("updating target network");
 	}
-	// Q values for new state
-/*	var newQs = myNetwork.activate(newState);
 
-	
-  var snakeOutOfBounds = snake.x < 0 || snake.x >= levelWidth || snake.y < 0 || snake.y >= levelHeight;
-	let takenApple = (snake.x === apple.x && snake.y === apple.y);
-	let finalState = takenApple ||snakeOutOfBounds;
-	
-	let updatedQ;
-	if(finalState) {
-		updatedQ = r;
-	} else {
-		updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*(r +discount * newQs[indexOfMax(newQs)]);
-	}
-	oldQs[directionTaken] = updatedQ;
-	
-	console.log(oldQs);
-	myNetwork.activate(oldState); // Current Q-value for input before moving
-	myNetwork.propagate(0.1, oldQs); // Backpropagate with new Q value
-		
-	*/
 	epsilon = epsilon > maxEpsilon ? maxEpsilon : epsilon+0.00001;
 
 	if(snake.x === apple.x && snake.y === apple.y) {
 		score++;
-		//resetGame();
+		resetGame();
 		apples++;
 		do {
 			apple.x = Math.floor((Math.random()*(levelWidth-3)+2));
