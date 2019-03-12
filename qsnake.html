@@ -15,6 +15,7 @@ body {
 <body>
 <canvas id='c'></canvas>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/synaptic/1.1.4/synaptic.js"></script>
+<script src="qnetwork.js"></script>
 <script>
 c = document.getElementById('c'),
 ctx = c.getContext('2d');
@@ -288,6 +289,11 @@ var clamp = (input, min, max) => {
 	return input < min ? min : input > max ? max : input;
 }
 
+var loadTrainedNetwork = function() {
+	myNetwork = Network.fromJSON(trainedNetwork);
+	targetNetwork =  Network.fromJSON(trainedNetwork);
+	console.log("Loaded pretrained network");
+}
 var GameLoop = function() {
 	targetNetworkCounter++;
   checkKeys();
