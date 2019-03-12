@@ -57,8 +57,9 @@ var targetNetwork = Network.fromJSON(myNetwork.toJSON());
 
 var replayMemory = [];
 var replayMemoryPointer = 0;
-var replayMemoryMax = 800;
+var replayMemoryMax = 2000;
 
+let training = true;
 let targetNetworkUpdateRate = replayMemoryMax*5;
 
 var replayMemoryBatchSize = 400;
@@ -301,6 +302,7 @@ var loadTrainedNetwork = function() {
 	myNetwork = Network.fromJSON(trainedNetwork);
 	targetNetwork =  Network.fromJSON(trainedNetwork);
 	epsilon = maxEpsilon;
+	training = false;
 	console.log("Loaded pretrained network");
 }
 var GameLoop = function() {
@@ -361,7 +363,7 @@ var GameLoop = function() {
   }
 	replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState, terminal: isTerminalState};
 	
-	if(replayMemoryPointer > replayMemoryMax) {
+	if(training && replayMemoryPointer > replayMemoryMax) {
 		let batch = sampleArray(replayMemory, replayMemoryBatchSize);
 		console.log("training");
 		for(let i = 0; i < batch.length;i++) {
@@ -388,7 +390,7 @@ var GameLoop = function() {
 		replayMemoryPointer = 0;
 	}
 
-	if(targetNetworkCounter > targetNetworkUpdateRate) {
+	if(training && targetNetworkCounter > targetNetworkUpdateRate) {
 		targetNetworkCounter = 0;
 		targetNetwork = Network.fromJSON(myNetwork.toJSON());
 		console.log("updating target network");
