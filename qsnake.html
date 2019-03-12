@@ -308,7 +308,7 @@ var GameLoop = function() {
 	let directionTaken;
 
 	let oldQs = myNetwork.activate(oldState);
-	if(debugOutput) {
+	if(debugOutput && targetNetworkCounter%20==0) {
 		console.log(oldQs);
 	}
 	var randomMove = Math.random() > epsilon;
@@ -337,8 +337,12 @@ var GameLoop = function() {
 		newState[tail[i].x+tail[i].y*levelWidth] = 0.2;
 	}
 	
-	
-	replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState};
+	let isTerminalState = false;
+	let snakeOutOfBounds = snake.x < 0 || snake.x >= levelWidth || snake.y < 0 || snake.y >= levelHeight;
+	if(tail.some(t => t.x === snake.x && t.y ===snake.y) || snakeOutOfBounds) {
+		isTerminalState = true;
+  }
+	replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState, terminal: isTerminalState};
 	
 	if(replayMemoryPointer > replayMemoryMax) {
 		let batch = sampleArray(replayMemory, replayMemoryBatchSize);
@@ -347,9 +351,16 @@ var GameLoop = function() {
 			let r = batch[i].reward;
 			let directionTaken = batch[i].action;
 			
+			let newQsMyNetwork = myNetwork.activate(batch[i].newState);
 			let newQs = targetNetwork.activate(batch[i].newState);
 			let oldQs = targetNetwork.activate(batch[i].oldState);
-			let updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQs)],-1,1);
+			let updatedQ;
+			if(batch[i].isTerminalState) {
+				updatedQ = r;
+			}
+			else { 
+				updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQsMyNetwork)],-1,1);
+			}
 			
 			updatedQ = clamp(updatedQ,-1,1);
 			oldQs[directionTaken] = updatedQ;
