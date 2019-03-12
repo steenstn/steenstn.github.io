@@ -194,6 +194,11 @@ var checkKeys = function () {
 		if(keyHit === 1) {
 			paused = !paused;
 		}
+	} else if (76 in keysDown) {
+		keyHit++;
+		if(keyHit === 1) {
+			loadTrainedNetwork();
+		}
 	} else {
 		keyHit = 0;
 	}
