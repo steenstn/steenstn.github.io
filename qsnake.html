@@ -306,6 +306,7 @@ var epsilon = 0.01;
 var maxEpsilon = 0.8;
 let learningRate = 0.01;
 let targetNetworkCounter = 0;
+let propagationRate = 0.1;
 
 var clamp = (input, min, max) => {
 	return input < min ? min : input > max ? max : input;
@@ -330,7 +331,7 @@ var loadTrainedNetwork = function() {
 	targetNetwork =  Network.fromJSON(trainedNetwork);
 	epsilon = maxEpsilon;
 	training = false;
-	console.log("Loaded pretrained network");
+	console.log("Loaded pretrained network, stopped training");
 }
 var GameLoop = function() {
 	targetNetworkCounter++;
@@ -411,7 +412,7 @@ var GameLoop = function() {
 			updatedQ = clamp(updatedQ,-1,1);
 			oldQs[directionTaken] = updatedQ;
 			myNetwork.activate(batch[i].oldState);
-			myNetwork.propagate(0.1, oldQs);
+			myNetwork.propagate(propagationRate, oldQs);
 		}
 
 		replayMemoryPointer = 0;
