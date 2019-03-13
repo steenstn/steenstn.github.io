@@ -321,7 +321,8 @@ var updateGraph = function() {
 		meanLengthArray.splice(0,1);
 	}
 	let maxMean = minMean = meanLengthArray[0];
-		gctx.fillStyle = "#4f4";
+	let sum = 0;
+	gctx.fillStyle = "#4f4";
   for(let i = 0; i < meanLengthArray.length;i++) {
 		if(meanLengthArray[i] > maxMean) {
 			maxMean = meanLengthArray[i];
@@ -330,13 +331,14 @@ var updateGraph = function() {
 			minMean = meanLengthArray[i];
 		}
 		
-		
+		sum+=meanLengthArray[i];
   	gctx.fillRect(i*2,Math.floor(gc.height-meanLengthArray[i]*10),1,Math.floor(meanLengthArray[i]*10));
 	}
 	
 	gctx.fillStyle = "#000";
 		gctx.fillText("maxMean for last " + meanLengthArray.length + " epocs: " + maxMean.toFixed(2),2,15);
 		gctx.fillText("minMean for last " + meanLengthArray.length + " epocs: " + minMean.toFixed(2),2,35);
+		gctx.fillText("mean for last " + meanLengthArray.length + " epocs: " + (sum/meanLengthArray.length).toFixed(2),2,55);
 }
 
 var loadTrainedNetwork = function() {
