@@ -7,6 +7,8 @@ canvas {
   margin-right: auto;
   margin-top: 40px;
 }
+
+
 body {
   text-align: center;
 }
@@ -18,10 +20,17 @@ body {
 <script src="qnetwork.js"></script>
 <br />
 <button onclick="loadTrainedNetwork()">Load pretrained network</button>
+<br />
+<canvas id='graphCanvas'></canvas>
 <script>
 c = document.getElementById('c'),
 ctx = c.getContext('2d');
 
+gc = document.getElementById('graphCanvas');
+gctx = gc.getContext('2d');
+
+gc.width = 800;
+gc.height = 300;
 var tileSize = 20;
 var levelWidth = 8;
 var levelHeight = 8;
@@ -207,6 +216,9 @@ var checkKeys = function () {
 	}
 }
 let maxLength = 1;
+let meanLength = 0;
+let lengthArray = [];
+let meanLengthArray = [];
 
 var resetGame = function() {
 	
@@ -293,8 +305,23 @@ var epsilon = 0.01;
 var maxEpsilon = 0.8;
 let learningRate = 0.01;
 let targetNetworkCounter = 0;
+
 var clamp = (input, min, max) => {
 	return input < min ? min : input > max ? max : input;
+}
+
+let meanLengthArrayMaxLength = 250;
+var updateGraph = function() {
+	gctx.fillStyle = "#fff";
+  gctx.fillRect(0,0,gc.width,gc.height);
+	gctx.fillStyle = "#4f4";
+  gctx.font = "9px Verdana";
+	if(meanLengthArray.length > meanLengthArrayMaxLength) {
+		meanLengthArray.splice(0,1);
+	}
+  for(let i = 0; i < meanLengthArray.length;i++) {
+  	gctx.fillRect(i*2,Math.floor(gc.height-meanLengthArray[i]*10),1,Math.floor(meanLengthArray[i]*10));
+	}
 }
 
 var loadTrainedNetwork = function() {
@@ -323,7 +350,7 @@ var GameLoop = function() {
 	let directionTaken;
 
 	let oldQs = myNetwork.activate(oldState);
-	if(debugOutput && targetNetworkCounter%20==0) {
+	if(debugOutput && targetNetworkCounter%100==0) {
 		console.log(oldQs);
 	}
 	var randomMove = Math.random() > epsilon;
@@ -386,6 +413,14 @@ var GameLoop = function() {
 		}
 
 		replayMemoryPointer = 0;
+		let lengthSum = 0;
+		for(let i = 0; i < lengthArray.length; i++) {
+			lengthSum+=lengthArray[i];
+		}
+		meanLength = lengthSum/lengthArray.length;
+		lengthArray = [];
+		meanLengthArray.push(meanLength);
+		updateGraph();
 	}
 
 	if(targetNetworkCounter > targetNetworkUpdateRate) {
@@ -432,6 +467,7 @@ var GameLoop = function() {
   
   snakeOutOfBounds = snake.x < 0 || snake.x >= levelWidth || snake.y < 0 || snake.y >= levelHeight;
 	if(tail.some(t => t.x === snake.x && t.y ===snake.y) || snakeOutOfBounds) {
+		lengthArray.push(tail.length);
 		resetGame();
 		deaths++;
   }
@@ -455,7 +491,8 @@ var GameLoop = function() {
 	
   ctx.fillText("Deaths: " + deaths,10,c.height-15);
 	ctx.fillText("Apples: " + apples,10,c.height-2);
-	ctx.fillText("Length: " + maxLength,80,c.height-30);
+	ctx.fillText("MaxLen: " + maxLength,80,c.height-30);
+	ctx.fillText("MeanLen: " + meanLength.toFixed(2),80,c.height-15);
   
   gLoop = setTimeout(GameLoop, speed);
   return;
