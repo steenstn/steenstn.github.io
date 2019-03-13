@@ -316,14 +316,27 @@ let meanLengthArrayMaxLength = 300;
 var updateGraph = function() {
 	gctx.fillStyle = "#fff";
   gctx.fillRect(0,0,gc.width,gc.height);
-	gctx.fillStyle = "#4f4";
-  gctx.font = "9px Verdana";
+  gctx.font = "12px Verdana";
 	if(meanLengthArray.length > meanLengthArrayMaxLength) {
 		meanLengthArray.splice(0,1);
 	}
+	let maxMean = minMean = meanLengthArray[0];
+		gctx.fillStyle = "#4f4";
   for(let i = 0; i < meanLengthArray.length;i++) {
+		if(meanLengthArray[i] > maxMean) {
+			maxMean = meanLengthArray[i];
+		}
+		if(meanLengthArray[i] < minMean) {
+			minMean = meanLengthArray[i];
+		}
+		
+		
   	gctx.fillRect(i*2,Math.floor(gc.height-meanLengthArray[i]*10),1,Math.floor(meanLengthArray[i]*10));
 	}
+	
+	gctx.fillStyle = "#000";
+		gctx.fillText("maxMean for last " + meanLengthArray.length + " epocs: " + maxMean.toFixed(2),2,15);
+		gctx.fillText("minMean for last " + meanLengthArray.length + " epocs: " + minMean.toFixed(2),2,35);
 }
 
 var loadTrainedNetwork = function() {
