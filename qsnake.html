@@ -304,7 +304,7 @@ var rewardFunction = function(position, currentDistance) {
 var discount = 0.9;
 var epsilon = 0.01;
 var maxEpsilon = 0.8;
-let learningRate = 0.1;
+let learningRate = 0.01;
 let targetNetworkCounter = 0;
 
 var clamp = (input, min, max) => {
@@ -397,7 +397,7 @@ var GameLoop = function() {
 			let r = batch[i].reward;
 			let directionTaken = batch[i].action;
 			
-			
+			let newQsMyNetwork = myNetwork.activate(batch[i].newState);
 			let newQs = targetNetwork.activate(batch[i].newState);
 			let oldQs = targetNetwork.activate(batch[i].oldState);
 			let updatedQ;
@@ -405,7 +405,7 @@ var GameLoop = function() {
 				updatedQ = r;
 			}
 			else { 
-				updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQs)],-1,1);
+				updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQsMyNetwork)],-1,1);
 			}
 			
 			updatedQ = clamp(updatedQ,-1,1);
