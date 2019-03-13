@@ -312,6 +312,7 @@ var clamp = (input, min, max) => {
 	return input < min ? min : input > max ? max : input;
 }
 
+
 let meanLengthArrayMaxLength = 300;
 var updateGraph = function() {
 	gctx.fillStyle = "#fff";
@@ -322,13 +323,16 @@ var updateGraph = function() {
 	}
 	let maxMean = minMean = meanLengthArray[0];
 	let sum = 0;
-	gctx.fillStyle = "#4f4";
   for(let i = 0; i < meanLengthArray.length;i++) {
+		
 		if(meanLengthArray[i] > maxMean) {
+			gctx.fillStyle = "#00f";
 			maxMean = meanLengthArray[i];
-		}
-		if(meanLengthArray[i] < minMean) {
+		} else if(meanLengthArray[i] < minMean) {
+			gctx.fillStyle = "#f00";
 			minMean = meanLengthArray[i];
+		} else {
+			gctx.fillStyle = "#4f4";
 		}
 		
 		sum+=meanLengthArray[i];
@@ -338,7 +342,7 @@ var updateGraph = function() {
 	gctx.fillStyle = "#000";
 		gctx.fillText("maxMean for last " + meanLengthArray.length + " epocs: " + maxMean.toFixed(2),2,15);
 		gctx.fillText("minMean for last " + meanLengthArray.length + " epocs: " + minMean.toFixed(2),2,35);
-		gctx.fillText("mean for last " + meanLengthArray.length + " epocs: " + (sum/meanLengthArray.length).toFixed(2),2,55);
+		gctx.fillText("mean of means for last " + meanLengthArray.length + " epocs: " + (sum/meanLengthArray.length).toFixed(2),2,55);
 }
 
 var loadTrainedNetwork = function() {
