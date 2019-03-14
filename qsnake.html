@@ -386,7 +386,7 @@ var GameLoop = function() {
 		snake.setDirection(directionTaken);
 	} else {
 		let directionAllowed = Math.abs(indexOfMax(oldQs) - snake.direction) != 2;
-		let directionTaken = directionAllowed ? indexOfMax(oldQs) : snake.direction
+		directionTaken = directionAllowed ? indexOfMax(oldQs) : snake.direction
 		snake.setDirection(directionTaken);
 	}
 	
@@ -406,12 +406,15 @@ var GameLoop = function() {
 	
 	let isTerminalState = false;
 	let snakeOutOfBounds = snake.x < 0 || snake.x >= levelWidth || snake.y < 0 || snake.y >= levelHeight;
-	if(tail.some(t => t.x === snake.x && t.y ===snake.y) || snakeOutOfBounds) {
+	if(tail.some(t => t.x === snake.x && t.y ===snake.y) || snakeOutOfBounds || (snake.x === apple.x && snake.y === apple.y)) {
 		isTerminalState = true;
   }
-	replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState, terminal: isTerminalState};
+	if(training) {
+		replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState, terminal: isTerminalState};
+	}
 	
-	if(training && replayMemoryPointer > replayMemoryMax) {
+	
+	if(training && replayMemoryPointer >= replayMemoryMax) {
 		let batch = sampleArray(replayMemory, replayMemoryBatchSize);
 		console.log("training");
 		for(let i = 0; i < batch.length;i++) {
@@ -428,7 +431,6 @@ var GameLoop = function() {
 			else { 
 				updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQsMyNetwork)],-1,1);
 			}
-			
 			updatedQ = clamp(updatedQ,-1,1);
 			oldQs[directionTaken] = updatedQ;
 			myNetwork.activate(batch[i].oldState);
