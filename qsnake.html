@@ -23,11 +23,12 @@ body {
 <br />
 <canvas id='graphCanvas'></canvas>
 <script>
-c = document.getElementById('c'),
-ctx = c.getContext('2d');
+'use strict';
+let c = document.getElementById('c');
+let ctx = c.getContext('2d');
 
-gc = document.getElementById('graphCanvas');
-gctx = gc.getContext('2d');
+let gc = document.getElementById('graphCanvas');
+let gctx = gc.getContext('2d');
 
 gc.width = 800;
 gc.height = 300;
