@@ -322,6 +322,7 @@ var updateGraph = function() {
 	if(meanLengthArray.length > meanLengthArrayMaxLength) {
 		meanLengthArray.splice(0,1);
 	}
+	let minMean;
 	let maxMean = minMean = meanLengthArray[0];
 	let sum = 0;
   for(let i = 0; i < meanLengthArray.length;i++) {
