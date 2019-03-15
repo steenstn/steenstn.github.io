@@ -221,6 +221,7 @@ let maxLength = 1;
 let meanLength = 0;
 let lengthArray = [];
 let meanLengthArray = [];
+let barHeightFactor = 20;
 
 var resetGame = function() {
 	
@@ -306,7 +307,7 @@ var discount = 0.9;
 var epsilon = 0.01;
 var maxEpsilon = 0.8;
 let epsilonUpdateRate = 0.00001;
-let learningRate = 0.1;
+let learningRate = 0.05;
 let targetNetworkCounter = 0;
 let propagationRate = 0.1;
 
@@ -339,7 +340,7 @@ var updateGraph = function() {
 		}
 		
 		sum+=meanLengthArray[i];
-  	gctx.fillRect(i*2,Math.floor(gc.height-meanLengthArray[i]*10),1,Math.floor(meanLengthArray[i]*10));
+  	gctx.fillRect(i*2,Math.floor(gc.height-meanLengthArray[i]*barHeightFactor),1,Math.floor(meanLengthArray[i]*barHeightFactor));
 	}
 	
 	gctx.fillStyle = "#000";
