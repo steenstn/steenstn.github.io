@@ -305,7 +305,8 @@ var rewardFunction = function(position, currentDistance) {
 var discount = 0.9;
 var epsilon = 0.01;
 var maxEpsilon = 0.8;
-let learningRate = 0.01;
+let epsilonUpdateRate = 0.00001;
+let learningRate = 0.1;
 let targetNetworkCounter = 0;
 let propagationRate = 0.1;
 
@@ -432,7 +433,7 @@ var GameLoop = function() {
 			else { 
 				updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQsMyNetwork)],-1,1);
 			}
-			updatedQ = clamp(updatedQ,-1,1);
+			
 			oldQs[directionTaken] = updatedQ;
 			myNetwork.activate(batch[i].oldState);
 			myNetwork.propagate(propagationRate, oldQs);
@@ -455,7 +456,7 @@ var GameLoop = function() {
 		console.log("updating target network");
 	}
 
-	epsilon = epsilon > maxEpsilon ? maxEpsilon : epsilon+0.00001;
+	epsilon = epsilon > maxEpsilon ? maxEpsilon : epsilon+epsilonUpdateRate;
 
 	if(snake.x === apple.x && snake.y === apple.y) {
 		score++;
