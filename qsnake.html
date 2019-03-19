@@ -38,7 +38,7 @@ var levelHeight = 8;
 var steps = 0;
 
 c.width = levelWidth*tileSize;
-c.height = levelHeight*tileSize+40;
+c.height = levelHeight*tileSize+60;
 
 var Neuron = synaptic.Neuron,
 	Layer = synaptic.Layer,
@@ -74,6 +74,11 @@ let targetNetworkUpdateRate = replayMemoryMax*5;
 
 var replayMemoryBatchSize = 400;
 
+
+let maxTailSize = -1;
+let importanceSamplingFactor = 0.0001;
+let importanceSamplingUpdateRate = 0.00001;
+
 function sampleArray(arr, size) {
     var shuffled = arr.slice(0), i = arr.length, min = i - size, temp, index;
     while (i-- > min) {
@@ -83,6 +88,41 @@ function sampleArray(arr, size) {
         shuffled[i] = temp;
     }
     return shuffled.slice(min);
+}
+
+function samplePrioArray(arr, size) {
+	let prioSum = 0;
+	let probabilites = [];
+	let weights = [];
+	let weightMax = 0;
+	for(let i = 0; i < arr.length; i++) {
+		prioSum+=arr[i].priority;
+		probabilites.push(arr[i].priority);
+		weights.push(0);
+	}
+	let prioMean = prioSum/arr.length;
+	for(let i = 0; i < probabilites.length;i++) {
+		probabilites[i]/=prioMean;
+
+		let weight = Math.pow((1/arr.length)*(1/probabilites[i]),importanceSamplingFactor);
+		weights[i] = weight;
+		if(weights[i] > weightMax) {
+			weightMax = weights[i];
+		}
+	}
+	let resultingBatch = [];
+	for(let i = 0; i < size; i++) {
+		let randomNumber = Math.random()*prioSum;
+		let index = 0;
+		let sum = 0;
+		while(sum < randomNumber && index < probabilites.length-1) {
+			sum+=probabilites[i];
+			index++;
+		}
+		resultingBatch.push(arr[index]);
+		resultingBatch[resultingBatch.length-1].weight = weights[i]/weightMax;
+	}
+	return resultingBatch;
 }
 
 var deaths = 0;
@@ -413,13 +453,21 @@ var GameLoop = function() {
 		isTerminalState = true;
   }
 	if(training) {
-		replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState, terminal: isTerminalState};
+		let oldQs = myNetwork.activate(oldState);
+		let newQs = myNetwork.activate(newState);
+		let target = r+discount*newQs[indexOfMax(newQs)];
+		let prio = Math.abs(oldQs[indexOfMax(oldQs)]-target)+0.01;
+		prio = Math.pow(prio,0.5);
+		
+		replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState, terminal: isTerminalState, priority:prio};
 	}
 	
 	
 	if(training && replayMemoryPointer >= replayMemoryMax) {
-		let batch = sampleArray(replayMemory, replayMemoryBatchSize);
+		//let batch = sampleArray(replayMemory, replayMemoryBatchSize);
+		let batch = samplePrioArray(replayMemory, replayMemoryBatchSize);
 		console.log("training");
+		
 		for(let i = 0; i < batch.length;i++) {
 			let r = batch[i].reward;
 			let directionTaken = batch[i].action;
@@ -433,11 +481,12 @@ var GameLoop = function() {
 			}
 			else { 
 				updatedQ = (1-learningRate)*oldQs[directionTaken]+learningRate*clamp(r+discount*newQs[indexOfMax(newQsMyNetwork)],-1,1);
+				
 			}
 			
 			oldQs[directionTaken] = updatedQ;
 			myNetwork.activate(batch[i].oldState);
-			myNetwork.propagate(propagationRate, oldQs);
+			myNetwork.propagate(batch[i].weight*propagationRate, oldQs);
 		}
 
 		replayMemoryPointer = 0;
@@ -446,7 +495,11 @@ var GameLoop = function() {
 			lengthSum+=lengthArray[i];
 		}
 		meanLength = lengthSum/lengthArray.length;
+		console.log("lengthArray", lengthArray);
 		lengthArray = [];
+		console.log("lengthSum", lengthSum);
+		console.log("meanLength", meanLength);
+		
 		meanLengthArray.push(meanLength);
 		updateGraph();
 	}
@@ -458,6 +511,7 @@ var GameLoop = function() {
 	}
 
 	epsilon = epsilon > maxEpsilon ? maxEpsilon : epsilon+epsilonUpdateRate;
+	importanceSamplingFactor = importanceSamplingFactor > 1 ? 1 : importanceSamplingFactor + importanceSamplingUpdateRate;
 
 	if(snake.x === apple.x && snake.y === apple.y) {
 		score++;
@@ -467,7 +521,10 @@ var GameLoop = function() {
 			apple.x = Math.floor((Math.random()*(levelWidth-3)+2));
 			apple.y = Math.floor((Math.random()*(levelWidth-3)+2));
 		} while((tail.some(t => t.x === apple.x && t.y === apple.y) || snake.x === apple.x && snake.y === apple.y))
-			tail.push(new tailSegment(tail[tail.length-1]));
+			if(maxTailSize < 0 || tail.length < maxTailSize) {
+				tail.push(new tailSegment(tail[tail.length-1]));
+			}
+			
 			maxLength = Math.max(maxLength, tail.length);
 
 		
@@ -495,10 +552,11 @@ var GameLoop = function() {
   ctx.fillStyle = "#000";
   ctx.font = "9px Verdana";
     
-  ctx.fillText("Ratio: " + (apples/(deaths+apples)).toFixed(2),10,c.height-30);
+  ctx.fillText("Ratio: " + (apples/(apples+deaths)).toFixed(2),1,c.height-30);
 	
-  ctx.fillText("Deaths: " + deaths,10,c.height-15);
-	ctx.fillText("Apples: " + apples,10,c.height-2);
+  ctx.fillText("Deaths: " + deaths,1,c.height-15);
+	ctx.fillText("Apples: " + apples,1,c.height-2);
+	ctx.fillText("APD: " + (apples/deaths).toFixed(2),1,c.height-45);
 	ctx.fillText("MaxLen: " + maxLength,80,c.height-30);
 	ctx.fillText("MeanLen: " + meanLength.toFixed(2),80,c.height-15);
   
