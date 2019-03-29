@@ -127,6 +127,8 @@ function samplePrioArray(arr, size) {
 
 var deaths = 0;
 var apples = 0;
+var wallDeaths = 0;
+var tailDeaths = 0;
 var gLoop;
 var keysDown = {};
 
@@ -237,6 +239,8 @@ var checkKeys = function () {
 		if(keyHit === 1) {
 			apples = 0;
 			deaths = 0;
+			wallDeaths = 0;
+			tailDeaths = 0;
 		}
 	} else if(79 in keysDown) {
 		keyHit++;
@@ -429,7 +433,6 @@ var GameLoop = function() {
 		oldState[tail[i].x+tail[i].y*levelWidth] = 0.2;
 	}
 	
-	let directionTaken;
 
 	let oldQs = myNetwork.activate(oldState);
 	if(debugOutput && targetNetworkCounter%100==0) {
@@ -437,15 +440,30 @@ var GameLoop = function() {
 	}
 	var randomMove = Math.random() > epsilon;
 
+	let directionTaken;
 	// Epsilon greedy, random move or optimal move
 	if(randomMove) {
-		var randomDirection = Math.floor(Math.random()*4);
-		let directionAllowed = Math.abs(randomDirection - snake.direction) != 2;
-		directionTaken =  randomDirection;//directionAllowed? randomDirection : snake.direction;
-		snake.setDirection(directionTaken);
+		while(true) {
+			var randomDirection = Math.floor(Math.random()*4);
+			let directionAllowed = Math.abs(randomDirection - snake.direction) != 2;
+			if(directionAllowed) {
+				directionTaken =  randomDirection;
+				snake.setDirection(directionTaken);
+				break;
+			}
+		}
 	} else {
 		let directionAllowed = Math.abs(indexOfMax(oldQs) - snake.direction) != 2;
-		directionTaken = indexOfMax(oldQs);//directionAllowed ? indexOfMax(oldQs) : snake.direction
+		if(directionAllowed) {
+			directionTaken = indexOfMax(oldQs);
+		} else { // Take second max Q-value
+			let directionsWithoutMax = oldQs.slice();
+			let maxIndex = indexOfMax(directionsWithoutMax);
+			directionsWithoutMax[maxIndex]=-100;
+			let newMaxIndex = indexOfMax(directionsWithoutMax);
+			directionTaken = newMaxIndex;
+		}
+		
 		snake.setDirection(directionTaken);
 	}
 	
@@ -548,6 +566,11 @@ var GameLoop = function() {
  	}
   
 	if(tail.some(t => t.x === snake.x && t.y ===snake.y) || isOutOfBounds(snake.x, snake.y)) {
+		if(tail.some(t => t.x === snake.x && t.y ===snake.y)) {
+			tailDeaths++;
+		} else if(isOutOfBounds(snake.x, snake.y)) {
+			wallDeaths++;
+		}
 		lengthArray.push(tail.length);
 		resetGame();
 		deaths++;
@@ -573,8 +596,10 @@ var GameLoop = function() {
   ctx.fillText("Deaths: " + deaths,1,c.height-15);
 	ctx.fillText("Apples: " + apples,1,c.height-2);
 	ctx.fillText("APD: " + (apples/deaths).toFixed(2),1,c.height-45);
-	ctx.fillText("MaxLen: " + maxLength,80,c.height-30);
-	ctx.fillText("MeanLen: " + meanLength.toFixed(2),80,c.height-15);
+	ctx.fillText("MaxLen: " + maxLength,80,c.height-45);
+	ctx.fillText("MeanLen: " + meanLength.toFixed(2),80,c.height-30);
+	ctx.fillText("Wall hits: " + wallDeaths,80,c.height-15);
+	ctx.fillText("Tail hits: " + tailDeaths,80,c.height-1);
   
   gLoop = setTimeout(GameLoop, speed);
   return;
