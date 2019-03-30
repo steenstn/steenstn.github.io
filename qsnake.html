@@ -78,6 +78,7 @@ var replayMemoryBatchSize = 400;
 let maxTailSize = -1;
 let importanceSamplingFactor = 0.0001;
 let importanceSamplingUpdateRate = 0.00001;
+let probabilityExponent = 0.6;
 
 function sampleArray(arr, size) {
     var shuffled = arr.slice(0), i = arr.length, min = i - size, temp, index;
@@ -492,7 +493,7 @@ var GameLoop = function() {
 		let newQs = myNetwork.activate(newState);
 		let target = isTerminalState ? r : r+discount*newQs[indexOfMax(newQs)];
 		let prio = Math.abs(oldQs[indexOfMax(oldQs)]-target)+0.001;
-		prio = Math.pow(prio,0.5);
+		prio = Math.pow(prio,probabilityExponent);
 		
 		replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState, terminal: isTerminalState, priority:prio};
 		//replayMemory[replayMemoryPointer++]={reward: r, oldState: oldState.slice(), action: directionTaken, newState: newState, terminal: isTerminalState};
