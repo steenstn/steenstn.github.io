@@ -75,7 +75,7 @@
 		}
 		result +="*";
 		console.log(result);
-		download(result, "result.txt", null)
+		download(result, "result.prv", null)
 	}
 	 
 	function getValue(worksheet, startColumn, index) {
@@ -123,7 +123,6 @@
           if (ev.dataTransfer.items[i].kind === 'file') {
             var file = ev.dataTransfer.items[i].getAsFile();
             console.log('... file[' + i + '].name = ' + file);
-			console.log("reading file")
 			fileReader.readAsArrayBuffer(file)
           }
         }
