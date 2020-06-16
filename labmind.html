@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Labmind</title>
+	<style>
+	#drop_zone {
+		border: 5px solid gray;
+		width:  600px;
+		height: 400px;
+	}</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+
+    <script>
+	var fileReader = new FileReader()
+	var woop;
+	fileReader.onloadend = function(e) {
+	
+		var data = new Uint8Array(fileReader.result);
+		var arr = new Array();
+		for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+		var bstr = arr.join("");
+
+		/* Call XLSX */
+		var workbook = XLSX.read(bstr, {
+			type: "binary"
+		});
+
+		/* DO SOMETHING WITH workbook HERE */
+		var first_sheet_name = workbook.SheetNames[workbook.SheetNames.indexOf('Steen')];
+		/* Get worksheet */
+		var worksheet = workbook.Sheets[first_sheet_name];
+		console.log(XLSX.utils.sheet_to_json(worksheet, {
+			raw: true
+		}));
+		woop = worksheet;
+		
+		var result = "0.000000 " + new Date().toLocaleDateString() + " 0 1 0 0 GUID " + create_UUID() + "\n";
+		result += "*\n";
+		
+		var startColumn = "C"
+		var startRow = 16
+		
+		var cellHeight = 3;
+		var currentRow = startRow + cellHeight;
+		var cell = startColumn + currentRow;
+		
+		var wnStartColumn = "I";
+		var wnStartRow = 19;
+		
+		var pStartColumn = "H";
+		var pStartRow = 19;
+		
+		var stStartColumn = "N";
+		var stStartRow = 19;
+		
+		var uOkorrStartColumn = "K"
+		var uOkorrStartRow = 19;
+		
+		var wlStartColumn = "J";
+		
+		for(var i = 0; i < getNumberOfEntries(worksheet); i++) {
+			result += "KV2\t" + worksheet[cell].v + " N N J\t" 
+			+ Math.round(getValue(worksheet, uOkorrStartColumn, i)).toFixed(2) + "\t"
+			+ Math.round(getValue(worksheet, stStartColumn, i)) + "\t"
+			+ getAverageP(worksheet, pStartColumn, pStartRow+i*3).toFixed(2) + "\t"
+			+ Math.round(getAverageP(worksheet, wnStartColumn, wnStartRow+i*3)) + "\t"
+			+ Math.round(getValue(worksheet, wlStartColumn, i))
+			+"\n";
+			currentRow += cellHeight;
+			cell = startColumn + currentRow;
+		}
+		result +="*";
+		console.log(result);
+		download(result, "result.txt", null)
+	}
+	 
+	function getValue(worksheet, startColumn, index) {
+		return worksheet[startColumn + (19+index*3)].v
+	}
+	
+	function getAverageP(worksheet, startColumn, startRow) {
+		return (worksheet[startColumn + startRow].v + worksheet[startColumn + (startRow+1)].v + worksheet[startColumn + (startRow+2)].v)/3;
+	}
+	
+	function getNumberOfEntries(worksheet) {
+		var startColumn = "C"
+		var startRow = 16
+		
+		var cellHeight = 3;
+		var currentRow = startRow + cellHeight;
+		var cell = startColumn + currentRow;
+		var numberOfEntries = 0;
+		while(worksheet[cell]) {
+			numberOfEntries++;
+			currentRow += cellHeight;
+			cell = startColumn + currentRow;
+		}
+		return numberOfEntries;
+	
+	}
+	
+    function dragOverHandler(ev) {
+      console.log('File(s) in drop zone');
+
+      // Prevent default behavior (Prevent file from being opened)
+      ev.preventDefault();
+    }
+
+    function dropHandler(ev) {
+      console.log('File(s) dropped');
+
+      // Prevent default behavior (Prevent file from being opened)
+      ev.preventDefault();
+
+      if (ev.dataTransfer.items) {
+        // Use DataTransferItemList interface to access the file(s)
+        for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+          // If dropped items aren't files, reject them
+          if (ev.dataTransfer.items[i].kind === 'file') {
+            var file = ev.dataTransfer.items[i].getAsFile();
+            console.log('... file[' + i + '].name = ' + file);
+			console.log("reading file")
+			fileReader.readAsArrayBuffer(file)
+          }
+        }
+      } else {
+        // Use DataTransfer interface to access the file(s)
+        for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+          console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
+        }
+      }
+
+      // Pass event to removeDragData for cleanup
+      removeDragData(ev)
+    }
+
+    function removeDragData(ev) {
+      console.log('Removing drag data')
+
+      if (ev.dataTransfer.items) {
+        // Use DataTransferItemList interface to remove the drag data
+        ev.dataTransfer.items.clear();
+      } else {
+        // Use DataTransfer interface to remove the drag data
+        ev.dataTransfer.clearData();
+      }
+    }
+	
+	function download(data, filename, type) {
+		var file = new Blob([data], {type: type});
+		if (window.navigator.msSaveOrOpenBlob) // IE10+
+			window.navigator.msSaveOrOpenBlob(file, filename);
+		else { // Others
+			var a = document.createElement("a"),
+					url = URL.createObjectURL(file);
+			a.href = url;
+			a.download = filename;
+			document.body.appendChild(a);
+			a.click();
+			setTimeout(function() {
+				document.body.removeChild(a);
+				window.URL.revokeObjectURL(url);  
+			}, 0); 
+		}
+	}
+	
+	function create_UUID(){
+		var dt = new Date().getTime();
+		var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+			var r = (dt + Math.random()*16)%16 | 0;
+			dt = Math.floor(dt/16);
+			return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+		});
+		return uuid;
+	}
+
+    </script>
+	
+	<div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+  <p>Drag and drop excel here</p>
+</div>
+	
+</body>
+
+</html>
