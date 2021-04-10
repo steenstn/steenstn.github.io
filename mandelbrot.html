@@ -46,7 +46,7 @@ addEventListener("keyup", function (e) {
 var numPasses = 20;
 var currentPass = numPasses;
 
-var maxIterations = 800;
+var maxIterations = 2000;
 var iterations = 0;
 var startX = -2.2;
 var startY = -1;
@@ -54,7 +54,6 @@ var moveSpeed = 0.05;
 var step = 2;
 
 var mandelbrot = () => {
-
 	if(keyA in keysDown) {
 		startX -=moveSpeed * step;
 		currentPass = numPasses;
@@ -91,7 +90,7 @@ var mandelbrot = () => {
 		setTimeout(mandelbrot, 1);
 		return;
 	}
-
+	ctx.font = "14px Verdana"
 	for(var i = 0; i < canvasWidth; i+=currentPass) {
 		for(var j = 0; j < canvasHeight; j+=currentPass) {
 			
@@ -121,7 +120,13 @@ var mandelbrot = () => {
 			ctx.fillStyle="rgb(" + r + "," + g + ","+b+")";
 			
 			ctx.fillRect(i,j,currentPass,currentPass);
-			
+			ctx.fillStyle="#fff";
+			if(currentPass > 1) {
+				ctx.fillText("Passes left: " + currentPass, 10, 14); 
+			} else {
+				ctx.fillText("Done", 10, 14);
+			}
+
 		}
 	}
 	currentPass--;
