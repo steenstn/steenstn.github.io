@@ -48,10 +48,10 @@ var currentPass = numPasses;
 
 var maxIterations = 800;
 var iterations = 0;
-var startX = -1.5;
+var startX = -2.2;
 var startY = -1;
 var moveSpeed = 0.05;
-var step = 1;
+var step = 2;
 
 var mandelbrot = () => {
 
@@ -72,11 +72,18 @@ var mandelbrot = () => {
 		currentPass = numPasses;
 	}
 	if(keyQ in keysDown) {
+		var oldStep = step
 		step*=0.98;
+		startX+=Math.abs(oldStep-step);
+		startY+=Math.abs(oldStep-step)*0.5;
 		currentPass = numPasses;
 	}
 	if(keyE in keysDown) {
+		var oldStep = step;
 		step*=1.02;
+		startX-=Math.abs(oldStep-step);
+		startY-=Math.abs(oldStep-step)*0.5;
+
 		currentPass = numPasses;
 	}
 	
@@ -88,8 +95,8 @@ var mandelbrot = () => {
 	for(var i = 0; i < canvasWidth; i+=currentPass) {
 		for(var j = 0; j < canvasHeight; j+=currentPass) {
 			
-			var x0 = startX+2.5*i/canvasWidth*step;
-			var y0 = startY+2*j/canvasHeight*step;
+			var x0 = startX+1.5*i/canvasWidth*step;
+			var y0 = startY+j/canvasHeight*step;
 			
 			var x = 0;
 			var y = 0;
