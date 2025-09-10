@@ -76,14 +76,7 @@ img.center {
 
 .project {
 	text-align:left;
-}
-.leftproject {
 	margin-left:5%;
-	
-}
-.rightproject {
-	margin-right:10%;
-	margin-left:10%
 }
 .project a {
 	color: #0E289A;
